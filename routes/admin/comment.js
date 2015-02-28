@@ -1,13 +1,12 @@
 /*!
  * LetsBlog
- * Routes of comment management pages (2015-02-27T14:36:55+0800)
+ * Routes of comment management pages (2015-02-28T17:27:03+0800)
  * Released under MIT license
  */
 
 'use strict';
 
 var util = require('../../lib/util'),
-	renderPaginator = require('../../lib/paginator'),
 	commentBLL = require('../../bll/comment');
 
 
