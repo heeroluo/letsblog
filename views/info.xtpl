@@ -1,0 +1,29 @@
+{{extend ('./_layout/simplepage')}}
+
+{{#block ('title')}}
+操作提示
+{{/block}}
+
+{{#block ('style')}}
+<link href="/style/info.css" rel="stylesheet" type="text/css" />
+{{/block}}
+
+{{#block ('body')}}
+<h1 class="title{{#if(status === 2)}} title--error{{/if}}">
+{{#if(status === 2)}}
+出错啦！
+{{elseif(status === 1)}}
+操作成功！
+{{else}}
+操作提示
+{{/if}}
+</h1>
+<div class="main">
+	<p class="main__message">{{message}}{{#if(httpStatus)}} (Status code: {{httpStatus}}){{/if}}</p>
+	{{#if(stack)}}<pre class="main__stack">{{stack}}</pre>{{/if}}
+	<p class="main__links">
+		{{#if(referrer)}}<a href="{{referrer}}">&laquo; 后退</a>{{/if}}
+		<a href="/">首页 &raquo;</a>
+	</p>
+</div>
+{{/block}}

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{{block ('title')}}}</title>
+<meta charset="utf-8" />
+{{{block ('style')}}}
+{{include ('../_partial/jraiser')}}
+</head>
+
+<body>
+{{{block ('body')}}}
+</body>
+</html>

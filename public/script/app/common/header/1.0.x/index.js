@@ -1,0 +1,6 @@
+/*!
+ * LetsBlog
+ * Header - v1.0.0 (2015-02-23T19:53:21+0800)
+ * Released under MIT license
+ */
+define("/common/header/1.0.x/",["dom/1.1.x/","ajax/1.1.x/",null],function(e){"use strict";var n=e("base/1.0.x/"),a=e("dom/1.1.x/"),s=e("ajax/1.1.x/"),_=window.currentUser,t=a("#header"),o=n.createClass(function(e,n,s){var _=this;_._toggle=e.find("."+n).click(function(){_._on?_.hide():_.show()}),_._layer=e.find("."+s),_._toggleOnClass=n+"--on",_._layerOnClass=s+"--on";var t;e.click(function(){t=!0}),a("body").click(function(){t||_.hide(),t=!1})},{show:function(){var e=this;e._toggle.addClass(e._toggleOnClass),e._layer.addClass(e._layerOnClass),e._on=!0},hide:function(){var e=this;e._toggle.removeClass(e._toggleOnClass),e._layer.removeClass(e._layerOnClass),e._on=!1}});if(new o(t.find(".header__nav"),"header__nav__toggle","header__nav__list"),new o(t.find(".header__user-panel"),"header__user-panel__toggle","header__user-panel__menu"),_.group.perm_manage_comment){var i=function(){s.send({url:"/admin/comment/totalpendingreviews",dataType:"json",onsuccess:function(e){var n=t.find(".header__user-panel__menu__item__admin__pending-reviews");1===e.status&&e.data.total>0?(n.find("em").text(e.data.total),n.show()):n.hide(),setTimeout(i,6e4)}})};i()}});

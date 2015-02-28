@@ -1,0 +1,60 @@
+{{extend ('../_layout/simplepage')}}
+
+{{#block ('title')}}
+用户登录
+{{/block}}
+
+{{#block ('style')}}
+<link href="/style/login.css" rel="stylesheet" type="text/css" />
+{{/block}}
+
+{{#block ('body')}}
+<div class="container">
+	<form action="?" method="post" class="login-form" id="login-form">
+		<input type="text" name="username" class="textbox" placeholder="用户名" maxlength="20" autofocus="autofocus" />&nbsp;
+		<input type="password" name="password" class="textbox" placeholder="密码" maxlength="16" />
+		<input type="submit" class="button" value="登 录" />
+		<input type="hidden" name="referrer" value="{{referrer}}" />
+	</form>
+</div>
+<script>
+require([
+	'dom/1.1.x/',
+	'ajax/1.1.x/',
+	'validator/1.0.x/'
+], function($, ajax, Validator) {
+	new Validator({
+		form: $('#login-form'),
+		steps: [
+			{ fields: 'username', message: '请填写用户名' },
+			{ fields: 'password', message: '请填写密码' },
+			{
+				fields: 'username',
+				message: '用户名必须为2-20个字母、数字或者下划线',
+				rule: function(val) {
+					return /^\w{2,20}$/.test(val);
+				}
+			}
+		],
+		submitProxy: function(data, form) {
+			ajax.send({
+				url: form.attr('action'),
+				data: data,
+				dataType: 'json',
+				method: 'POST',
+				onsuccess: function(res) {
+					if (res.status === 1) {
+						var referrer = data.filter(function(d) {
+							return d.name == 'referrer';
+						})[0];
+						window.location.href = referrer ? referrer.value : '/admin/home';
+					} else {
+						alert(res.message);
+					}
+				}
+			});
+		}
+	});
+});
+</script>
+{{/block}}

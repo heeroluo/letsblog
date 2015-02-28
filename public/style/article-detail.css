@@ -1,0 +1,63 @@
+.container { background: #fff; }
+.main { float: none; padding-left: 0; padding-right: 0; }
+
+
+.article__header__title {
+	font-size: 32px;
+	font-weight: bold;
+	font-family: 'PingHei', 'Microsoft JhengHei', 'Microsoft YaHei', STHeiti, SimHei;
+}
+.article__header__meta { margin-top: 15px; color: #aaa; }
+.article__content { margin-top: 30px; }
+.article__footer { margin-top: 50px; }
+.article__footer__share { text-align: center; word-spacing: 1em; }
+
+
+.comment { margin-top: 50px; }
+.comment__title {
+	padding: 0 5px 8px 5px;
+	border-bottom: 1px solid #ddd;
+	font-size: 18px;
+	font-weight: bold;
+}
+.comment__title em { color: #f53a24; }
+.comment__list__tips { padding: 25px 20px; font-style: italic; }
+.comment__list__item {
+	border-bottom: 1px dashed #ccc;
+	margin-top: 18px;
+	padding: 0 5px 18px 5px;
+}
+.comment__list__item:last-child { border: none; }
+.comment__list__item__header { color: #aaa; line-height: 23px; }
+.comment__list__item__header__author { float: left; }
+.comment__list__item__header__author em {
+	color: #333;
+	font-style: normal;
+	font-weight: bold;
+	font-size: 16px;
+}
+.comment__list__item__header__pubtime { float: right; }
+.comment__list__item__content {
+	margin-top: 8px;
+	font-size: 16px;
+	line-height: 1.5;
+}
+.comment__list__paginator .paginator { margin-top: 25px; }
+
+.comment__form { margin-top: 30px; }
+.comment__form .form-item { margin-left: 8px; margin-right: 8px; }
+
+
+@media (max-width: 679px) {
+	.form-layout__col {
+		width: 100% !important;
+		float: none;
+		margin-top: 15px;
+	}
+}
+@media (max-width: 999px) {
+	.main { width: auto; margin: 0 20px;}
+}
+@media (min-width: 1000px) {
+	.main { width: 960px; margin: 0 auto; }
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{title}}</title>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+{{#if (keywords !== undefined && keywords !== '')}}<meta name="Keywords" content="{{keywords}}" />{{/if}}
+{{#if (description !== undefined && description !== '')}}<meta name="Description" content="{{description}}" />{{/if}}
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta name="format-detection" content="telephone=no" />
+<link href="/style/base.css" media="all" rel="stylesheet" type="text/css" />
+{{{block ('style')}}}
+{{include ('../_partial/jraiser')}}
+<script>
+var currentUser = {{{json(currentUser)}}};
+</script>
+</head>
+
+<body>
+<!--[if lt IE 9]>
+<script>
+!function(body) {
+var html = body.parentNode;
+body.style.width = '100%';
+body.style.height = '100%';
+html.style.overflow = body.style.overflow= 'hidden';
+}(document.body);
+</script>
+<iframe src="/browsertips.html" frameborder="0" scrolling="no" style="position: absolute; width: 100%; height: 100%; left: 0; top: 0; z-index: 99999;"></iframe>
+<![endif]-->
+<header id="header" class="header">
+	<div class="boundary header_boundary clearfix">
+		<div class="header__logo"><a href="/"><img src="/images/logo.png" alt="{{options.sitename}}" /></a></div>
+		<nav class="header__nav">
+			<span class="header__nav__toggle">&#xe622;</span>
+			<ul class="header__nav__list clearfix">
+				<li class="header__nav__list-item{{#if (categoryid === 0)}} header__nav__list-item--current{{/if}}"><a href="/">首页</a></li>
+{{#each (categoryList)}}
+				<li class="header__nav__list-item{{#if (root.categoryid === this.categoryid)}} header__nav__list-item--current{{/if}}"><a href="{{this.href}}">{{this.categoryname}}</a></li>
+{{/each}}
+			</ul>
+		</nav>
+		<div class="header__user-panel">
+{{#if (currentUser && currentUser.userid > 0)}}
+			<span class="header__user-panel__toggle">&#xe625;</span>
+			<ul class="header__user-panel__menu">
+				<li>Welcome, {{currentUser.nickname}}</li>
+				<li class="header__user-panel__menu__item__admin"><a href="/admin/home" target="_blank">后台管理</a><span class="header__user-panel__menu__item__admin__pending-reviews"> (<a href="/admin/comment/list?state=0" target="_blank">待审:<em></em>条</a>)</span> | <a href="/user/logout">退出</a></li>
+			</ul>
+{{else}}
+			<div class="header__user-panel__login"><a href="/user/login">登录</a></div>
+{{/if}}
+		</div>
+	</div>
+</header>
+<div class="container clearfix">
+	<div class="boundary container__boundary clearfix">
+		{{{block ('container')}}}
+	</div>
+</div>
+<footer class="footer">
+	<div class="boundary footer__boundary clearfix">
+		<div class="footer__col-left">
+			<nav class="footer__nav">
+				<ul class="clearfix">
+					<li><a href="/">首页</a></li>
+{{#each (categoryList)}}
+					<li><a href="{{this.href}}">{{this.categoryname}}</a></li>
+{{/each}}
+				</ul>
+			</nav>
+			<p>本站作品采用 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a> 进行许可。</p>
+			<p>Copyright © 2009-{{currentYear}} <a href="/">{{options.sitename}}</a>. All rights reserved.</p>
+		</div>
+		<div class="footer__col-right">
+			<p>Power by <a href="http://nodejs.org/" target="_blank"><img class="footer__nodejs-logo" src="/style/nodejs.svg" alt="node.js" /></a></p>
+		</div>
+	</div>
+</footer>
+{{{block ('script')}}}
+{{#if (options.statcode)}}
+{{{options.statcode}}}
+{{/if}}
+</body>

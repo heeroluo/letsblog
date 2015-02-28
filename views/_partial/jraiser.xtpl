@@ -1,0 +1,7 @@
+<script src="/script/jraiser2.js"></script>
+<script>
+jraiser.config({
+	libPath: '/script/lib',
+	appPath: '/script/app'
+});
+</script>

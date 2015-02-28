@@ -1,0 +1,6 @@
+/*!
+ * LetsBlog
+ * SNS share - v1.0.0 (2015-02-22T15:56:43+0800)
+ * Released under MIT license
+ */
+define("/common/share/1.0.x/",["querystring/1.0.x/","dom/1.1.x/","widget/1.0.x/","dom/1.0.x/","overlayer/1.0.x/","/common/qrcode/1.0.x/",null],function(e,t){"use strict";var o=e("querystring/1.0.x/"),r=e("dom/1.1.x/"),i=e("overlayer/1.0.x/"),c=e("/common/qrcode/1.0.x/"),n={weibo:function(e){window.open(o.append("http://service.weibo.com/share/share.php",{title:e.title,url:e.url}))},wechat:function(e){function t(){n.remove(),o.hide()}var o=new i({wrapper:r("body"),zIndex:1e4,opacity:.7,fade:{duration:200},visible:!0,events:{afterhide:function(){this.destroy()}}}),n=r('<div class="share-wechat"><p>扫一扫，分享到微信</p><p class="share-wechat__qrcode"></p><p class="share-wechat__close">点击任意位置关闭</p></div>');r("body").append(n);new c(n.find(".share-wechat__qrcode").get(0),{text:e.url,width:128,height:128,colorDark:"#000000",colorLight:"#ffffff"});o.on("click",t),n.on("click",t)}};t.to=function(e,t){return n[e](t)}});

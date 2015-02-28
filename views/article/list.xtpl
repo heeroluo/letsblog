@@ -1,0 +1,74 @@
+{{extend ('../_layout/frontpage')}}
+
+{{#block ('style')}}
+<link href="/style/article-content.css" media="all" rel="stylesheet" type="text/css" />
+<link href="/highlightjs/styles/tomorrow.css" media="all" rel="stylesheet" type="text/css" />
+{{/block}}
+
+{{#block ('container')}}
+<div class="main">
+{{#if (articleList !== null && articleList.length > 0)}}
+	<div id="article-list" class="article-list">
+	{{#each (articleList)}}
+		<article class="article-list__item">
+			<header class="article-list__item__header clearfix">
+				<h1 class="article-list__item__header__title"><a href="{{this.href}}">{{this.title}}</a></h1>
+				<div class="article-list__item__header__meta">
+					{{#if (root.categoryid <= 0)}}<a href="{{this.category_href}}">{{this.categoryname}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;{{/if}}{{this.pubtime_formatted}}
+				</div>
+			</header>
+			<div class="article__content article-list__item__summary">
+				{{{this.summary}}}
+			</div>
+			<footer class="article-list__item__footer clearfix">
+				<div class="article-list__item__footer_info"><em>{{this.totalviews}}</em>次阅读，<em>{{this.totalcomments}}</em>条评论</div>
+				<div class="article-list__item__footer__share clearfix">
+					<a href="#" class="share-ico share-ico--weibo" data-sharetype="weibo">&#x349f;</a>
+					<a href="#" class="share-ico share-ico--wechat" data-sharetype="wechat">&#xe63c;</a>
+				</div>
+			</footer>
+		</article>
+	{{/each}}
+{{#if (paginator !== undefined)}}
+		<nav id="article-list__paginator">
+			{{parse ('../_partial/paginator', paginator = paginator)}}
+		</nav>
+{{/if}}
+	</div>
+{{/if}}
+</div>
+<aside class="sidebar">
+{{#if (recommendedArticles !== undefined && recommendedArticles.length > 0)}}
+	<section class="sidebar__section recommended-articles">
+		<h2 class="sidebar__section__title">推荐文章</h2>
+		<ol class="sidebar__article-list">
+	{{#each (recommendedArticles)}}
+			<li><a href="{{this.href}}" target="_blank">{{this.title}}</a></li>
+	{{/each}}
+		</ol>
+	</section>
+{{/if}}
+{{#if (linkList !== undefined && linkList.length > 0)}}
+	<section class="sidebar__section friend-sites">
+		<h2 class="sidebar__section__title">友情链接</h2>
+		<dl class="sidebar__link-list">
+	{{#each (linkList)}}
+			<dt><a href="{{this.siteurl}}" target="_blank">{{this.linkname}}</a></dt>
+			<dd>{{this.introduction}}</dd>
+	{{/each}}
+		</dl>
+	</section>
+{{/if}}
+</aside>
+{{/block}}
+
+{{#block ('script')}}
+<script src="/highlightjs/highlight.pack.js"></script>
+<script>
+hljs.configure({
+	tabReplace: '    '
+});
+hljs.initHighlightingOnLoad();
+</script>
+<script>require('/page/article-list/1.x/');</script>
+{{/block}}

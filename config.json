@@ -1,0 +1,16 @@
+{
+	"port": 3000,
+	"staticExpires": 4320,
+	"express": {
+		"env": "development",
+		"trust_proxy": false
+	},
+	"iisnode": true,
+	"db": {
+		"host": "localhost",
+		"port": 3306,
+		"user": "root",
+		"password": "12345",
+		"database": "letsblog"
+	}
+}
