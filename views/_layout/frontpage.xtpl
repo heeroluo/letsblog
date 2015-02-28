@@ -82,3 +82,4 @@ html.style.overflow = body.style.overflow= 'hidden';
 {{{options.statcode}}}
 {{/if}}
 </body>
+</html>
