@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Business logic layer of article (2015-03-07T12:12:15+0800)
+ * Business logic layer of article (2015-03-07T17:12:59+0800)
  * Released under MIT license
  */
 
@@ -223,4 +223,25 @@ exports.addViews = function(articleid, callback) {
 			callback(util.createError('无效的文章编号'));
 		}
 	}
+};
+
+
+// 获取上一篇和下一篇文章
+exports.getAdjacentArticles = function(articleid, categoryid, callback) {
+	async.parallel([function(callback) {
+		articleDAL.adjacent(articleid, categoryid, 0, function(err, result) {
+			callback(err, result);
+		});
+	}, function(callback) {
+		articleDAL.adjacent(articleid, categoryid, 1, function(err, result) {
+			callback(err, result);
+		});
+	}], function(err, results) {
+		if (!err) {
+			results = results.map(function(result) {
+				return result && result[0] ? articleModel.createEntity(result[0]) : null;
+			});
+		}
+		callback(err, results);
+	});
 };

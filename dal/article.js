@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Data access layer of article (2015-02-21T20:23:29+0800)
+ * Data access layer of article (2015-03-07T18:10:35+0800)
  * Released under MIT license
  */
 
@@ -110,4 +110,15 @@ exports.list = function(params, pageSize, page, callback) {
 		params: whereParams,
 		callback: callback
 	});
+};
+
+
+exports.adjacent = function(articleid, categoryid, prevOrNext, callback) {
+	db.query(
+		SELECT_ARTICLE_LIST + ' WHERE article.articleid ' +
+			(prevOrNext ? '>' : '<') + ' ? AND article.categoryid = ? ' +
+			'ORDER BY article.articleid ' + (prevOrNext ? 'ASC' : 'DESC') + ' LIMIT 1',
+		[articleid, categoryid],
+		callback
+	);
 };

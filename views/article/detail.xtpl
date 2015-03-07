@@ -1,7 +1,7 @@
 {{extend ('../_layout/frontpage')}}
 
 {{#block ('style')}}
-<link href="/style/article-detail.css" media="all" rel="stylesheet" type="text/css" />
+<link href="/style/article-detail.css?20150307" media="all" rel="stylesheet" type="text/css" />
 <link href="/style/article-content.css" media="all" rel="stylesheet" type="text/css" />
 <link href="/highlightjs/styles/tomorrow.css" media="all" rel="stylesheet" type="text/css" />
 {{/block}}
@@ -21,6 +21,22 @@
 				<a href="#" class="share-btn share-btn--weibo" data-sharetype="weibo"><span class="share-btn__ico">&#x349f;</span>分享到微博</a>
 				<a href="#" class="share-btn share-btn--wechat" data-sharetype="wechat"><span class="share-btn__ico">&#xe63c;</span>分享到微信</a>
 			</div>
+{{#if (prevArticle !== null || nextArticle !== null)}}
+			<div class="article__footer__adjacents">
+				<ol class="clearfix">
+	{{#if (prevArticle !== null)}}
+					<li class="article__footer__adjacents__item article__footer__adjacents__item--prev">
+						<a href="{{prevArticle.href}}"><span class="article__footer__adjacents__item__icon"></span>{{prevArticle.title}}</a>
+					</li>
+	{{/if}}
+	{{#if (nextArticle !== null)}}
+					<li class="article__footer__adjacents__item article__footer__adjacents__item--next">
+						<a href="{{nextArticle.href}}">{{nextArticle.title}}<span class="article__footer__adjacents__item__icon"></span></a>
+					</li>
+	{{/if}}
+				</ol>
+			</div>
+{{/if}}
 		</footer>
 	</article>
 	<div class="comment">

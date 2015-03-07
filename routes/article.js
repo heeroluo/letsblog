@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Routes of article (2015-03-07T12:15:34+0800)
+ * Routes of article (2015-03-07T17:05:23+0800)
  * Released under MIT license
  */
 
@@ -106,7 +106,19 @@ exports.detail = function(req, res, next) {
 			err = util.createError('您没有权限查看此文章', 403);
 		}
 
-		callback(err);
+		callback(err, article);
+	}, function(article, callback) {
+		articleBLL.getAdjacentArticles(
+			article.articleid,
+			article.categoryid,
+			function(err, results) {
+				if (!err) {
+					res.routeHandler.setData('prevArticle', results[0]);
+					res.routeHandler.setData('nextArticle', results[1]);
+				}
+				callback(err);
+			}
+		);
 	}], next);
 };
 
