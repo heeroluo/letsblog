@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Routes of article (2015-02-26T17:10:12+0800)
+ * Routes of article (2015-03-07T12:15:34+0800)
  * Released under MIT license
  */
 
@@ -15,57 +15,54 @@ var async = require('async'),
 exports.list = function(req, res, next) {
 	var categoryid = parseInt(req.params[0]) || 0,
 		page = parseInt(req.query.page) || 1,
-		params = { };
+		tasks = [ ];
 
-	if (categoryid) {
-		// 检查分类是否存在
-		var category = res.routeHandler.getData('categoryList').filter(function(category) {
-			return category.categoryid === categoryid;
-		})[0];
+	if (!categoryid && page === 1) {
+		tasks.push(articleBLL.getHomePageArticles);
+	} else {
+		var params = { };
 
-		if (category) {
-			params.categoryid = categoryid;
-		} else {
-			next(util.createError('分类不存在或不可见', 404));
-			return;
+		if (categoryid) {
+			// 检查分类是否存在
+			var category = res.routeHandler.getData('categoryList').filter(function(category) {
+				return category.categoryid === categoryid;
+			})[0];
+
+			if (category) {
+				params.categoryid = categoryid;
+			} else {
+				next(util.createError('分类不存在或不可见', 404));
+				return;
+			}
 		}
+
+		// 只加载可见文章
+		params.minWeight = 1;
+		params.state = 1;
+
+		tasks.push(function(callback) {
+			articleBLL.list(params, 10, page, callback);
+		});
 	}
 
-	// 只加载可见文章
-	params.minWeight = 1;
-	params.state = 1;
+	tasks.push(articleBLL.getRecommendedArticles);
 
-	async.parallel([function(callback) {
-		articleBLL.list(params, 10, page, function(err, result) {
-			if (!err) {
-				res.routeHandler.setData('categoryid', categoryid);
-				if (result.data) {
-					result.data.forEach(function(d) {
-						d.pubtime_formatted = util.formatDateFromNow(d.pubtime);
-					});
-					res.routeHandler.setData('articleList', result.data);
-				}
-				if (result.totalPages > 1) {
-					res.routeHandler.setData('paginator', util.createPaginatorData(
-						result.page, result.totalPages, '?page={{page}}'
-					));
-				}
+
+	async.parallel(tasks, function(err, results) {
+		if (!err) {
+			res.routeHandler.setData('categoryid', categoryid);
+			if (results[0].data) {
+				res.routeHandler.setData('articleList', results[0].data);
 			}
-			callback(err);
-		});
-	}, function(callback) {
-		articleBLL.list({ minWeight: 200 }, -1, 1, function(err, result) {
-			if (!err) {
-				if (result.data) {
-					result.data.sort(function(a, b) {
-						return b.weight - a.weight;
-					});
-					res.routeHandler.setData('recommendedArticles', result.data);
-				}
+			if (results[0].totalPages > 1) {
+				res.routeHandler.setData('paginator', util.createPaginatorData(
+					results[0].page, results[0].totalPages, '?page={{page}}'
+				));
 			}
-			callback();
-		});
-	}], next);
+			res.routeHandler.setData('recommendedArticles', results[1]);
+		}
+		next(err);
+	});
 };
 
 

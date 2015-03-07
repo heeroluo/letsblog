@@ -1,12 +1,13 @@
 /*!
  * LetsBlog
- * Business logic layer of article (2015-02-26T09:38:12+0800)
+ * Business logic layer of article (2015-03-07T12:12:15+0800)
  * Released under MIT license
  */
 
 'use strict';
 
-var util = require('../lib/util'),
+var async = require('async'),
+	util = require('../lib/util'),
 	validator = require('../lib/validator'),
 	Cache = require('./_cache'),
 	categoryBLL = require('./category'),
@@ -15,7 +16,7 @@ var util = require('../lib/util'),
 	articleDAL = require('../dal/article');
 
 
-exports.list = function(params, pageSize, page, callback) {
+var list = exports.list = function(params, pageSize, page, callback) {
 	if (params) {
 		if (isNaN(params.minWeight) || params.minWeight < 0) { delete params.minWeight; }
 		if (isNaN(params.maxWeight) || params.maxWeight < 0) { delete params.maxWeight; }
@@ -33,10 +34,69 @@ exports.list = function(params, pageSize, page, callback) {
 	articleDAL.list(params, pageSize, page, function(err, result) {
 		if (result && result.data) {
 			result.data = result.data.map(function(d) {
-				return articleModel.createEntity(d);
+				d = articleModel.createEntity(d);
+				d.pubtime_formatted = util.formatDateFromNow(d.pubtime);
+				return d;
 			});
 		}
 		callback(err, result);
+	});
+};
+
+
+// 缓存首页列表数据和推荐文章数据
+var articleCache = new Cache(function(setCache) {
+	async.parallel([function(callback) {
+		list({
+			minWeight: 1,
+			state: 1
+		}, 10, 1, function(err, result) {
+			if (!err) {
+				if (result.data) {
+					result.data.forEach(function(d) { Object.freeze(d); });
+					Object.freeze(result.data);
+				}
+				Object.freeze(result);
+			}
+			callback(err, result);
+		});
+	}, function(callback) {
+		list({
+			minWeight: 200,
+			state: 1
+		}, -1, 1, function(err, result) {
+			if (!err) {
+				result = result.data;
+				if (result) {
+					result.sort(function(a, b) { return b.weight - a.weight; });
+					result.forEach(function(d) { Object.freeze(d); });
+				}
+				Object.freeze(result);
+			}
+			callback(err, result);
+		});
+	}], function(err, results) {
+		setCache(err, results ? {
+			homePageArticles: results[0],
+			recommendedArticles: results[1]
+		}: null);
+	});
+}, exports, {
+	expires: 10 * 60 * 1000
+});
+var addClearCacheAction = exports.addClearCacheAction;
+
+// 获取首页文章
+exports.getHomePageArticles = function(callback) {
+	articleCache.get(function(err, result) {
+		callback(err, result ? result.homePageArticles : null);
+	});
+};
+
+// 获取推荐文章
+exports.getRecommendedArticles = function(callback) {
+	articleCache.get(function(err, result) {
+		callback(err, result ? result.recommendedArticles : null);
 	});
 };
 
@@ -95,7 +155,10 @@ exports.create = function(article, user, callback) {
 		if (err) {
 			callback(err);
 		} else {
-			articleDAL.create( article.toDbRecord(), categoryBLL.addClearCacheAction(callback) );
+			articleDAL.create(
+				article.toDbRecord(),
+				addClearCacheAction(categoryBLL.addClearCacheAction(callback))
+			);
 		}
 	});
 };
@@ -110,12 +173,12 @@ exports.update = function(article, articleid, user, callback) {
 				articleDAL.update(
 					article.toDbRecord(),
 					articleid,
-					categoryBLL.addClearCacheAction(callback)
+					addClearCacheAction(categoryBLL.addClearCacheAction(callback))
 				);
 			}
 		});
 	} else {
-		callback( util.createError('无效的文章编号') );
+		callback(util.createError('无效的文章编号'));
 	}
 };
 
@@ -144,7 +207,9 @@ exports.delete = function(articleids, userid, callback) {
 		commentBLL.deleteByArticleIds(articleids);
 		// 删除文章
 		articleDAL.delete(
-			articleids, userid, categoryBLL.addClearCacheAction(callback)
+			articleids,
+			userid,
+			addClearCacheAction(categoryBLL.addClearCacheAction(callback))
 		);
 	}
 };
@@ -155,7 +220,7 @@ exports.addViews = function(articleid, callback) {
 		articleDAL.addViews(articleid, callback);
 	} else {
 		if (callback) {
-			callback( util.createError('无效的文章编号') );
+			callback(util.createError('无效的文章编号'));
 		}
 	}
 };
