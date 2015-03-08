@@ -126,6 +126,36 @@ a:hover {
 .share-wechat__qrcode { margin: 8px 0; }
 .share-wechat__qrcode img { width: 128px; height: 128px; }
 .share-wechat__close { font-size: 12px; }
+.share-wechat--inwechat {
+	color: #fff;
+	position: fixed;
+	top: 0;
+	right: 0;
+	z-index: 12000;
+}
+.share-wechat--inwechat__text {
+	float: left;
+	margin-top: 8px;
+	line-height: 22px;
+	text-align: center;
+	font-size: 16px;
+}
+.share-wechat--inwechat__arrow { float: right; margin: 0 22px 0 10px; }
+.share-wechat--inwechat__arrow__triangle {
+	width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid #fff;
+    display: block;
+}
+.share-wechat--inwechat__arrow__rectangle {
+	background: #fff;
+	width: 10px;
+	height: 15px;
+	margin: 0 auto;
+	display: block;
+}
 
 
 /* 表单布局 */

@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Comment component - v1.0.0 (2015-02-25T09:41:12+0800)
+ * Comment component - v1.0.0 (2015-03-08T11:24:20+0800)
  * Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
@@ -17,7 +17,7 @@ var $ = require('dom/1.1.x/'),
 var tmpl = new Tmpl({
 	LIST:
 '<% data.forEach(function(comment) { %>' +
-'<article class="comment__list__item">' +
+'<article class="comment__list__item<% if (comment.userid) { %> comment__list__item--isuser<% } %>">' +
 	'<header class="comment__list__item__header clearfix">' +
 		'<div class="comment__list__item__header__author"><em><%=comment.user_nickname%></em> 说：</div>' +
 		'<div class="comment__list__item__header__pubtime">发表于<%=comment.pubtime_formatted%></div>' +

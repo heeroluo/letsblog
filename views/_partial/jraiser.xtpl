@@ -2,6 +2,9 @@
 <script>
 jraiser.config({
 	libPath: '/script/lib',
-	appPath: '/script/app'
+	appPath: '/script/app',
+	map: [
+		[/(.*)/, '$1?20150308']
+	]
 });
 </script>
