@@ -73,6 +73,21 @@
 	font-weight: bold;
 	font-size: 16px;
 }
+.comment__list__item--isuser .comment__list__item__header__author em:before {
+	font-family: 'iconfont';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	content: '\e625';
+	color: #ccc;
+	padding-right: 5px;
+	font-size: 14px;
+	vertical-align: 2px;
+}
 .comment__list__item__header__pubtime { float: right; }
 .comment__list__item__content {
 	margin-top: 8px;
