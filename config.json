@@ -5,7 +5,7 @@
 		"env": "development",
 		"trust_proxy": false
 	},
-	"iisnode": true,
+	"iisnode": false,
 	"db": {
 		"host": "localhost",
 		"port": 3306,
