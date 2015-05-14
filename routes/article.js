@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Routes of article (2015-03-07T17:05:23+0800)
+ * Routes of article (2015-05-14T17:34:06+0800)
  * Released under MIT license
  */
 
@@ -102,6 +102,9 @@ exports.detail = function(req, res, next) {
 			res.routeHandler.setData('categoryid', article.categoryid);
 			res.routeHandler.setData('article', article);
 			res.routeHandler.setData('author', author);
+			if (article.keywords) {
+				res.routeHandler.setData('keywords', article.keywords.split(/\s*,\s*/));	
+			}
 		} else {
 			err = util.createError('您没有权限查看此文章', 403);
 		}
