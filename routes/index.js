@@ -1,13 +1,12 @@
 /*!
  * LetsBlog
- * All routes (2015-02-25T11:24:51+0800)
+ * All routes (2015-05-18T15:04:11+0800)
  * Released under MIT license
  */
 
 'use strict';
 
-var util = require('../lib/util'),
-	pubRoutes = require('./_routes'),
+var pubRoutes = require('./_routes'),
 	admin_optionsRoutes = require('./admin/options'),
 	admin_linkRoutes = require('./admin/link'),
 	admin_userGroupRoutes = require('./admin/usergroup'),
