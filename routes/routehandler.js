@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Route handler definations (2015-02-25T11:24:55+0800)
+ * Route handler definations (2015-05-25T14:17:25+0800)
  * Released under MIT license
  */
 
@@ -92,7 +92,6 @@ var BasicRouteHandler = util.createClass(function(pageTemplate) {
 	 */
 	renderInfo: function(res, info) {
 		util.extend(this._info, this._data, info);
-		console.log( res.req.get('Referer') );
 		this._info.backURL = this._info.backURL || res.req.get('Referer');
 		this._infoTemplate = res.req.originalUrl.indexOf('/admin/') === 0 ? 'admin/info' : 'info';
 		this._renderInfo(res);
