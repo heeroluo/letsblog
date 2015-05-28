@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Route handler definations (2015-05-25T14:17:25+0800)
+ * Route handler definations (2015-05-26T15:46:23+0800)
  * Released under MIT license
  */
 
@@ -9,7 +9,7 @@
 var util = require('../lib/util');
 
 
-// 为了避免往res对象中写入过多属性或方法或
+// 为了避免往res对象中写入过多属性或方法
 // 把这些逻辑全部封装到RouteHandler中
 // 然后把RouteHandler挂到res对象
 

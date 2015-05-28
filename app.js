@@ -32,23 +32,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// 增加文件上传支持
-var multer  = require('multer');
-app.use(multer({
-	dest: './public/upload/',
-	rename: function (fieldname, filename) {
-		var now = new Date();
-		// 重命名为 年+月+日+时+分+秒+5位随机数
-		return now.getFullYear() +
-			( '0' + (now.getMonth() + 1) ).slice(-2) +
-			( '0' + now.getDate() ).slice(-2) +
-			( '0' + now.getHours() ).slice(-2) +
-			( '0' + now.getMinutes() ).slice(-2) +
-			( '0' + now.getSeconds() ).slice(-2) +
-			parseInt(10000 + Math.random() * 90000);
-	}
-}));
-
 // 静态文件及其过期时间
 app.use(express.static(path.join(__dirname, 'public'), {
 	maxAge: config.staticExpires * 60 * 1000
@@ -110,29 +93,28 @@ app.use('/favicon.ico', function(req, res) {
 		app.use(rule.basePath, router);
 	});
 
-	require('./routes').forEach(function(rule) {
+	routeRules.forEach(function(rule) {
 		var router = express.Router();
 
 		rule.routes.forEach(function(route) {
-			var callbacks = [ ];
-
-			if (route.callback) {
-				if (Array.isArray(route.callback)) {
-					callbacks = callbacks.concat(route.callback)
-				} else {
-					callbacks.push(route.callback);
-				}
+			var callbacks;
+			if ( Array.isArray(route.callback) ) {
+				callbacks = route.callback.slice();
+			} else if (route.callback) {
+				callbacks = [route.callback];
+			} else {
+				callbacks = [ ];
 			}
 
 			if (route.template || route.resType) {
 				callbacks.push(function(req, res, next) {
 					if (res.routeHandler) {
 						var title = res.routeHandler.getData('title');
-						if (title && Array.isArray(title)) {
+						if (Array.isArray(title)) {
 							res.routeHandler.setData('title', title.join(' | '));
 						}
 						var keywords = res.routeHandler.getData('keywords');
-						if (keywords && Array.isArray(keywords)) {
+						if (Array.isArray(keywords)) {
 							res.routeHandler.setData('keywords', keywords.join(','));
 						}
 						res.routeHandler.render(res);

@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Routes of article management pages (2015-02-25T16:04:03+0800)
+ * Routes of article management pages (2015-05-28T15:18:14+0800)
  * Released under MIT license
  */
 
@@ -195,7 +195,26 @@ exports.delete_post = addPermissionChecking(function(req, res, next) {
 });
 
 
-exports.upload_post = addPermissionChecking(function(req, res, next) {
+// 增加文件上传支持
+var multer  = require('multer');
+exports.multer_upload = addPermissionChecking(
+	multer({
+		dest: './public/upload/',
+		rename: function () {
+			var now = new Date();
+			// 重命名为 年+月+日+时+分+秒+5位随机数
+			return now.getFullYear() +
+				( '0' + (now.getMonth() + 1) ).slice(-2) +
+				( '0' + now.getDate() ).slice(-2) +
+				( '0' + now.getHours() ).slice(-2) +
+				( '0' + now.getMinutes() ).slice(-2) +
+				( '0' + now.getSeconds() ).slice(-2) +
+				parseInt(10000 + Math.random() * 90000);
+		}
+	})
+);
+
+exports.upload_complete = addPermissionChecking(function(req, res, next) {
 	var file = req.files.file, fs = require('fs');
 	if (file && file.size) {
 		if (file.size > 8 * 1024 * 1024) {

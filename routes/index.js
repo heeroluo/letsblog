@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * All routes (2015-05-18T15:04:11+0800)
+ * All routes (2015-05-28T15:28:36+0800)
  * Released under MIT license
  */
 
@@ -373,7 +373,10 @@ module.exports = [
 				path: '/upload',
 				verb: 'post',
 				resType: 'json',
-				callback: admin_articleRoutes.upload_post
+				callback: [
+					admin_articleRoutes.multer_upload,
+					admin_articleRoutes.upload_complete
+				]
 			}
 		]
 	},
