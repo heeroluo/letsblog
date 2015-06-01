@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Route handler definations (2015-05-26T15:46:23+0800)
+ * Route handler definations (2015-06-01T09:20:19+0800)
  * Released under MIT license
  */
 
@@ -153,8 +153,8 @@ exports.createErrorRouteHandler = function(isDevEnv) {
 			res.routeHandler.renderInfo(res, {
 				status: 2,
 				httpStatus: err.status,
-				message: isDevEnv ? err.message : '',
-				stack: isDevEnv ? err.stack : '',
+				message: err.message || '',
+				stack: isDevEnv ? err.stack : ''
 			});
 		} catch (e) {
 			res.end();
