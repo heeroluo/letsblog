@@ -41,7 +41,9 @@ app.use(express.static(path.join(__dirname, 'public'), {
 if (config.iisnode) {
 	app.use(function(req, res, next) {
 		Object.defineProperty(req, 'ip', {
-		    get: function() { return this.headers['REMOTE_ADDR'] || this.headers['x-iisnode-REMOTE_ADDR']; }
+		    get: function() {
+		    	return this.headers['REMOTE_ADDR'] || this.headers['x-iisnode-remote_addr'];
+		    }
 		});
 		next();
 	});
