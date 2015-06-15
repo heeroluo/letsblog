@@ -15,7 +15,7 @@ if (config && config.express) {
 	}
 }
 
-var XTemplate = require('xtemplate'), xtpl = require('xtpl');
+var XTemplate = require('xtemplate'), xtpl = require('./lib/xtpl');
 XTemplate.addCommand('json', function(scope, option) {
 	return JSON.stringify(option.params[0]);
 });
@@ -23,6 +23,7 @@ xtpl.config({ XTemplate: XTemplate });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
+app.engine('xtpl', xtpl.__express);
 app.set('view engine', 'xtpl');
 
 // uncomment after placing your favicon in /public
