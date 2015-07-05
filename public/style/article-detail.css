@@ -1,5 +1,13 @@
-.container { background: #fff; }
-.main { float: none; padding-left: 0; padding-right: 0; }
+.container {
+	background: #fff;
+	padding-top: 40px;
+	padding-bottom: 40px;
+}
+.main {
+	float: none;
+	padding-left: 0;
+	padding-right: 0;
+}
 
 
 .article__header__title {

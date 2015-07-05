@@ -8,7 +8,7 @@
 {{#if (description !== undefined && description !== '')}}<meta name="Description" content="{{description}}" />{{/if}}
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 <meta name="format-detection" content="telephone=no" />
-<link href="/style/base.css?20150308v2" media="all" rel="stylesheet" type="text/css" />
+<link href="/style/base.css?20150705" media="all" rel="stylesheet" type="text/css" />
 {{{block ('style')}}}
 {{include ('../_partial/jraiser')}}
 <script>
@@ -54,7 +54,7 @@ html.style.overflow = body.style.overflow= 'hidden';
 	</div>
 </header>
 <div class="container clearfix">
-	<div class="boundary container__boundary clearfix">
+	<div class="boundary clearfix">
 		{{{block ('container')}}}
 	</div>
 </div>
