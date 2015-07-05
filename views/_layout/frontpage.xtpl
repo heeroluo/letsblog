@@ -54,7 +54,7 @@ html.style.overflow = body.style.overflow= 'hidden';
 	</div>
 </header>
 <div class="container clearfix">
-	<div class="boundary clearfix">
+	<div class="boundary container__boundary clearfix">
 		{{{block ('container')}}}
 	</div>
 </div>

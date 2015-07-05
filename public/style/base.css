@@ -266,6 +266,11 @@ a.paginator__item__text:hover {
 
 /* 页头 */
 .header {
+	width: 100%;
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: 9999;
 	background: rgba(255, 255, 255, 0.93);
 	border-bottom: 1px solid #eee;
 	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
@@ -393,14 +398,7 @@ a.paginator__item__text:hover {
 	/* 空出页头高度 */
 	body { margin-top: 81px; }
 
-	.header {
-		width: 100%;
-		height: 80px;
-		position: fixed;
-		left: 0;
-		top: 0;
-		z-index: 9999;
-	}
+	.header { height: 80px; }
 	.header__logo { float: left; height: 46px; padding: 17px 0; }
 	.header__nav { float: left; margin-left: 30px; }
 	.header__nav__toggle { display: none; }
@@ -456,14 +454,14 @@ a.paginator__item__text:hover {
 
 
 @media (max-width: 959px) {
-	body { background: #fff; }
+	body { background: #fff; margin-top: 64px; }
 
-	.header { height: 70px; }
-	.header__logo { height: 42px; padding: 14px 0; text-align: center; }
+	.header { height: 64px; }
+	.header__logo { height: 40px; padding: 12px 0; text-align: center; }
 	.header__nav__toggle,
 	.header__user-panel__toggle,
 	.header__user-panel__login {
-		line-height: 70px;
+		line-height: 64px;
 		position: absolute;
 		top: 0;	
 	}
@@ -525,7 +523,11 @@ a.paginator__item__text:hover {
 
 	.footer__col-right { margin-top: 0.5em; }
 
-	.article-list__item { padding: 20px; }
+	.article-list__item {
+		padding: 20px 30px;
+		margin-left: -30px;
+		margin-right: -30px;
+	}
 	.article-list__item__header__meta { margin-top: 0.5em; }
 }
 
@@ -536,4 +538,9 @@ a.paginator__item__text:hover {
 	.sidebar { padding-top: 40px; }
 	.header__nav__toggle { left: 20px; }
 	.header__user-panel__toggle, .header__user-panel__login { right: 20px; }
+	.article-list__item {
+		padding: 20px;
+		margin-left: -20px;
+		margin-right: -20px;
+	}
 }

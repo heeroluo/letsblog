@@ -116,7 +116,7 @@
 	}
 }
 @media (max-width: 999px) {
-	.main { width: auto; margin: 0 20px;}
+	.main { width: auto; }
 }
 @media (min-width: 1000px) {
 	.main { width: 960px; margin: 0 auto; }
