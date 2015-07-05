@@ -447,16 +447,17 @@ a.paginator__item__text:hover {
 
 
 @media (min-width: 768px) and (max-width: 1099px) {
-	.boundary { margin-left: 30px; margin-right: 30px; }
-	.sidebar { padding-left: 40px; }
 	.header__nav__list-item a { padding-left: 0.5em; padding-right: 0.5em; }
 }
 
 
 @media (max-width: 959px) {
-	body { background: #fff; margin-top: 64px; }
+	body { background: #fff; margin-top: 65px; }
+
+	.boundary { margin-left: 30px; margin-right: 30px; }
 
 	.header { height: 64px; }
+	.header_boundary { position: relative; }
 	.header__logo { height: 40px; padding: 12px 0; text-align: center; }
 	.header__nav__toggle,
 	.header__user-panel__toggle,
@@ -479,14 +480,14 @@ a.paginator__item__text:hover {
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;	
 	}
-	.header__nav__toggle { left: 30px; transition-duration: 0.4s; }
+	.header__nav__toggle { left: 0; transition-duration: 0.4s; }
 	.header__nav__toggle--on { color: #08c; }
 	.header__nav__list, .header__user-panel__menu {
 		width: 100%;
-		position: absolute;
-		top: 71px;
+		position: fixed;
+		top: 65px;
 		left: 0;
-		background: rgba(255, 255, 255, 0.95);
+		background: rgba(255, 255, 255, 0.93);
 		border-bottom: 1px solid #eee;
 		display: none;
 	}
@@ -509,7 +510,7 @@ a.paginator__item__text:hover {
 		text-align: center;
 	}
 	.header__user-panel__login { line-height: 70px; top: 0; position: absolute; }
-	.header__user-panel__toggle, .header__user-panel__login { right: 30px; }
+	.header__user-panel__toggle, .header__user-panel__login { right: 0; }
 	.header__user-panel__toggle { transition-duration: 0.4s; }
 	.header__user-panel__toggle--on { color: #08c; }
 	.header__user-panel__menu { padding: 0.5em 0; text-align: right; }
@@ -519,7 +520,7 @@ a.paginator__item__text:hover {
 		word-spacing: 0.5em;
 	}
 
-	.sidebar { background: #f8f8f8; }
+	.sidebar { padding-top: 40px; background: #f8f8f8; }
 
 	.footer__col-right { margin-top: 0.5em; }
 
@@ -534,10 +535,8 @@ a.paginator__item__text:hover {
 
 @media (max-width: 767px) {
 	.paginator__item { margin-left: 0.2em; margin-right: 0.2em; }
+	.paginator__item--prev, .paginator__item--next { margin: 0; }
 	.boundary { margin-left: 20px; margin-right: 20px; }
-	.sidebar { padding-top: 40px; }
-	.header__nav__toggle { left: 20px; }
-	.header__user-panel__toggle, .header__user-panel__login { right: 20px; }
 	.article-list__item {
 		padding: 20px;
 		margin-left: -20px;
