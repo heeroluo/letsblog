@@ -1,12 +1,12 @@
 /*!
  * LetsBlog
- * Business logic layer of article (2015-03-07T17:12:59+0800)
+ * Business logic layer of article
  * Released under MIT license
  */
 
 'use strict';
 
-var async = require('async'),
+var Promise = require('bluebird'),
 	util = require('../lib/util'),
 	validator = require('../lib/validator'),
 	Cache = require('./_cache'),
@@ -16,7 +16,8 @@ var async = require('async'),
 	articleDAL = require('../dal/article');
 
 
-var list = exports.list = function(params, pageSize, page, callback) {
+// 读取文章列表（带分页）
+var list = exports.list = function(params, pageSize, page) {
 	if (params) {
 		if (isNaN(params.minWeight) || params.minWeight < 0) { delete params.minWeight; }
 		if (isNaN(params.maxWeight) || params.maxWeight < 0) { delete params.maxWeight; }
@@ -31,86 +32,86 @@ var list = exports.list = function(params, pageSize, page, callback) {
 		}
 	}
 
-	articleDAL.list(params, pageSize, page, function(err, result) {
-		if (result && result.data) {
-			result.data = result.data.map(function(d) {
-				d = articleModel.createEntity(d);
-				d.pubtime_formatted = util.formatDateFromNow(d.pubtime);
-				return d;
-			});
-		}
-		callback(err, result);
+	return articleDAL.list(params, pageSize, page).then(function(result) {
+		result.data = result.data.map(function(article) {
+			article = articleModel.createEntity(article);
+			article.pubtime_formatted = util.formatDateFromNow(article.pubtime);
+			return article;
+		});
+
+		return result;
 	});
 };
 
 
-// 缓存首页列表数据和推荐文章数据
-var articleCache = new Cache(function(setCache) {
-	async.parallel([function(callback) {
-		list({
-			minWeight: 1,
-			state: 1
-		}, 10, 1, function(err, result) {
-			if (!err) {
-				if (result.data) {
-					result.data.forEach(function(d) { Object.freeze(d); });
-					Object.freeze(result.data);
-				}
-				Object.freeze(result);
-			}
-			callback(err, result);
-		});
-	}, function(callback) {
-		list({
-			minWeight: 200,
-			state: 1
-		}, -1, 1, function(err, result) {
-			if (!err) {
-				result = result.data;
-				if (result) {
-					result.sort(function(a, b) { return b.weight - a.weight; });
-					result.forEach(function(d) { Object.freeze(d); });
-				}
-				Object.freeze(result);
-			}
-			callback(err, result);
-		});
-	}], function(err, results) {
-		setCache(err, results ? {
-			homePageArticles: results[0],
-			recommendedArticles: results[1]
-		}: null);
+// 首页文章列表缓存
+var homePageCache = new Cache(function() {
+	return list({
+		minWeight: 1,
+		state: 1
+	}, 10, 1).then(function(result) {
+		// 冻结对象，防止因意外修改导致脏数据的出现
+		if (result.data) {
+			result.data.forEach(Object.freeze);
+			Object.freeze(result.data);
+		}
+		Object.freeze(result);
+
+		return result;
 	});
-}, exports, {
+}, {
+	// 10分钟过期
 	expires: 10 * 60 * 1000
 });
-var addClearCacheAction = exports.addClearCacheAction;
 
-// 获取首页文章
-exports.getHomePageArticles = function(callback) {
-	articleCache.get(function(err, result) {
-		callback(err, result ? result.homePageArticles : null);
-	});
-};
+// 获取首页文章列表
+exports.getHomePageList = function() { return homePageCache.promise(); };
 
-// 获取推荐文章
-exports.getRecommendedArticles = function(callback) {
-	articleCache.get(function(err, result) {
-		callback(err, result ? result.recommendedArticles : null);
+
+// 推荐文章列表缓存（10分钟过期）
+var recommendedCache = new Cache(function() {
+	return list({
+		minWeight: 200,
+		state: 1
+	}, -1, 1).then(function(result) {
+		result = result.data;
+		// 冻结对象，防止因意外修改导致脏数据的出现
+		if (result) {
+			// 按权重排序
+			result.sort(function(a, b) { return b.weight - a.weight; });
+			result.forEach(Object.freeze);
+		}
+		Object.freeze(result);
+
+		return result;
 	});
+}, {
+	// 10分钟过期
+	expires: 10 * 60 * 1000
+});
+
+// 获取推荐文章列表
+exports.getRecommendedList = function() { return recommendedCache.promise(); };
+
+
+// 清空缓存
+var clearCache = exports.clearCache = function() {
+	homePageCache.clear();
+	recommendedCache.clear();
 };
 
 
 // 默认权重
 var DEFAULT_WEIGHT = exports.DEFAULT_WEIGHT = 60;
 
-// 截取摘要
+// 截取文章摘要（分页符前的部分）
 function getSummary(content) {
 	return /<div\s+style=(["'])page-break-after:\s*always;?\1>/i.test(content) ?
 		RegExp.leftContext : content;
 }
 
-function validate(article, user, callback) {
+// 创建和更新数据前的验证
+function validate(article, user) {
 	var err;
 
 	if (!article.title) {
@@ -136,112 +137,103 @@ function validate(article, user, callback) {
 	article.summary = getSummary(article.content);
 
 	if (err) {
-		callback( util.createError(err) );
+		return Promise.reject( util.createError(err) );
 	} else {
-		categoryBLL.read(article.categoryid, function(err, category) {
-			if (!err) {
-				if (!category) {
-					err = util.createError('分类不存在');
-				}
+		return categoryBLL.read(article.categoryid).then(function(category) {
+			if (!category) {
+				throw util.createError('分类不存在');
 			}
-			callback(err);
 		});
 	}
 }
 
 
-exports.create = function(article, user, callback) {
-	validate(article, user, function(err) {
-		if (err) {
-			callback(err);
-		} else {
-			articleDAL.create(
-				article.toDbRecord(),
-				addClearCacheAction(categoryBLL.addClearCacheAction(callback))
-			);
-		}
+// 创建文章
+exports.create = function(article, user) {
+	return validate(article, user).then(function() {
+		return articleDAL.create( article.toDbRecord() ).then(function(result) {
+			categoryBLL.clearCache();
+			clearCache();
+			return result;
+		});
 	});
 };
 
-exports.update = function(article, articleid, user, callback) {
+// 更新文章
+exports.update = function(article, articleid, user) {
 	if ( validator.isAutoId(articleid) ) {
-		validate(article, user, function(err, result) {
-			if (err) {
-				callback(err);
-			} else {
-				article.summary = getSummary(article.content);
-				articleDAL.update(
-					article.toDbRecord(),
-					articleid,
-					addClearCacheAction(categoryBLL.addClearCacheAction(callback))
-				);
-			}
+		return validate(article, user).then(function() {
+			return articleDAL.update(article.toDbRecord(), articleid).then(function() {
+				categoryBLL.clearCache();
+				clearCache();
+			});
 		});
 	} else {
-		callback(util.createError('无效的文章编号'));
+		return Promise.reject( util.createError('无效的文章编号') );
 	}
 };
 
 
-// 移除文章内容中的多余标签
+// 移除文章内容中用于截取摘要的分页符
 exports.cleanContent = function(content) {
 	return content.replace(/<div\s+style=(["'])page-break-after:\s*always;?\1>.*?<\/div>/i, '');
 };
 
-exports.read = function(articleid, callback) {
+// 读取单条文章数据
+exports.read = function(articleid) {
 	if ( validator.isAutoId(articleid) ) {
-		articleDAL.read(articleid, function(err, result) {
-			callback(err, result && result[0] ? articleModel.createEntity(result[0]) : null);
+		return articleDAL.read(articleid).then(function(result) {
+			if (result && result[0]) {
+				return articleModel.createEntity(result[0]);
+			}
 		});
 	} else {
-		callback( util.createError('无效的文章编号') );
+		return Promise.reject( util.createError('无效的文章编号') );
 	}
 };
 
 
-exports.delete = function(articleids, userid, callback) {
-	if ( articleids.some(function(id) { return !validator.isAutoId(id); }) ) {
-		callback( util.createError('无效的文章编号') );
-	} else {
-		// 删除评论（无需理会何时完成）
-		commentBLL.deleteByArticleIds(articleids);
-		// 删除文章
-		articleDAL.delete(
-			articleids,
-			userid,
-			addClearCacheAction(categoryBLL.addClearCacheAction(callback))
-		);
-	}
+// 删除文章记录
+exports.delete = function(articleids, userid) {
+	var err;
+	if (!articleids.length) {
+		err = '请指定要操作的文章';
+	} else if ( articleids.some(function(id) { return !validator.isAutoId(id); }) ) {
+		err = '无效的文章编号';
+	} 
+
+	return err ?
+		Promise.reject( util.createError(err) ) :
+		Promise.all([
+			// 删除文章的评论
+			commentBLL.deleteByArticleIds(articleids),
+			// 删除文章
+			articleDAL.delete(articleids, userid)
+		]).then(function() {
+			categoryBLL.clearCache();
+			clearCache();
+		});
 };
 
 
-exports.addViews = function(articleid, callback) {
-	if ( validator.isAutoId(articleid) ) {
-		articleDAL.addViews(articleid, callback);
-	} else {
-		if (callback) {
-			callback(util.createError('无效的文章编号'));
-		}
-	}
+// 增加阅读次数
+exports.addViews = function(articleid) {
+	return validator.isAutoId(articleid) ?
+		articleDAL.addViews(articleid) :
+		Promise.reject( util.createError('无效的文章编号') );
 };
 
 
 // 获取上一篇和下一篇文章
-exports.getAdjacentArticles = function(articleid, categoryid, callback) {
-	async.parallel([function(callback) {
-		articleDAL.adjacent(articleid, categoryid, 0, function(err, result) {
-			callback(err, result);
+exports.getAdjacentArticles = function(articleid, categoryid) {
+	return Promise.all([
+		articleDAL.adjacent(articleid, categoryid, 0),
+		articleDAL.adjacent(articleid, categoryid, 1)
+	]).then(function(results) {
+		return results.map(function(result) {
+			if (result && result[0]) {
+				return articleModel.createEntity(result[0])
+			}
 		});
-	}, function(callback) {
-		articleDAL.adjacent(articleid, categoryid, 1, function(err, result) {
-			callback(err, result);
-		});
-	}], function(err, results) {
-		if (!err) {
-			results = results.map(function(result) {
-				return result && result[0] ? articleModel.createEntity(result[0]) : null;
-			});
-		}
-		callback(err, results);
 	});
 };

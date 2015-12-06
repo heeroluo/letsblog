@@ -1,31 +1,36 @@
 /*!
  * LetsBlog
- * Business logic layer of options (2015-02-09T13:50:58+0800)
+ * Business logic layer of options
  * Released under MIT license
  */
 
 'use strict';
 
-var	util = require('../lib/util'),
+var	Promise = require('bluebird'),
+	util = require('../lib/util'),
 	Cache = require('./_cache'),
 	optionsModel = require('../entity/options'),
 	optionsDAL = require('../dal/options');
 
 
-var currentOptions = new Cache(function(setCache) {
-	optionsDAL.list(function(err, result) {
-		setCache(
-			err,
-			result ? Object.freeze( optionsModel.createEntity(result[0]) ) : null
-		);
+// 网站设置只有一条记录，缓存之
+var myCache = new Cache(function() {
+	return optionsDAL.list().then(function(result) {
+		if (result) {
+			return Object.freeze( optionsModel.createEntity(result[0]) )
+		}
 	});
-}, exports);
-var addClearCacheAction = exports.addClearCacheAction;
+});
+
+// 向外暴露清空缓存的接口
+var clearCache = exports.clearCache = function() { myCache.clear(); };
 
 
-exports.read = function(callback) { currentOptions.get(callback); };
+// 读取单条网站设置记录
+exports.read = function() { return myCache.promise(); };
 
 
+// 更新数据前执行的验证
 function validate(options) {
 	if (!options.sitename) { return '网站名称不能为空'; }
 	if (!options.siteurl) { return '网站URL不能为空'; }
@@ -35,11 +40,10 @@ function validate(options) {
 	options.keywords = options.keywords.replace(/，/g, ',');
 }
 
-exports.update = function(options, callback) {
+// 更新网站设置
+exports.update = function(options) {
 	var err = validate(options);
-	if (err) {
-		callback( util.createError(err) );
-	} else {
-		optionsDAL.update( options.toDbRecord(), addClearCacheAction(callback) );
-	}
+	return err ?
+		Promise.reject( util.createError(err) ) :
+		optionsDAL.update( options.toDbRecord() ).then(clearCache);
 };

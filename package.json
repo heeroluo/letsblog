@@ -1,6 +1,6 @@
 {
 	"name": "letsblog",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "a blog publishing system",
 	"keywords": "blog",
 	"license": "MIT",
@@ -13,15 +13,16 @@
 		"start": "node ./bin/www"
 	},
 	"dependencies": {
-		"body-parser": "~1.13.3",
-		"cookie-parser": "~1.3.5",
+		"body-parser": "~1.14.1",
+		"cookie-parser": "~1.4.0",
 		"debug": "~2.2.0",
 		"express": "~4.13.3",
 		"morgan": "~1.6.1",
 		"serve-favicon": "~2.3.0",
-		"xtemplate": "~4.3.1",
-		"multer": "~1.0.3",
-		"async": "~1.4.2",
+		"xtemplate": "~4.4.2",
+		"multer": "~1.1.0",
+		"require-dir": "~0.3.0",
+		"bluebird": "~3.0.6",
 		"mysql": "~2.9.0"
 	},
 	"engines": {

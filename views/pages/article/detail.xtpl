@@ -1,0 +1,110 @@
+{{extend ('../../_layout/frontpage')}}
+
+{{#block ('style')}}
+<link href="/style/article-detail.css?20150307" media="all" rel="stylesheet" type="text/css" />
+<link href="/style/article-content.css" media="all" rel="stylesheet" type="text/css" />
+<link href="/highlightjs/styles/tomorrow.css" media="all" rel="stylesheet" type="text/css" />
+{{/block}}
+
+{{#block ('container')}}
+<div class="main">
+	<article class="article">
+		<header class="article__header">
+			<h1 class="article__header__title">{{article.title}}</h1>
+			<div class="article__header__meta clearfix">
+				{{author.nickname}}发表于{{article.pubtime_formatted}}，已被查看{{article.totalviews}}次
+			</div>
+		</header>
+		<div class="article__content">{{{article.content}}}</div>
+		<footer class="article__footer">
+			<div class="article__footer__share">
+				<a href="#" class="share-btn share-btn--weibo" data-sharetype="weibo"><span class="share-btn__ico">&#x349f;</span>分享到微博</a>
+				<a href="#" class="share-btn share-btn--wechat" data-sharetype="wechat"><span class="share-btn__ico">&#xe63c;</span>分享到微信</a>
+			</div>
+{{#if ( exists(prevArticle) || exists(nextArticle) )}}
+			<div class="article__footer__adjacents">
+				<ol class="clearfix">
+	{{#if ( exists(prevArticle) )}}
+					<li class="article__footer__adjacents__item article__footer__adjacents__item--prev">
+						<a href="{{prevArticle.href}}"><span class="article__footer__adjacents__item__icon"></span>{{prevArticle.title}}</a>
+					</li>
+	{{/if}}
+	{{#if ( exists(nextArticle) )}}
+					<li class="article__footer__adjacents__item article__footer__adjacents__item--next">
+						<a href="{{nextArticle.href}}">{{nextArticle.title}}<span class="article__footer__adjacents__item__icon"></span></a>
+					</li>
+	{{/if}}
+				</ol>
+			</div>
+{{/if}}
+		</footer>
+	</article>
+	<div class="comment">
+		<h2 class="comment__title">评论 (<em class="comment__total">{{article.totalcomments}}</em>条)</h2>
+		<div id="comment__list" class="comment__list"></div>
+{{#if (currentUser.group.perm_comment > 0)}}
+		<form id="comment__form" action="/comment/post" method="post" class="comment__form form-layout">
+			<input type="hidden" name="articleid" value="{{article.articleid}}" />
+			<h2 class="comment__title">发表评论</h2>
+	{{#if (currentUser === undefined || currentUser.userid <= 0)}}
+			<div class="form-layout__row form-layout__row--3cols clearfix">
+				<div class="form-layout__col">
+					<div class="form-item">
+						<p class="form-item__label">
+							<label for="comment_user_nickname">昵称</label>
+							<em class="form-item__label__tips form-item__label__tips--required">(必填)</em>
+						</p>
+						<input class="textbox" type="text" id="comment_user_nickname" name="user_nickname" maxlength="20" />
+					</div>
+				</div>
+				<div class="form-layout__col">
+					<div class="form-item">
+						<p class="form-item__label">
+							<label for="comment_user_email">Email</label>
+							<em class="form-item__label__tips">(选填，不公开)</em>
+						</p>
+						<input class="textbox" type="text" id="comment_user_email" name="user_email" maxlength="60" />
+					</div>
+				</div>
+				<div class="form-layout__col">
+					<div class="form-item">
+						<p class="form-item__label">
+							<label for="comment_user_qq">QQ</label>
+							<em class="form-item__label__tips">(选填，不公开)</em>
+						</p>
+						<input class="textbox" type="text" id="comment_user_qq" name="user_qq" maxlength="15" />
+					</div>
+				</div>
+			</div>
+	{{/if}}
+			<div class="form-layout__row">
+				<div class="form-item">
+					<p class="form-item__label">
+						<label for="comment_content">内容</label>
+						<em class="form-item__label__tips form-item__label__tips--required">(必填)</em>
+					</p>
+					<textarea class="textbox" id="comment_content" name="content" cols="50" rows="10"></textarea>
+				</div>
+			</div>
+			<div class="form-layout__row">
+				<div class="form-item">
+					<input type="submit" value="发 表" class="btn" data-submitingtext="发表中，请稍后" />
+				</div>
+			</div>
+		</form>
+{{/if}}
+	</div>
+</div>
+{{/block}}
+
+{{#block ('script')}}
+<script src="/highlightjs/highlight.pack.js"></script>
+<script>
+hljs.configure({
+	tabReplace: '    '
+});
+hljs.initHighlightingOnLoad();
+</script>
+<script>require('/page/article-detail/1.x/');</script>
+<script src="/article/view/{{article.articleid}}"></script>
+{{/block}}

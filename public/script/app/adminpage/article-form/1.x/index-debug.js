@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Article form - v1.0.0 (2015-02-26T09:36:16+0800)
+ * Article form - v1.0.0 (2015-12-06T19:54:56+0800)
  * Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
@@ -57,7 +57,7 @@ new Validator({
 						isUpdatePage = true;
 						$('input[name=articleid]').val(res.data.articleid);
 						// 修改提交地址
-						form.attr('action', 'update/' + res.data.articleid);
+						form.attr('action', '/admin/article/update/' + res.data.articleid + '/post');
 						// 显示“更新发布时间”选项
 						$('#form-item-update-pubtime').show();
 						alert('发布成功，您可以继续编辑文章');
@@ -172,8 +172,8 @@ uploadControl.change(function(e) {
 		return;
 	}
 
-	if (file.size > 3 * 1024 * 1024) {
-		alert('文件不能大于3MB');
+	if (file.size > 5 * 1024 * 1024) {
+		alert('文件不能大于5MB');
 		return;
 	}
 
@@ -187,7 +187,7 @@ uploadControl.change(function(e) {
 	formData.append('file', file);
 
 	var xhr = new XMLHttpRequest(), taskId = uploadTasks.push(xhr) - 1;
-	xhr.open('POST', '/admin/article/upload');
+	xhr.open('POST', '/admin/article/attachment/upload');
 	xhr.onreadystatechange = function() {
 		if (this.readyState == 4) {
 			uploadTasks[taskId] = null;

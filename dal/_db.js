@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Database accessing helper (2015-02-19T11:27:25+0800)
+ * Database accessing interfaces
  * Released under MIT license
  */
 
@@ -9,43 +9,33 @@
 
 var mysql = require('mysql'),
 	config = require('../config'),
-	pool = mysql.createPool(config.db);
+	pool = mysql.createPool(config.db),
+	Promise = require('bluebird');
+
 
 /**
  * 执行数据库请求
  * @method query
  * @param {String} cmd SQL命令
  * @param {Any} [args] 命令参数
- * @param {Function} [callback] 回调函数
+ * @return {Promise} 执行数据库请求的Promise实例
  */
-/**
- * 执行数据库请求
- * @method query
- * @param {String} cmd SQL命令
- * @param {Function} [callback] 回调函数
- */
-function query(cmd) {
-	var args, callback;
-	// 重载
-	if (arguments.length <= 2) {
-		callback = arguments[1];
-	} else {
-		args = arguments[1];
-		callback = arguments[2];
-	}
-
-	pool.getConnection(function(err, conn) {
-		if (err) {
-			if (callback) { callback(err); }
-		} else {
-			conn.query(cmd, args, function(err) {
-				try {
-					if (callback) { callback.apply(this, arguments); }
-				} finally {
+function query(cmd, args) {
+	return new Promise(function(resolve, reject) {
+		pool.getConnection(function(err, conn) {
+			if (err) {
+				reject(err);
+			} else {
+				conn.query(cmd, args, function(err, rows) {
 					conn.release();
-				}
-			});
-		}
+					if (err) {
+						reject(err);
+					} else {
+						resolve(rows);
+					}
+				});
+			}
+		});
 	});
 }
 exports.query = query;
@@ -60,30 +50,19 @@ exports.query = query;
  *   @param {Number} [options.pageSize=10] 每页记录数，为-1时读取所有记录
  *   @param {Number} [options.params] 命令参数
  *   @param {Boolean} [options.onlyTotal=false] 是否只计算记录总数
- *   @param {Function} [options.callback] 回调函数，参数依次为err、result
  */
-function dataPaging(sql, options) {
+exports.dataPaging = Promise.method(function(sql, options) {
 	if (!sql) { throw new Error('please specify SQL command'); }
 
 	options = options || { };
+	// 默认取10条记录
 	options.pageSize = parseInt(options.pageSize) || 10;
-
-	var callback = options.callback;
-	if (typeof callback !== 'function') {
-		// 默认设为一个空函数，免得后面要经常判断
-		callback = function() { };
-	}
 
 	// 加载数据，无需分页
 	if (options.pageSize === -1) {
-		query(sql, options.params, function(err, result_data) {
-			var result;
-			if (!err) {
-				result = { data: result_data };
-			}
-			callback.call(this, err, result);
+		return query(sql, options.params).then(function(result_data) {
+			return { data: result_data };
 		});
-		return;
 	}
 
 	// XXX 通过正则简单替换，不能适应复杂的SQL语句
@@ -91,12 +70,11 @@ function dataPaging(sql, options) {
 		return 'SELECT COUNT(*) as total FROM ';
 	});
 
+	// 默认取第一页
 	options.page = parseInt(options.page) || 1;
 
 	var result = { };
-	query(sqlToCount, options.params, function(err, result_total) {
-		if (err) { callback.call(this, err); }
-
+	return query(sqlToCount, options.params).then(function(result_total) {
 		result.pageSize = options.pageSize;
 		result.totalRows = result_total[0].total;
 		result.totalPages = Math.ceil(result.totalRows / result.pageSize);
@@ -104,23 +82,16 @@ function dataPaging(sql, options) {
 			result.totalPages : Math.min(options.page, result.totalPages);
 
 		if (options.onlyTotal) {
-			callback.call(this, null, result);
+			return result;
 		} else {
 			sql += ' LIMIT ';
-			if (result.page > 1) {
-				sql += (result.page - 1) * result.pageSize + ',';
-			}
+			if (result.page > 1) { sql += (result.page - 1) * result.pageSize + ','; }
 			sql += result.pageSize;
 
-			query(sql, options.params, function(err, result_data) {
-				if (err) {
-					result = undefined;
-				} else {
-					result.data = result_data;
-				}
-				callback.call(this, err, result);
+			return query(sql, options.params).then(function(result_data) {
+				result.data = result_data;
+				return result;
 			});
 		}
 	});
-}
-exports.dataPaging = dataPaging;
+});

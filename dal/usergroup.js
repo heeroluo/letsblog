@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Data access layer of user group (2015-02-08T16:07:02+0800)
+ * Data access layer of user group
  * Released under MIT license
  */
 
@@ -9,18 +9,18 @@
 var db = require('./_db');
 
 
-exports.create = function(userGroup, callback) {
-	db.query('INSERT INTO usergroup SET ?', userGroup, callback);
+exports.create = function(userGroup) {
+	return db.query('INSERT INTO usergroup SET ?', userGroup);
 };
 
-exports.update = function(userGroup, groupid, callback) {
-	db.query('UPDATE usergroup SET ? WHERE groupid = ?', [userGroup, groupid], callback);
+exports.update = function(userGroup, groupid) {
+	return db.query('UPDATE usergroup SET ? WHERE groupid = ?', [userGroup, groupid]);
 };
 
-exports.delete = function(groupid, callback) {
-	db.query('DELETE FROM usergroup WHERE groupid = ?', [groupid], callback);
+exports.delete = function(groupid) {
+	return db.query('DELETE FROM usergroup WHERE groupid = ?', [groupid]);
 };
 
-exports.list = function(callback) {
-	db.query('SELECT * FROM usergroup', callback);
+exports.list = function() {
+	return db.query('SELECT * FROM usergroup');
 };

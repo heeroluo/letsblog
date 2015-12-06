@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Data access layer of article (2015-03-07T18:10:35+0800)
+ * Data access layer of article
  * Released under MIT license
  */
 
@@ -9,28 +9,27 @@
 var db = require('./_db');
 
 
-exports.create = function(article, callback) {
-	db.query('INSERT INTO article SET ?', article, callback);
+exports.create = function(article) {
+	return db.query('INSERT INTO article SET ?', article);
 };
 
-exports.read = function(articleid, callback) {
-	db.query('SELECT * FROM article WHERE articleid = ? LIMIT 1', articleid, callback);
+exports.read = function(articleid) {
+	return db.query('SELECT * FROM article WHERE articleid = ? LIMIT 1', articleid);
 };
 
-exports.update = function(article, articleid, callback) {
-	db.query('UPDATE article SET ? WHERE articleid = ?', [article, articleid], callback);
+exports.update = function(article, articleid) {
+	return db.query('UPDATE article SET ? WHERE articleid = ?', [article, articleid]);
 };
 
-exports.delete = function(articleids, userid, callback) {
+exports.delete = function(articleids, userid) {
 	var sql = 'DELETE FROM article WHERE articleid IN (' + articleids.join(',') + ')';
 	if (userid) { sql += ' AND userid = ' + userid; }
-	db.query(sql, callback);
+	return db.query(sql);
 };
 
-exports.addViews = function(articleid, callback) {
-	db.query(
-		'UPDATE article SET totalviews = totalviews + 1 WHERE articleid = ?',
-		articleid, callback
+exports.addViews = function(articleid) {
+	return db.query(
+		'UPDATE article SET totalviews = totalviews + 1 WHERE articleid = ?', articleid
 	);
 };
 
@@ -56,7 +55,7 @@ var SELECT_ARTICLE_LIST = 'SELECT ' +
 ' LEFT JOIN category ON article.categoryid = category.categoryid' +
 ' LEFT JOIN user ON article.userid = user.userid';
 
-exports.list = function(params, pageSize, page, callback) {
+exports.list = function(params, pageSize, page) {
 	var sql = SELECT_ARTICLE_LIST;
 
 	var whereStr = [ ], whereParams = [ ];
@@ -104,21 +103,20 @@ exports.list = function(params, pageSize, page, callback) {
 
 	sql += ' ORDER BY article.pubtime DESC, article.weight DESC';
 
-	db.dataPaging(sql, {
+	return db.dataPaging(sql, {
 		page: page,
 		pageSize: pageSize,
-		params: whereParams,
-		callback: callback
+		params: whereParams
 	});
 };
 
 
-exports.adjacent = function(articleid, categoryid, prevOrNext, callback) {
-	db.query(
+// 获取同分类下的相邻文章
+exports.adjacent = function(articleid, categoryid, prevOrNext) {
+	return db.query(
 		SELECT_ARTICLE_LIST + ' WHERE article.articleid ' +
 			(prevOrNext ? '>' : '<') + ' ? AND article.categoryid = ? ' +
 			'ORDER BY article.articleid ' + (prevOrNext ? 'ASC' : 'DESC') + ' LIMIT 1',
-		[articleid, categoryid],
-		callback
+		[articleid, categoryid]
 	);
 };

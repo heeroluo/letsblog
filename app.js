@@ -19,6 +19,17 @@ var XTemplate = require('xtemplate'), xtpl = require('./lib/xtpl');
 XTemplate.addCommand('json', function(scope, option) {
 	return JSON.stringify(option.params[0]);
 });
+XTemplate.addCommand('exists', function(scope, option) {
+	var obj = option.params[0], result = obj != null;
+	if (result) {
+		if ( Array.isArray(obj) ) {
+			result = obj.length > 0;
+		} else if (typeof obj === 'string') {
+			result = obj.trim() !== '';
+		}
+	}
+	return result;
+});
 xtpl.config({ XTemplate: XTemplate });
 
 // view engine setup
@@ -63,94 +74,8 @@ app.use('/favicon.ico', function(req, res) {
 	res.end();
 });
 
-// 路由
-!function() {
-	var routeHandler = require('./routes/routehandler'),
-		routeRules = require('./routes');
-
-	routeRules.forEach(function(rule) {
-		var router = express.Router();
-
-		rule.routes.forEach(function(route) {
-			if (route.template || route.resType) {
-				var callback = function(req, res, next) {
-					if (route.resType === 'json') {
-						res.routeHandler = new routeHandler.JSONRouteHandler();
-					} else if (route.resType === 'jsonp') {
-						res.routeHandler = new routeHandler.JSONPRouteHandler();
-					} else {
-						res.routeHandler = new routeHandler.BasicRouteHandler(route.template);
-					}
-					if (route.data) { res.routeHandler.setData(route.data); }
-					next();
-				};
-
-				if (route.path) {
-					router[route.verb || 'get'](route.path, callback);
-				} else {
-					router.use(callback);
-				}
-			}
-		});
-
-		app.use(rule.basePath, router);
-	});
-
-	routeRules.forEach(function(rule) {
-		var router = express.Router();
-
-		rule.routes.forEach(function(route) {
-			var callbacks;
-			if ( Array.isArray(route.callback) ) {
-				callbacks = route.callback.slice();
-			} else if (route.callback) {
-				callbacks = [route.callback];
-			} else {
-				callbacks = [ ];
-			}
-
-			if (route.template || route.resType) {
-				callbacks.push(function(req, res, next) {
-					if (res.routeHandler) {
-						var title = res.routeHandler.getData('title');
-						if (Array.isArray(title)) {
-							res.routeHandler.setData('title', title.join(' | '));
-						}
-						var keywords = res.routeHandler.getData('keywords');
-						if (Array.isArray(keywords)) {
-							res.routeHandler.setData('keywords', keywords.join(','));
-						}
-						res.routeHandler.render(res);
-					} else {
-						next();
-					}
-				});
-			}
-
-			callbacks.forEach(function(callback) {
-				if (route.path) {
-					router[route.verb || 'get'](route.path, callback);
-				} else {
-					router.use(callback);
-				}
-			});
-		});
-
-		app.use(rule.basePath, router);
-	});
-
-	// catch 404 and forward to error handler
-	app.use(function(req, res, next) {
-		var err = new Error('Not Found');
-		err.status = 404;
-
-		next(err);
-	});
-
-	// 异常处理
-	var isDevEnv = app.get('env') !== 'production';
-	app.use(routeHandler.createErrorRouteHandler(isDevEnv));
-}();
+// 初始化路由
+require('./routes/init')(express, app);
 
 
 module.exports = app;

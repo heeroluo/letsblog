@@ -1,0 +1,124 @@
+{{extend ('../../_layout/adminpage')}}
+
+{{#block ('mainTitle')}}
+{{#if (isPersonalPage === true)}}我的文章{{else}}文章管理{{/if}}
+{{/block}}
+
+{{#block ('body')}}
+{{#if (isPersonalPage !== true)}}
+<form action="?" method="get" class="form-layout" style="margin-bottom: 2.5em;">
+	<section class="form-layout__section">
+		<h3 class="form-layout__section__title">文章搜索</h3>
+		<div class="form-layout__row form-layout__row--3cols clearfix">
+			<div class="form-layout__col">
+				<div class="form-item">
+					<input class="textbox" name="title" type="text" placeholder="文章标题" maxlength="100" value="{{params.title}}" />
+				</div>
+			</div>
+			<div class="form-layout__col">
+				<div class="form-item">
+					<input class="textbox" name="username" type="text" placeholder="发布者" maxlength="20" value="{{params.username}}" />
+				</div>
+			</div>
+			<div class="form-layout__col">
+				<div class="form-item">
+					<select name="categoryid" class="selectbox">
+						<option value="">文章分类</option>
+{{#each (categoryList)}}
+						 <option value="{{this.categoryid}}"{{#if (this.categoryid === params.categoryid)}} selected="selected"{{/if}}>{{this.categoryname}}</option>
+{{/each}}
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="form-layout__row form-layout__row--3cols clearfix">
+			<div class="form-layout__col">
+				<div class="form-item">
+					<input class="textbox" name="min_weight" type="text" placeholder="最小权重" maxlength="3" value="{{params.minWeight}}" />
+				</div>
+			</div>
+			<div class="form-layout__col">
+				<div class="form-item">
+					<input class="textbox" name="max_weight" type="text" placeholder="最大权重" maxlength="3" value="{{params.maxWeight}}" />
+				</div>
+			</div>
+			<div class="form-layout__col">
+				<div class="form-item">
+					<select name="state" class="selectbox">
+						<option value="">发布状态</option>
+						<option value="0"{{#if (params.state === 0)}} selected="selected"{{/if}}>状态：草稿</option>
+						<option value="1"{{#if (params.state === 1)}} selected="selected"{{/if}}>状态：已发布</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="form-layout__row">
+			<input id="submit-btn" type="submit" value="搜 索" class="button" />
+		</div>
+	</section>
+</form>
+{{/if}}
+<form id="article-list-form" action="./batch" method="post" class="form-layout">
+	<table id="article-list-table" class="datatable">
+		<thead>
+			<tr>
+				<th><input id="checkall" type="checkbox" /></th>
+				<th>标题</th>
+				<th>分类</th>
+				<th>发布者</th>
+				<th>状态</th>
+				<th>发布时间</th>
+				<th>权重</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tfoot>
+{{#if (paginator !== undefined)}}
+			<tr>
+				<td colspan="8">{{parse ('../../_partial/paginator', paginator = paginator)}}</td>
+			</tr>
+{{/if}}
+			<tr>
+				<td colspan="8">
+					<input type="submit" value="批量删除" class="button" />
+				</td>
+			</tr>
+		</tfoot>
+		<tbody>
+{{#if ( exists(articleList) )}}
+	{{#each (articleList)}}
+			<tr>
+				<td style="text-align: center;"><input type="checkbox" name="articleids" value="{{this.articleid}}" /></td>
+				<td><a href="{{this.href}}" target="_blank">{{this.title}}</a></td>
+				<td style="text-align: center;">{{this.categoryname}}</td>
+				<td style="text-align: center;">{{this.nickname}}</td>
+				<td style="text-align: center;">{{#if (this.state === 1)}}已发布{{else}}草稿{{/if}}</td>
+				<td style="text-align: center;">{{this.pubtime_formatted}}</td>
+				<td style="text-align: center;">{{this.weight}}</td>
+				<td style="word-spacing: 1em; text-align: center;">
+					<a href="/admin/article/update/{{this.articleid}}/">编辑</a>
+				</td>
+			</tr>
+	{{/each}}
+{{else}}
+			<tr>
+				<td colspan="8">没有符合搜索条件的文章</td>
+			</tr>
+{{/if}}
+		</tbody>
+	</table>
+</form>
+<script>
+require(['dom/1.1.x/'], function($) {
+	$('#article-list-form').on('submit', function(e) {
+		if ( !window.confirm('确定要删除选定的文章吗？') ) {
+			e.preventDefault();
+		}
+	});
+
+	$('#checkall').click(function() {
+		$('#article-list-table tbody input[type=checkbox]').prop('checked', this.checked);
+	});
+});
+</script>
+{{/block}}

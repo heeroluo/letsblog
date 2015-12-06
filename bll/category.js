@@ -1,32 +1,46 @@
 /*!
  * LetsBlog
- * Business logic layer of category (2015-02-21T18:46:54+0800)
+ * Business logic layer of category
  * Released under MIT license
  */
 
 'use strict';
 
-var util = require('../lib/util'),
+var Promise = require('bluebird'),
+	util = require('../lib/util'),
 	validator = require('../lib/validator'),
 	Cache = require('./_cache'),
 	categoryModel = require('../entity/category'),
 	categoryDAL = require('../dal/category');
 
 
-var allCategories = new Cache(function(setCache) {
-	categoryDAL.list(function(err, result) {
-		setCache( err, Object.freeze(
+// 分类的改动较少，且需要在导航栏中展示
+// 缓存在内存中可以避免频繁访问数据库
+var listCache = new Cache(function() {
+	return categoryDAL.list().then(function(result) {
+		// 冻结对象，防止因意外修改导致脏数据的出现
+		return Object.freeze(
 			(result || [ ]).map(function(category) {
 				return Object.freeze( categoryModel.createEntity(category) );
 			})
-		) );
+		);
 	});
-}, exports);
-var addClearCacheAction = exports.addClearCacheAction;
+});
+
+// 向外暴露清理缓存的接口
+var clearCache = exports.clearCache = function() { listCache.clear(); };
 
 
-var list = exports.list = function(callback, minWeight, type) {
-	minWeight = Number(minWeight) || 0;
+// 读取分类数据列表
+// minWeight为最小（>=）权重值
+// type为true时，返回map，否则返回数组
+var list = exports.list = function(minWeight, type) {
+	if (typeof minWeight === 'boolean') {
+		type = minWeight;
+		minWeight = 0;
+	} else {
+		minWeight = Number(minWeight) || 0;
+	}
 
 	var filter;
 	// 根据最小权重过滤
@@ -34,33 +48,22 @@ var list = exports.list = function(callback, minWeight, type) {
 		filter = function(category) { return category.weight >= minWeight; };
 	}
 
-	allCategories.get(function(err, result) {
-		if (result) {
-			// type为true时，返回map，否则返回数组
-			result = type ?
-				util.arrayToMap(result, 'categoryid', filter) :
-				( filter ? result.filter(filter) : result );
-		}
-		callback(err, result);
+	return listCache.promise().then(function(result) {
+		return type ?
+			util.arrayToMap(result, 'categoryid', filter) :
+			( filter ? result.filter(filter) : result );
 	});
 };
 
-var read = exports.read = function(categoryid, callback) {
-	list(function(err, result) {
-		var category;
-		if (result) {
-			for (var i = result.length - 1; i >= 0; i--) {
-				if (result[i].categoryid == categoryid) {
-					category = result[i];
-					break;
-				}
-			}
-		}
-		callback(err, category);
+// 读取单条分类数据
+var read = exports.read = function(categoryid) {
+	return list(true).then(function(result) {
+		return result[categoryid];
 	});
 };
 
 
+// 创建和更新数据前的验证
 function validate(category) {
 	if (!category.categoryname) {
 		return '分类名不能为空';
@@ -73,42 +76,41 @@ function validate(category) {
 	}
 }
 
-exports.create = function(category, callback) {
+// 创建分类
+exports.create = function(category) {
 	var err = validate(category);
-	if (err) {
-		callback(util.createError(err));
-	} else {
-		categoryDAL.create(category.toDbRecord(), addClearCacheAction(callback));
-	}
+	return err ? 
+		Promise.reject( util.createError(err) ) :
+		categoryDAL.create( category.toDbRecord() ).then(clearCache);
 };
 
-exports.update = function(category, categoryid, callback) {
+// 更新分类
+exports.update = function(category, categoryid) {
 	var err = validator.isAutoId(categoryid) ? validate(category) : '无效的分类编号';
-	if (err) {
-		callback(util.createError(err));
-	} else {
-		categoryDAL.update(category.toDbRecord(), categoryid, addClearCacheAction(callback));
-	}
+	return err ?
+		Promise.reject( util.createError(err) ):
+		categoryDAL.update(category.toDbRecord(), categoryid).then(clearCache);
 };
 
 
-exports.delete = function(categoryid, callback) {
+// 删除分类
+exports.delete = function(categoryid) {
 	if ( validator.isAutoId(categoryid) ) {
-		read(categoryid, function(err, result) {
-			if (!err) {
-				if (!result) {
-					err = util.createError('分类不存在');
-				} else if (result.totalarticles) {
-					err = util.createError('不能删除有文章的分类');
-				}
+		return read(categoryid).then(function(result) {
+			var err;
+			if (!result) {
+				err = '分类不存在';
+			} else if (result.totalarticles) {
+				err = '不能删除有文章的分类';
 			}
+
 			if (err) {
-				callback(err);
+				throw util.createError(err);
 			} else {
-				categoryDAL.delete(categoryid, addClearCacheAction(callback));
+				return categoryDAL.delete(categoryid).then(clearCache);
 			}
 		});
 	} else {
-		callback( util.createError('无效的分类编号') );
+		return Promise.reject( util.createError('无效的分类编号') );
 	}
 };

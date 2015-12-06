@@ -25,5 +25,8 @@
 			"excepts": ["^(?!/)"]
 		}
 	],
-	"ignored_paths": ["_examples_"]
+	"ignored_paths": ["_examples_"],
+	"uglify_options": {
+		"comments": "^\\!"
+	}
 }

@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Data access layer of user (2015-02-17T17:41:34+0800)
+ * Data access layer of user
  * Released under MIT license
  */
 
@@ -9,53 +9,50 @@
 var db = require('./_db');
 
 
-exports.create = function(user, callback) {
-	db.query('INSERT INTO user SET ?', user, callback);
+exports.create = function(user) {
+	return db.query('INSERT INTO user SET ?', user);
 };
 
-exports.readByUserId = function(userid, callback) {
-	db.query('SELECT * FROM user WHERE userid = ? LIMIT 1', userid, callback);
+exports.readByUserId = function(userid) {
+	return db.query('SELECT * FROM user WHERE userid = ? LIMIT 1', userid);
 };
 
-exports.readByUsername = function(username, password, callback) {
-	// 重载
-	if (typeof password === 'function') { callback = password; }
-
-	var usePassword = arguments.length >= 3;
-
+exports.readByUsername = function(username, password) {
 	var sql = 'SELECT * FROM user WHERE username = ?', params = [username];
-	if (usePassword) {
+
+	// 参数个数大于1个时，表示有传password
+	if (arguments.length > 1) {
 		sql += ' AND password = ?';
 		params.push(password);
 	}
 	sql += ' LIMIT 1';
 
-	db.query(sql, params, callback);
+	return db.query(sql, params);
 };
 
-exports.update = function(user, userid, callback) {
-	db.query('UPDATE user SET ? WHERE userid = ?', [user, userid], callback);
+exports.update = function(user, userid) {
+	return db.query('UPDATE user SET ? WHERE userid = ?', [user, userid]);
 };
 
 exports.updateActivity = function(activity, lastip, userid) {
-	db.query(
+	return db.query(
 		'UPDATE user SET lastactivity = ?, lastip = ? WHERE userid = ?',
-		[activity, lastip, userid], null
+		[activity, lastip, userid]
 	);
 };
 
-exports.updatePassword = function(password, username, callback) {
-	db.query(
+exports.updatePassword = function(password, username) {
+	return db.query(
 		'UPDATE user SET password = ? WHERE username = ?',
-		[password, username], callback
+		[password, username]
 	);
 };
 
-exports.delete = function(userids, callback) {
-	db.query('DELETE FROM user WHERE userid IN (' + userids.join(',') + ')', callback);
+exports.delete = function(userids) {
+	return db.query('DELETE FROM user WHERE userid IN (' + userids.join(',') + ')');
 };
 
-exports.findByName = function(username, nickname, callback) {
+exports.findByName = function(username, nickname) {
 	var sql = 'SELECT * FROM user', whereStr = [ ], params = [ ];
 	[username, nickname].forEach(function(name) {
 		if (name) {
@@ -67,7 +64,7 @@ exports.findByName = function(username, nickname, callback) {
 	});
 	if (whereStr.length) { sql += ' WHERE ' + whereStr.join(' OR '); }
 
-	db.query(sql, params, callback);
+	return db.query(sql, params);
 };
 
 
@@ -86,7 +83,7 @@ var SELECT_USER_LIST = 'SELECT ' +
 ' FROM user' +
 ' LEFT JOIN usergroup ON user.groupid = usergroup.groupid';
 
-exports.list = function(params, pageSize, page, callback) {
+exports.list = function(params, pageSize, page) {
 	var sql = SELECT_USER_LIST;
 
 	var whereStr = [ ], whereParams = [ ];
@@ -105,10 +102,9 @@ exports.list = function(params, pageSize, page, callback) {
 
 	sql += ' ORDER BY user.userid DESC';
 
-	db.dataPaging(sql, {
+	return db.dataPaging(sql, {
 		page: page,
 		pageSize: pageSize,
-		params: whereParams,
-		callback: callback
+		params: whereParams
 	});
 };

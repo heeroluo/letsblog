@@ -1,0 +1,88 @@
+{{extend ('../../_layout/adminpage')}}
+
+{{#block ('mainTitle')}}
+{{#if (article.articleid > 0)}}编辑{{else}}写{{/if}}文章
+{{/block}}
+
+{{#block ('body')}}
+<form id="article-form" action="./post" method="post" class="form-layout">
+	<div class="form-layout__row">
+		<div class="form-item">
+			<input class="textbox textbox--larger" name="title" type="text" placeholder="标题" maxlength="100" value="{{article.title}}" />
+			<div class="form-item__side"><em class="form-item__required">*</em></div>
+		</div>
+	</div>
+	<div class="form-layout__row form-layout__row--2cols clearfix">
+		<div class="form-layout__col" style="width: 65%;">
+			<div class="form-item">
+				<input class="textbox" name="title_en" type="text" placeholder="英文标题" maxlength="150" value="{{article.title_en}}" />
+			</div>
+		</div>
+		<div class="form-layout__col" style="width: 35%;">
+			<div class="form-item">
+				<select name="categoryid" class="selectbox">
+					<option value="">请选择分类</option>
+{{#each (categoryList)}}
+					 <option value="{{this.categoryid}}"{{#if (this.categoryid === article.categoryid)}} selected="selected"{{/if}}>{{this.categoryname}}</option>
+{{/each}}
+				</select>
+				<div class="form-item__side"><em class="form-item__required">*</em></div>
+			</div>
+		</div>
+	</div>
+	<div class="form-layout__row form-layout__row--2cols clearfix">
+		<div class="form-layout__col" style="width: 65%;">
+			<div class="form-item">
+				<input class="textbox" name="keywords" type="text" placeholder="关键词" maxlength="255" value="{{article.keywords}}" />
+			</div>
+		</div>
+		<div class="form-layout__col" style="width: 35%;">
+			<div class="form-item">
+				<select name="state" class="selectbox">
+					<option value="0"{{#if (article.state === 0)}} selected="selected"{{/if}}>状态：草稿</option>
+					<option value="1"{{#if (article.state === 1)}} selected="selected"{{/if}}>状态：已发布</option>
+				</select>
+				<div class="form-item__side"><em class="form-item__required">*</em></div>
+			</div>
+		</div>
+	</div>
+	<div class="form-layout__row">
+		<textarea class="ckeditor" name="content" style="width: 100%; height: 383px;"></textarea>
+	</div>
+	<div id="upload-panel" class="form-layout__row upload-panel">
+		<input type="file" />
+		<input type="button" value="上传文件" class="button upload-button" />
+		<div class="upload-result"></div>
+	</div>
+	<div class="form-layout__row form-layout--3cols clearfix">
+{{#if (canSetWeight)}}
+		<div class="form-layout__col">
+			<div class="form-item">
+				<input class="textbox" name="weight" type="text" placeholder="权重" maxlength="3" value="{{article.weight}}" />
+			</div>
+		</div>
+{{/if}}
+		<div class="form-layout__col">
+			<div id="form-item-update-pubtime" class="form-item"{{#if (article.articleid <= 0)}} style="display: none;"{{/if}}>
+				<label><input type="checkbox" name="update-pubtime" value="1" /> 更新发布时间</label>
+			</div>
+		</div>
+		<div class="form-layout__col" style="text-align: right;">
+			<input id="submit-btn" type="submit" value="提 交" class="button" />
+			<input type="hidden" value="{{article.articleid}}" name="articleid" />
+		</div>
+	</div>
+</form>
+<script src="/ckeditor/ckeditor.js"></script>
+<script>
+CKEDITOR.config.height = 350;
+CKEDITOR.config.contentsCss = '/style/article-content.css';
+CKEDITOR.config.bodyClass = 'article__content';
+{{#if (articleContentJSON !== '')}}
+CKEDITOR.on('instanceReady', function() {
+	this.instances.content.setData({{{json(article.content)}}});
+});
+{{/if}}
+require('/adminpage/article-form/1.x/');
+</script>
+{{/block}}

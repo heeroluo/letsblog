@@ -1,44 +1,53 @@
 /*!
  * LetsBlog
- * Business logic layer of user group (2015-02-16T15:41:58+0800)
+ * Business logic layer of user group
  * Released under MIT license
  */
 
 'use strict';
 
-var util = require('../lib/util'),
+var Promise = require('bluebird'),
+	util = require('../lib/util'),
 	validator = require('../lib/validator'),
 	Cache = require('./_cache'),
 	userGroupModel = require('../entity/usergroup'),
 	userGroupDAL = require('../dal/usergroup');
 
 
-var allUserGroups = new Cache(function(setCache) {
-	userGroupDAL.list(function(err, result) {
-		setCache(
-			err,
-			Object.freeze(
-				(result || [ ]).map(function(group) {
-					return Object.freeze( userGroupModel.createEntity(group) );
-				})
-			)
+// 用户组的改动较少，且经常用于权限判断
+// 缓存在内存中可以避免频繁访问数据库
+var listCache = new Cache(function() {
+	return userGroupDAL.list().then(function(result) {
+		// 冻结对象，防止因意外修改导致脏数据的出现
+		return Object.freeze(
+			(result || [ ]).map(function(group) {
+				return Object.freeze( userGroupModel.createEntity(group) );
+			})
 		);
 	});
-}, exports);
-var addClearCacheAction = exports.addClearCacheAction;
+});
+
+// 向外暴露清理缓存的接口
+var clearCache = exports.clearCache = function() { listCache.clear(); };
 
 
-var list = exports.list = function(callback, type) {
-	allUserGroups.get(function(err, result) {
-		if (result) {
-			// type为true时，返回map，否则返回数组
-			result = type ? util.arrayToMap(result, 'groupid') : result;
-		}
-		callback(err, result);
+// 读取用户组数据列表
+// type为true时返回map，否则返回数组
+var list = exports.list = function(type) {
+	return listCache.promise().then(function(result) {
+		return type ? util.arrayToMap(result, 'groupid') : result;
+	});
+};
+
+// 读取单条用户组数据
+var read = exports.read = function(groupid) {
+	return list(true).then(function(result) {
+		return result[groupid];
 	});
 };
 
 
+// 创建和更新数据前的验证
 function validate(userGroup) {
 	if (!userGroup.groupname) {
 		return '组名不能为空';
@@ -63,64 +72,45 @@ function validate(userGroup) {
 	}
 }
 
-exports.create = function(userGroup, callback) {
+// 创建用户组
+exports.create = function(userGroup) {
 	var err = validate(userGroup);
-	if (err) {
-		callback(util.createError(err));
-	} else {
-		userGroupDAL.create(userGroup.toDbRecord(), addClearCacheAction(callback));
-	}
+	return err ?
+		Promise.reject( util.createError(err) ) :
+		userGroupDAL.create( userGroup.toDbRecord() ).then(clearCache);
 };
 
-exports.update = function(userGroup, groupid, callback) {
+// 更新用户组
+exports.update = function(userGroup, groupid) {
 	var err = validator.isAutoId(groupid) ? validate(userGroup) : '无效的用户组编号';
-	if (err) {
-		callback(util.createError(err));
-	} else {
-		userGroupDAL.update(userGroup.toDbRecord(), groupid, addClearCacheAction(callback));
-	}
+	return err ?
+		Promise.reject(err) :
+		userGroupDAL.update(userGroup.toDbRecord(), groupid).then(clearCache);
 };
 
 
-var read = exports.read = function(groupid, callback) {
-	list(function(err, result) {
-		if (err) {
-			callback(err);
-		} else {
-			var group;
-			for (var i = result.length - 1; i >= 0; i--) {
-				if (result[i].groupid == groupid) {
-					group = result[i];
-					break;
-				}
-			}
-			callback(err, group);
-		}
-	});
-};
-
-
+// 删除用户组
 exports.delete = function(groupid, callback) {
 	if ( validator.isAutoId(groupid) ) {
 		if (groupid <= 2) {
-			callback( util.createError('不能删除系统用户组') );
+			return Promise.reject( util.createError('不能删除系统用户组') );
 		} else {
-			read(groupid, function(err, result) {
-				if (!err) {
-					if (!result) {
-						err = '用户组不存在';
-					} else if (result.totalusers) {
-						err = '不能删除有用户的用户组';
-					}
+			return read(groupid).then(function(result) {
+				var err;
+				if (!result) {
+					err = '用户组不存在';
+				} else if (result.totalusers) {
+					err = '不能删除有用户的用户组';
 				}
+
 				if (err) {
-					callback(util.createError(err));
+					throw util.createError(err);
 				} else {
-					userGroupDAL.delete(groupid, addClearCacheAction(callback));
+					return userGroupDAL.delete(groupid).then(clearCache);
 				}
 			});
 		}
 	} else {
-		callback( util.createError('无效的用户组编号') );
+		return Promise.reject( util.createError('无效的用户组编号') );
 	}
 };

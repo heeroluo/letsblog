@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Data access layer of comment (2015-02-22T20:25:01+0800)
+ * Data access layer of comment
  * Released under MIT license
  */
 
@@ -9,20 +9,22 @@
 var db = require('./_db');
 
 
-exports.create = function(comment, callback) {
-	db.query('INSERT INTO comment SET ?', comment, callback);
+exports.create = function(comment) {
+	return db.query('INSERT INTO comment SET ?', comment);
 };
 
-exports.updateState = function(state, commentids, callback) {
-	db.query('UPDATE comment SET state = ' + state + ' WHERE commentid IN (' + commentids.join(',') + ')', callback);
+exports.updateState = function(state, commentids) {
+	return db.query(
+		'UPDATE comment SET state = ' + state + ' WHERE commentid IN (' + commentids.join(',') + ')'
+	);
 };
 
-exports.deleteByCommentIds = function(commentids, callback) {
-	db.query('DELETE FROM comment WHERE commentid IN (' + commentids.join(',') + ')', callback);
+exports.deleteByCommentIds = function(commentids) {
+	return db.query('DELETE FROM comment WHERE commentid IN (' + commentids.join(',') + ')');
 };
 
-exports.deleteByArticleIds = function(articleids, callback) {
-	db.query('DELETE FROM comment WHERE articleid IN (' + articleids.join(',') + ')', callback);
+exports.deleteByArticleIds = function(articleids) {
+	return db.query('DELETE FROM comment WHERE articleid IN (' + articleids.join(',') + ')');
 };
 
 
@@ -44,7 +46,7 @@ var SELECT_USER_LIST = 'SELECT ' +
 ' LEFT JOIN user ON comment.userid = user.userid' +
 ' LEFT JOIN article ON comment.articleid = article.articleid';
 
-exports.list = function(params, pageSize, page, callback) {
+exports.list = function(params, pageSize, page) {
 	var sql = SELECT_USER_LIST;
 
 	var whereStr = [ ], whereParams = [ ];
@@ -69,30 +71,28 @@ exports.list = function(params, pageSize, page, callback) {
 
 	sql += ' ORDER BY comment.pubtime ASC';
 
-	db.dataPaging(sql, {
+	return db.dataPaging(sql, {
 		page: page,
 		pageSize: pageSize,
-		params: whereParams,
-		callback: callback
+		params: whereParams
 	});
 };
 
 
-exports.getTotalPendingReviews = function(callback) {
-	db.query('SELECT COUNT(*) AS total FROM comment WHERE state = 0', function(err, result) {
-		if (!err) { result = result[0].total; }
-		if (callback) { callback(err, result); }
+exports.getTotalPendingReviews = function() {
+	return db.query(
+		'SELECT COUNT(*) AS total FROM comment WHERE state = 0'
+	).then(function(result) {
+		return result[0].total;
 	});
 };
 
 
-exports.getTotalCommentsAfterTime = function(time, ip, callback) {
-	db.query(
+exports.getTotalCommentsAfterTime = function(time, ip) {
+	return db.query(
 		'SELECT COUNT(*) AS total FROM comment WHERE pubtime >= ? AND IP = ?',
-		[time, ip],
-		function(err, result) {
-			if (!err) { result = result[0].total; }
-			if (callback) { callback(err, result); }
-		}
-	);
+		[time, ip]
+	).then(function(result) {
+		return result[0].total;
+	});
 };
