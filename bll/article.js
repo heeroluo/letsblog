@@ -110,6 +110,10 @@ function getSummary(content) {
 		RegExp.leftContext : content;
 }
 
+
+// 行分隔符和段落分隔符
+var re_separator = new RegExp('[' + String.fromCharCode(8232) + String.fromCharCode(8233) + ']', 'g');
+
 // 创建和更新数据前的验证
 function validate(article, user) {
 	var err;
@@ -133,6 +137,8 @@ function validate(article, user) {
 	if (article.keywords) { article.keywords = article.keywords.replace(/，/g, ','); }
 	// 清理末尾的空段落
 	article.content = article.content.replace(/(?:<p>(?:&nbsp;|\s)*<\/p>)+$/, '');
+	// 移除容易导致异常的字符
+	article.content = article.content.replace(re_separator, '');
 	// 截取摘要
 	article.summary = getSummary(article.content);
 
@@ -184,6 +190,8 @@ exports.read = function(articleid) {
 	if ( validator.isAutoId(articleid) ) {
 		return articleDAL.read(articleid).then(function(result) {
 			if (result && result[0]) {
+				// 移除容易导致异常的字符
+				result[0].content = result[0].content.replace(re_separator, '');
 				return articleModel.createEntity(result[0]);
 			}
 		});
