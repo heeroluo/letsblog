@@ -35,7 +35,6 @@ var list = exports.list = function(params, pageSize, page) {
 	return articleDAL.list(params, pageSize, page).then(function(result) {
 		result.data = result.data.map(function(article) {
 			article = articleModel.createEntity(article);
-			article.pubtime_formatted = util.formatDateFromNow(article.pubtime);
 			return article;
 		});
 

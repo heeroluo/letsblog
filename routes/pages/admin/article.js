@@ -164,36 +164,13 @@ exports.list = pageType.admin(
 
 			return Promise.all([
 				articleBLL.list(params, 15, page).then(function(result) {
-					if (result.data) {
-						result.data.forEach(function(article) {
-							article.pubtime_formatted = util.formatDate(
-								article.pubtime,
-								'YYYY-MM-DD hh:mm:ss'
-							);
-						});
-					}
-					res.routeHelper.viewData('articleList', result.data);
-
 					if (isPersonalPage) { params.type = 'personal'; }
 
-					var hrefTpl = util.toQueryString(params);
-					if (hrefTpl) {
-						hrefTpl = '?' + hrefTpl + '&amp;';
-					} else {
-						hrefTpl = '?';
-					}
-					hrefTpl += 'page={{page}}';
-
-					res.routeHelper.viewData('params', params);
-					res.routeHelper.viewData('isPersonalPage', isPersonalPage);
-
-					// 分页条
-					if (result.totalPages > 1) {
-						res.routeHelper.viewData(
-							'paginator',
-							util.createPaginatorData(result.page, result.totalPages, hrefTpl)
-						);
-					}
+					res.routeHelper.viewData({
+						articleList: result,
+						params: params,
+						isPersonalPage: isPersonalPage,
+					});
 				}),
 
 				categoryBLL.list().then(function(result) {

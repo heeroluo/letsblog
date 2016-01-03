@@ -7,14 +7,14 @@
 
 {{#block ('container')}}
 <div class="main">
-{{#if (articleList !== null && articleList.length > 0)}}
+	{{#if ( exists(articleList.data) )}}
 	<div id="article-list" class="article-list">
-	{{#each (articleList)}}
+		{{#each (articleList.data)}}
 		<article class="article-list__item">
 			<header class="article-list__item__header clearfix">
 				<h1 class="article-list__item__header__title"><a href="{{this.href}}">{{this.title}}</a></h1>
 				<div class="article-list__item__header__meta">
-					{{#if (root.categoryid <= 0)}}<a href="{{this.category_href}}">{{this.categoryname}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;{{/if}}{{this.pubtime_formatted}}
+					{{#if (root.categoryid <= 0)}}<a href="{{this.category_href}}">{{this.categoryname}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;{{/if}}{{formatDateFromNow(this.pubtime)}}
 				</div>
 			</header>
 			<div class="article__content article-list__item__summary">
@@ -28,47 +28,47 @@
 				</div>
 			</footer>
 		</article>
-	{{/each}}
-{{#if (paginator !== undefined)}}
-		<nav id="article-list__paginator">
-			{{parse ('../../_partial/paginator', paginator = paginator)}}
-		</nav>
-{{/if}}
+		{{/each}}
+		{{#if (articleList.totalPages > 1)}}
+		<nav id="article-list__paginator">{{ parse (
+			'../../_partial/paginator',
+			currentPage = articleList.page,
+			totalPages = articleList.totalPages
+		) }}</nav>
+		{{/if}}
 	</div>
-{{/if}}
+	{{/if}}
 </div>
 <aside class="sidebar">
-{{#if ( exists(recommendedArticles) )}}
+	{{#if ( exists(recommendedArticles) )}}
 	<section class="sidebar__section recommended-articles">
 		<h2 class="sidebar__section__title">推荐文章</h2>
 		<ol class="sidebar__article-list">
-	{{#each (recommendedArticles)}}
+			{{#each (recommendedArticles)}}
 			<li><a href="{{this.href}}" target="_blank">{{this.title}}</a></li>
-	{{/each}}
+			{{/each}}
 		</ol>
 	</section>
-{{/if}}
-{{#if ( exists(linkList) )}}
+	{{/if}}
+	{{#if ( exists(linkList) )}}
 	<section class="sidebar__section friend-sites">
 		<h2 class="sidebar__section__title">友情链接</h2>
 		<dl class="sidebar__link-list">
-	{{#each (linkList)}}
+			{{#each (linkList)}}
 			<dt><a href="{{this.siteurl}}" target="_blank">{{this.linkname}}</a></dt>
 			<dd>{{this.introduction}}</dd>
-	{{/each}}
+			{{/each}}
 		</dl>
 	</section>
-{{/if}}
+	{{/if}}
 </aside>
 {{/block}}
 
 {{#block ('script')}}
 <script src="/highlightjs/highlight.pack.js"></script>
 <script>
-hljs.configure({
-	tabReplace: '    '
-});
+hljs.configure({ tabReplace: '    ' });
 hljs.initHighlightingOnLoad();
+require('/page/article-list/1.x/');
 </script>
-<script>require('/page/article-list/1.x/');</script>
 {{/block}}

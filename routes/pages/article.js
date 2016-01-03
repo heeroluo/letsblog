@@ -20,17 +20,7 @@ exports.list = {
 		// 首页文章列表数据和非首页文章列表数据从不同的接口获取
 		// 获取后都需要经过此函数处理
 		function handleArticleList(result) {
-			if (result.data) {
-				res.routeHelper.viewData('articleList', result.data);
-			}
-			if (result.totalPages > 1) {
-				res.routeHelper.viewData(
-					'paginator',
-					util.createPaginatorData(
-						result.page, result.totalPages, '?page={{page}}'
-					)
-				);
-			}
+			res.routeHelper.viewData('articleList', result);
 		}
 
 		var categoryid = parseInt(req.params[0]) || 0,
@@ -98,7 +88,6 @@ exports.detail = {
 					res.routeHelper.title(article.title);
 
 					article.content = articleBLL.cleanContent(article.content);
-					article.pubtime_formatted = util.formatDateFromNow(article.pubtime);
 
 					res.routeHelper.viewData('category', category);
 					res.routeHelper.viewData('categoryid', article.categoryid);

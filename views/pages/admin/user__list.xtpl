@@ -45,9 +45,14 @@
 			</tr>
 		</thead>
 		<tfoot>
-{{#if (paginator !== undefined)}}
+{{#if (userList.totalPages > 1)}}
 			<tr>
-				<td colspan="8">{{parse ('../_partial/paginator', paginator = paginator)}}</td>
+				<td colspan="8">{{ parse (
+					'../../_partial/paginator',
+					currentPage = userList.page,
+					totalPages = userList.totalPages,
+					href = '?' + toQueryString(params, true)
+				) }}</td>
 			</tr>
 {{/if}}
 			<tr>
@@ -57,15 +62,15 @@
 			</tr>
 		</tfoot>
 		<tbody>
-{{#if ( exists(userList) )}}
-	{{#each (userList)}}
+{{#if ( exists(userList.data) )}}
+	{{#each (userList.data)}}
 			<tr>
 				<td style="text-align: center;"><input type="checkbox" name="userids" value="{{this.userid}}" /></td>
 				<td>{{this.username}}</td>
 				<td>{{this.nickname}}</td>
 				<td>{{this.groupname}}</td>
-				<td style="text-align: center;">{{this.regtime_formatted}}</td>
-				<td style="text-align: center;">{{this.lastactivity_formatted}}</td>
+				<td style="text-align: center;">{{formatDate(this.regtime, 'YYYY-MM-DD hh:mm:ss')}}</td>
+				<td style="text-align: center;">{{formatDate(this.lastactivity, 'YYYY-MM-DD hh:mm:ss')}}</td>
 				<td style="text-align: center;">{{this.totalarticles}} / {{this.totalcomments}}</td>
 				<td style="word-spacing: 1em; text-align: center;">
 					<a href="/admin/user/update/{{this.userid}}/">编辑</a>

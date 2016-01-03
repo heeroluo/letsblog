@@ -12,7 +12,7 @@
 {{{block ('style')}}}
 {{include ('../_partial/jraiser')}}
 <script>
-var currentUser = {{{json(currentUser)}}};
+var currentUser = {{{jsonEncode(currentUser)}}};
 </script>
 </head>
 

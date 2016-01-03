@@ -12,7 +12,7 @@
 		<header class="article__header">
 			<h1 class="article__header__title">{{article.title}}</h1>
 			<div class="article__header__meta clearfix">
-				{{author.nickname}}发表于{{article.pubtime_formatted}}，已被查看{{article.totalviews}}次
+				{{author.nickname}}发表于{{formatDateFromNow(article.pubtime)}}，已被查看{{article.totalviews}}次
 			</div>
 		</header>
 		<div class="article__content">{{{article.content}}}</div>

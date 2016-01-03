@@ -32,34 +32,11 @@ exports.list = pageType.admin(
 				},
 				page = parseInt(req.query.page) || -1;
 
-			return commentBLL.list(params, 20, page).then(function(result) {
-				result.data.forEach(function(d) {
-					d.pubtime_formatted = d.pubtime.getFullYear() + '-' +
-						(d.pubtime.getMonth() + 1) + '-' +
-						d.pubtime.getDate() + ' ' +
-						d.pubtime.getHours() + ':' + 
-						d.pubtime.getMinutes() + ':' +
-						d.pubtime.getSeconds();
+			return commentBLL.list(params, 20, page).then(function(result) {				
+				res.routeHelper.viewData({
+					commentList: result,
+					params: params
 				});
-				res.routeHelper.viewData('commentList', result.data);
-
-				var hrefTpl = util.toQueryString(params);
-				if (hrefTpl) {
-					hrefTpl = '?' + hrefTpl + '&amp;';
-				} else {
-					hrefTpl = '?';
-				}
-				hrefTpl += 'page={{page}}';
-
-				res.routeHelper.viewData('params', params);
-
-				// 分页条
-				if (result.totalPages > 1) {
-					res.routeHelper.viewData(
-						'paginator',
-						util.createPaginatorData( result.page, result.totalPages, hrefTpl )
-					);
-				}
 			});
 		}
 	)

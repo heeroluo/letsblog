@@ -80,7 +80,7 @@ CKEDITOR.config.contentsCss = '/style/article-content.css';
 CKEDITOR.config.bodyClass = 'article__content';
 {{#if (articleContentJSON !== '')}}
 CKEDITOR.on('instanceReady', function() {
-	this.instances.content.setData({{{json(article.content)}}});
+	this.instances.content.setData({{{jsonEncode(article.content)}}});
 });
 {{/if}}
 require('/adminpage/article-form/1.x/');

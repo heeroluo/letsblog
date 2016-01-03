@@ -238,29 +238,10 @@ exports.list = pageType.admin(
 
 			return Promise.all([
 				userBLL.list(params, 15, page).then(function(result) {
-					result.data.forEach(function(d) {
-						d.regtime_formatted = util.formatDate(d.regtime, 'YYYY-MM-DD hh:mm:ss');
-						d.lastactivity_formatted = util.formatDate(d.lastactivity, 'YYYY-MM-DD hh:mm:ss');
+					res.routeHelper.viewData({
+						userList: result,
+						params: params
 					});
-					res.routeHelper.viewData('userList', result.data);
-
-					var hrefTpl = util.toQueryString(params);
-					if (hrefTpl) {
-						hrefTpl = '?' + hrefTpl + '&amp;';
-					} else {
-						hrefTpl = '?';
-					}
-					hrefTpl += 'page={{page}}';
-
-					res.routeHelper.viewData('params', params);
-					if (result.totalPages > 1) {
-						res.routeHelper.viewData(
-							'paginator',
-							util.createPaginatorData(
-								result.page, result.totalPages, hrefTpl
-							)
-						);
-					}
 				}),
 
 				userGroupBLL.list().then(function(result) {

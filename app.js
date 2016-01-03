@@ -15,22 +15,18 @@ if (config && config.express) {
 	}
 }
 
-var XTemplate = require('xtemplate'), xtpl = require('./lib/xtpl');
-XTemplate.addCommand('json', function(scope, option) {
-	return JSON.stringify(option.params[0]);
-});
-XTemplate.addCommand('exists', function(scope, option) {
-	var obj = option.params[0], result = obj != null;
-	if (result) {
-		if ( Array.isArray(obj) ) {
-			result = obj.length > 0;
-		} else if (typeof obj === 'string') {
-			result = obj.trim() !== '';
-		}
+var xtpl = require('./lib/xtpl');
+!function() {
+	var XTemplate = require('xtemplate');
+	
+	var xtemplateCmds = require('./lib/xtemplate-command');
+	for (var c in xtemplateCmds) {
+		XTemplate.addCommand(c, xtemplateCmds[c]);
 	}
-	return result;
-});
-xtpl.config({ XTemplate: XTemplate });
+
+	xtpl.config({ XTemplate: XTemplate });
+}();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
