@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>{{title}}</title>
+<title>{{fullTitle}}</title>
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-{{#if (keywords !== undefined && keywords !== '')}}<meta name="Keywords" content="{{keywords}}" />{{/if}}
-{{#if (description !== undefined && description !== '')}}<meta name="Description" content="{{description}}" />{{/if}}
+{{#if ( exists(fullKeywords) )}}<meta name="Keywords" content="{{fullKeywords}}" />{{/if}}
+{{#if ( exists(description) )}}<meta name="Description" content="{{description}}" />{{/if}}
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 <meta name="format-detection" content="telephone=no" />
 <link href="/style/base.css?20150705" media="all" rel="stylesheet" type="text/css" />
-{{{block ('style')}}}
-{{include ('../_partial/jraiser')}}
+{{{ block ('style') }}}
+{{ include ('../_partial/jraiser') }}
 <script>
-var currentUser = {{{jsonEncode(currentUser)}}};
+var currentUser = {{{ jsonEncode(currentUser) }}};
 </script>
 </head>
 
@@ -78,8 +78,6 @@ html.style.overflow = body.style.overflow= 'hidden';
 	</div>
 </footer>
 {{{block ('script')}}}
-{{#if (options.statcode)}}
-{{{options.statcode}}}
-{{/if}}
+{{#if (options.statcode)}}{{{options.statcode}}}{{/if}}
 </body>
 </html>

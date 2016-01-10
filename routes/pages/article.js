@@ -45,6 +45,7 @@ exports.list = {
 				if (category) {
 					params.categoryid = categoryid;
 					res.routeHelper.viewData('categoryid', categoryid);
+					res.routeHelper.prependTitle(category.categoryname);
 				} else {
 					next( util.createError('分类不存在或不可见', 404) );
 					return;
@@ -84,8 +85,8 @@ exports.detail = {
 				}
 
 				if (category) {
-					res.routeHelper.title(category.categoryname);
-					res.routeHelper.title(article.title);
+					res.routeHelper.prependTitle(category.categoryname);
+					res.routeHelper.prependTitle(article.title);
 
 					article.content = articleBLL.cleanContent(article.content);
 
@@ -93,7 +94,7 @@ exports.detail = {
 					res.routeHelper.viewData('categoryid', article.categoryid);
 					res.routeHelper.viewData('article', article);
 					if (article.keywords) {
-						res.routeHelper.keywords( article.keywords.split(/\s*,\s*/) );	
+						res.routeHelper.appendKeywords( article.keywords.split(/\s*,\s*/) );	
 					}
 				} else {
 					throw util.createError('您没有权限查看此文章', 403);

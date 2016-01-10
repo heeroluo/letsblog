@@ -1,13 +1,12 @@
 /*!
- * 页面类型
- * 可以把一批页面的公共逻辑放到一种页面类型的预执行函数中
+ * 页面类型预执行函数
+ * 可以把一批页面的公共逻辑作为一种页面类型
  */
 
 'use strict';
 
 var Promise = require('bluebird'),
 	util = require('../lib/util'),
-	routeHelper = require('./route-helper'),
 	optionsBLL = require('../bll/options'),
 	categoryBLL = require('../bll/category'),
 	linkBLL = require('../bll/link'),
@@ -87,11 +86,9 @@ function normalPage(callbacks) {
 		prepend(function(req, res, next) {
 			var isHTMLPage = res.routeHelper.type() === 'html';
 
-			if (isHTMLPage) {
-				res.routeHelper.viewData('categoryid', -1);
-			}
+			if (isHTMLPage) { res.routeHelper.viewData('categoryid', -1); }
 
-			return Promise.all([
+			var tasks = [
 				// 加载网站设置
 				optionsBLL.read().then(function(result) {
 					if (!result) {
@@ -100,8 +97,8 @@ function normalPage(callbacks) {
 						err = util.createError(result.tipstext || '网站已关闭');
 					} else {
 						if (res.routeHelper.type() === 'html') {
-							res.routeHelper.title(result.sitename);
-							res.routeHelper.keywords( result.keywords.split(/\s*,\s*/) );
+							res.routeHelper.appendTitle(result.sitename);
+							res.routeHelper.appendKeywords( result.keywords.split(/\s*,\s*/) );
 							res.routeHelper.viewData({
 								description: result.description,
 								currentOptions: result,
@@ -109,22 +106,24 @@ function normalPage(callbacks) {
 							});
 						}
 					}
-				}),
-
-				// 加载可见分类
-				categoryBLL.list(1).then(function(result) {
-					if (isHTMLPage) {
-						res.routeHelper.viewData('categoryList', result);
-					}
-				}),
-
-				// 加载可见链接
-				linkBLL.list(1).then(function(result) {
-					if (isHTMLPage) {
-						res.routeHelper.viewData('linkList', result);
-					}
 				})
-			]);
+			];
+
+			if (isHTMLPage) {
+				tasks.push(
+					// 加载可见分类
+					categoryBLL.list(1).then(function(result) {
+						res.routeHelper.viewData('categoryList', result);
+					}),
+
+					// 加载可见链接
+					linkBLL.list(1).then(function(result) {
+						res.routeHelper.viewData('linkList', result);
+					})
+				)
+			}
+
+			return Promise.all(tasks);
 		}, callbacks)
 	);
 }
