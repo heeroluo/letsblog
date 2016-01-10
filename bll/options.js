@@ -44,6 +44,6 @@ function validate(options) {
 exports.update = function(options) {
 	var err = validate(options);
 	return err ?
-		Promise.reject( util.createError(err) ) :
+		util.createError(err) :
 		optionsDAL.update( options.toDbRecord() ).then(clearCache);
 };

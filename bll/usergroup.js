@@ -76,7 +76,7 @@ function validate(userGroup) {
 exports.create = function(userGroup) {
 	var err = validate(userGroup);
 	return err ?
-		Promise.reject( util.createError(err) ) :
+		util.createError(err) :
 		userGroupDAL.create( userGroup.toDbRecord() ).then(clearCache);
 };
 
@@ -84,33 +84,27 @@ exports.create = function(userGroup) {
 exports.update = function(userGroup, groupid) {
 	var err = validator.isAutoId(groupid) ? validate(userGroup) : '无效的用户组编号';
 	return err ?
-		Promise.reject(err) :
+		util.createError(err) :
 		userGroupDAL.update(userGroup.toDbRecord(), groupid).then(clearCache);
 };
 
 
 // 删除用户组
-exports.delete = function(groupid, callback) {
-	if ( validator.isAutoId(groupid) ) {
-		if (groupid <= 2) {
-			return Promise.reject( util.createError('不能删除系统用户组') );
-		} else {
-			return read(groupid).then(function(result) {
-				var err;
-				if (!result) {
-					err = '用户组不存在';
-				} else if (result.totalusers) {
-					err = '不能删除有用户的用户组';
-				}
+exports.delete = function(groupid) {
+	if ( !validator.isAutoId(groupid) ) { return util.createError('无效的用户组编号'); }
 
-				if (err) {
-					throw util.createError(err);
-				} else {
-					return userGroupDAL.delete(groupid).then(clearCache);
-				}
-			});
+	if (groupid <= 2) { return util.createError('不能删除系统用户组');
+
+	return read(groupid).then(function(result) {
+		var err;
+		if (!result) {
+			err = '用户组不存在';
+		} else if (result.totalusers) {
+			err = '不能删除有用户的用户组';
 		}
-	} else {
-		return Promise.reject( util.createError('无效的用户组编号') );
-	}
+
+		return err ?
+			util.createError(err) :
+			userGroupDAL.delete(groupid).then(clearCache);
+	});
 };

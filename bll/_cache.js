@@ -33,7 +33,7 @@ module.exports = util.createClass(function(createPromise, options) {
 	promise: function() {
 		var t = this;
 
-		// 判断数据是否已过期
+		// 判断缓存数据是否已过期
 		if (t._promise && t._expires && Date.now() - t._lastTime > t._expires) {
 			t.clear();
 		}

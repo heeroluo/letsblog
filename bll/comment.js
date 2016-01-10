@@ -34,14 +34,12 @@ function validate(comment, user) {
 	if (user && user.userid) {
 		tasks.push(function() {
 			return userBLL.readByUserId(user.userid).then(function(result) {
-				if (result) {
-					comment.userid = result.userid;
-					comment.user_nickname = result.nickname;
-					comment.user_email = result.email;
-					comment.user_qq = '';
-				} else {
-					throw util.createError('用户不存在');
-				}
+				if (!result) { return util.createError('用户不存在'); }
+
+				comment.userid = result.userid;
+				comment.user_nickname = result.nickname;
+				comment.user_email = result.email;
+				comment.user_qq = '';
 			});
 		});
 	} else {
@@ -61,7 +59,7 @@ function validate(comment, user) {
 				new Date(Date.now() - 5000), comment.ip
 			).then(function(result) {
 				if (result > 0) {
-					throw util.createError('发表评论的间隔不能小于5秒');
+					return util.createError('发表评论的间隔不能小于5秒');
 				}
 			});
 		});
@@ -69,19 +67,17 @@ function validate(comment, user) {
 
 	tasks.push(function() {
 		return articleBLL.read(comment.articleid).then(function(result) {
-			if (!result) {
-				throw util.createError('文章不存在');
-			}
+			if (!result) { return util.createError('文章不存在'); }
 		});
 	});
 
 	return err ?
-		Promise.reject( util.createError(err) ) :
+		util.createError(err):
 		util.promiseSeries(tasks);
 }
 
 // 发表评论
-// user为当前操作用户
+// user为当前操作用户，用于检查权限
 exports.create = function(comment, user) {
 	return validate(comment, user).then(function(result) {
 		// 如果用户本身有审核评论的权限，就直接把评论设为审核通过，否则为待审核状态
@@ -128,7 +124,7 @@ exports.updateState = Promise.method(function(state, commentids) {
 	}
 
 	return err ?
-		Promise.reject( util.createError(err) ) :
+		util.createError(err) :
 		commentDAL.updateState(state, commentids);
 });
 
@@ -148,7 +144,7 @@ exports.deleteByCommentIds = function(commentids) {
 	}
 
 	return err ?
-		Promise.reject( util.createError(err) ) :
+		util.createError(err) :
 		commentDAL.deleteByCommentIds(commentids);
 };
 
@@ -162,6 +158,6 @@ exports.deleteByArticleIds = function(articleids) {
 	}
 
 	return err ?
-		Promise.reject( util.createError(err) ) :
+		util.createError(err) :
 		commentDAL.deleteByArticleIds(articleids);
 };

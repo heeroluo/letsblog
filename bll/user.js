@@ -28,28 +28,24 @@ function validate(user, currentUser) {
 		err = '昵称必须为2-20个字符';
 	}
 
-	if (err) {
-		return Promise.reject( util.createError(err) );
-	} else {
-		// 默认以用户名为昵称
-		user.nickname = user.nickname || user.username;
+	if (err) { return util.createError(err); }
 
-		return userDAL.findByName(user.username, user.nickname).then(function(result) {
-			if ( result.some(function(u) { return u.userid != user.userid; }) ) {
-				throw util.createError('用户名或昵称重复');
-			} else {
-				return userGroupBLL.read(user.groupid);
-			}
-		}).then(function(result) {
-			var err;
-			if (!result) {
-				err = '用户组不存在';
-			} else if (currentUser && currentUser.group.compare(result) < 0) {
-				err = '权限不足';
-			}
-			if (err) { throw util.createError(err); }
-		});
-	}
+	// 默认以用户名为昵称
+	user.nickname = user.nickname || user.username;
+
+	return userDAL.findByName(user.username, user.nickname).then(function(result) {
+		return result.some(function(u) { return u.userid != user.userid; }) ?
+			util.createError('用户名或昵称重复') :
+			userGroupBLL.read(user.groupid);
+	}).then(function(result) {
+		var err;
+		if (!result) {
+			err = '用户组不存在';
+		} else if (currentUser && currentUser.group.compare(result) < 0) {
+			err = '权限不足';
+		}
+		if (err) { return util.createError(err); }
+	});
 }
 
 // 检查密码合法性和强度
@@ -66,31 +62,27 @@ function encryptPassword(password) {
 
 
 // 创建用户
-// currentUser为当前操作用户
+// currentUser为当前操作用户，用于检查权限
 exports.create = function(user, currentUser) {
 	var err = checkPassword(user.password);
 	return err ?
-		Promise.reject( util.createError(err) ) :
-		validate(user, currentUser).then(function(err) {
-			// 密码加密
+		util.createError(err) :
+		validate(user, currentUser).then(function() {
 			user.password = encryptPassword(user.password);
-
-			return userDAL.create( user.toDbRecord() ).then(userGroupBLL.clearCache);
-		});
+			return userDAL.create( user.toDbRecord() );
+		}).then(userGroupBLL.clearCache);
 };
 
 // 更新用户（密码除外）
-// currentUser为当前操作用户
+// currentUser为当前操作用户，用于检查权限
 exports.update = function(user, userid, currentUser) {
-	if ( validator.isAutoId(userid) ) {
-		user.userid = userid;
-		// 基本权限验证在页面完成
-		return validate(user, currentUser).then(function() {
-			return userDAL.update(user.toDbRecord(), userid).then(userGroupBLL.clearCache);
-		});
-	} else {
-		return Promise.reject( util.createError('无效的用户编号') );
-	}
+	if ( !validator.isAutoId(userid) ) { return util.createError('无效的用户编号'); }
+
+	user.userid = userid;
+	// 基本权限验证在页面完成
+	return validate(user, currentUser).then(function() {
+		return userDAL.update(user.toDbRecord(), userid);
+	}).then(userGroupBLL.clearCache);
 };
 
 // 更新密码
@@ -116,22 +108,19 @@ exports.updatePassword = function(newPassword, oldPassword, username) {
 		}
 	}
 
-	if (err) {
-		throw Promise.reject( util.createError(err) );
-	} else {
-		if (oldPassword != null) { oldPassword = encryptPassword(oldPassword); }
+	if (err) { return util.createError(err); }
 
-		return userDAL.readByUsername(username, oldPassword).then(function(result) {
-			if (!result) { throw util.createError('用户不存在或旧密码错误'); }
+	if (oldPassword != null) { oldPassword = encryptPassword(oldPassword); }
 
-			newPassword = encryptPassword(newPassword);
+	return userDAL.readByUsername(username, oldPassword).then(function(result) {
+		if (!result) { return util.createError('用户不存在或旧密码错误'); }
 
-			return userDAL.updatePassword(newPassword, username).then(function(result) {
-				result.newPassword = newPassword;
-				return result;
-			});
+		newPassword = encryptPassword(newPassword);
+		return userDAL.updatePassword(newPassword, username).then(function(result) {
+			result.newPassword = newPassword;
+			return result;
 		});
-	}
+	});
 };
 
 
@@ -145,11 +134,11 @@ var updateActivity = exports.updateActivity = function(ip, userid) {
 exports.readByUserId = function(userid) {
 	return validator.isAutoId(userid) ?
 		userDAL.readByUserId(userid).then(function(result) {
-			if (result && result[0]) {
+			if (result[0]) {
 				return userModel.createEntity(result[0]);
 			}
 		}) :
-		Promise.reject( util.createError('无效的用户编号') );
+		util.createError('无效的用户编号');
 };
 
 // 通过用户名和密码读取单条用户记录（主要用于登录）
@@ -162,9 +151,9 @@ exports.readByUsernameAndPassword = function(username, password) {
 	}
 
 	return err ?
-		Promise.reject( util.createError(err) ) :
+		util.createError(err) :
 		userDAL.readByUsername(username, password).then(function(result) {
-			if (result && result[0]) {
+			if (result[0]) {
 				return userModel.createEntity(result[0]);
 			}
 		});
@@ -181,7 +170,7 @@ exports.delete = function(userids) {
 	}
 
 	return err ?
-		Promise.reject( util.createError(err) ) :
+		util.createError(err) :
 		userDAL.delete(userids).then(userGroupBLL.clearCache);
 };
 
@@ -264,7 +253,7 @@ exports.login = function(username, password, ip) {
 	}
 
 	if (err) {
-		return Promise.reject( util.createError(err) );
+		return util.createError(err);
 	} else {
 		return userDAL.readByUsername(username).then(function(result) {
 			result = result[0];
@@ -280,7 +269,7 @@ exports.login = function(username, password, ip) {
 			}
 
 			if (err) {
-				throw util.createError('用户不存在或密码错误');
+				return util.createError('用户不存在或密码错误');
 			} else {
 				// 登录成功，移除密码错误记录
 				loginRetryHistory.remove(historyKey);

@@ -54,7 +54,7 @@ exports.read = function(linkid) {
 				if (result[i].linkid == linkid) { return result[i]; }
 			}
 		}) :
-		Promise.reject( util.createError('无效的链接编号') ) ;
+		util.createError('无效的链接编号');
 };
 
 
@@ -72,7 +72,7 @@ function validate(link) {
 exports.create = function(link) {
 	var err = validate(link);
 	return err ?
-		Promise.reject( util.createError(err) ) :
+		util.createError(err) :
 		linkDAL.create( link.toDbRecord() ).then(clearCache);
 };
 
@@ -80,7 +80,7 @@ exports.create = function(link) {
 exports.update = function(link, linkid) {
 	var err = validator.isAutoId(linkid) ? validate(link) : '无效的链接编号';
 	return err ? 
-		Promise.reject( util.createError(err) ) :
+		util.createError(err) :
 		linkDAL.update( link.toDbRecord(), linkid ).then(clearCache);
 };
 
@@ -89,5 +89,5 @@ exports.update = function(link, linkid) {
 exports.delete = function(linkid) {
 	return validator.isAutoId(linkid) ?
 		linkDAL.delete(linkid).then(clearCache) :
-		Promise.reject( util.createError('无效的链接编号') );
+		util.createError('无效的链接编号');
 };

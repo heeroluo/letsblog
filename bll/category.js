@@ -80,7 +80,7 @@ function validate(category) {
 exports.create = function(category) {
 	var err = validate(category);
 	return err ? 
-		Promise.reject( util.createError(err) ) :
+		util.createError(err) :
 		categoryDAL.create( category.toDbRecord() ).then(clearCache);
 };
 
@@ -88,29 +88,25 @@ exports.create = function(category) {
 exports.update = function(category, categoryid) {
 	var err = validator.isAutoId(categoryid) ? validate(category) : '无效的分类编号';
 	return err ?
-		Promise.reject( util.createError(err) ):
+		util.createError(err) :
 		categoryDAL.update(category.toDbRecord(), categoryid).then(clearCache);
 };
 
 
 // 删除分类
 exports.delete = function(categoryid) {
-	if ( validator.isAutoId(categoryid) ) {
-		return read(categoryid).then(function(result) {
-			var err;
-			if (!result) {
-				err = '分类不存在';
-			} else if (result.totalarticles) {
-				err = '不能删除有文章的分类';
-			}
+	if ( !validator.isAutoId(categoryid) ) { return util.createError('无效的分类编号'); }
 
-			if (err) {
-				throw util.createError(err);
-			} else {
-				return categoryDAL.delete(categoryid).then(clearCache);
-			}
-		});
-	} else {
-		return Promise.reject( util.createError('无效的分类编号') );
-	}
+	return read(categoryid).then(function(result) {
+		var err;
+		if (!result) {
+			err = '分类不存在';
+		} else if (result.totalarticles) {
+			err = '不能删除有文章的分类';
+		}
+
+		return err ?
+			util.createError(err):
+			categoryDAL.delete(categoryid).then(clearCache);
+	});
 };

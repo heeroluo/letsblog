@@ -34,10 +34,8 @@ var list = exports.list = function(params, pageSize, page) {
 
 	return articleDAL.list(params, pageSize, page).then(function(result) {
 		result.data = result.data.map(function(article) {
-			article = articleModel.createEntity(article);
-			return article;
+			return articleModel.createEntity(article);
 		});
-
 		return result;
 	});
 };
@@ -110,7 +108,7 @@ function getSummary(content) {
 }
 
 
-// 行分隔符和段落分隔符
+// 行分隔符和段落分隔符（JSON序列化时，这两个字符不会被编码，容易导致异常，清空之）
 var re_separator = new RegExp('[' + String.fromCharCode(8232) + String.fromCharCode(8233) + ']', 'g');
 
 // 创建和更新数据前的验证
@@ -141,41 +139,37 @@ function validate(article, user) {
 	// 截取摘要
 	article.summary = getSummary(article.content);
 
-	if (err) {
-		return Promise.reject( util.createError(err) );
-	} else {
-		return categoryBLL.read(article.categoryid).then(function(category) {
+	return err ?
+		util.createError(err) :
+		categoryBLL.read(article.categoryid).then(function(category) {
 			if (!category) {
-				throw util.createError('分类不存在');
+				return util.createError('分类不存在');
 			}
 		});
-	}
 }
 
 
 // 创建文章
 exports.create = function(article, user) {
 	return validate(article, user).then(function() {
-		return articleDAL.create( article.toDbRecord() ).then(function(result) {
-			categoryBLL.clearCache();
-			clearCache();
-			return result;
-		});
+		return articleDAL.create( article.toDbRecord() );
+	}).then(function(result) {
+		categoryBLL.clearCache();
+		clearCache();
+		return result;
 	});
 };
 
 // 更新文章
 exports.update = function(article, articleid, user) {
-	if ( validator.isAutoId(articleid) ) {
-		return validate(article, user).then(function() {
-			return articleDAL.update(article.toDbRecord(), articleid).then(function() {
-				categoryBLL.clearCache();
-				clearCache();
-			});
-		});
-	} else {
-		return Promise.reject( util.createError('无效的文章编号') );
-	}
+	if ( !validator.isAutoId(articleid) ) { return util.createError('无效的文章编号'); }
+
+	return validate(article, user).then(function() {
+		return articleDAL.update(article.toDbRecord(), articleid);
+	}).then(function() {
+		categoryBLL.clearCache();
+		clearCache();
+	});
 };
 
 
@@ -186,17 +180,15 @@ exports.cleanContent = function(content) {
 
 // 读取单条文章数据
 exports.read = function(articleid) {
-	if ( validator.isAutoId(articleid) ) {
-		return articleDAL.read(articleid).then(function(result) {
-			if (result && result[0]) {
-				// 移除容易导致异常的字符
-				result[0].content = result[0].content.replace(re_separator, '');
-				return articleModel.createEntity(result[0]);
-			}
-		});
-	} else {
-		return Promise.reject( util.createError('无效的文章编号') );
-	}
+	if ( !validator.isAutoId(articleid) ) { return util.createError('无效的文章编号'); }
+
+	return articleDAL.read(articleid).then(function(result) {
+		if (result && result[0]) {
+			// 移除容易导致异常的字符
+			result[0].content = result[0].content.replace(re_separator, '');
+			return articleModel.createEntity(result[0]);
+		}
+	});
 };
 
 
@@ -210,7 +202,7 @@ exports.delete = function(articleids, userid) {
 	} 
 
 	return err ?
-		Promise.reject( util.createError(err) ) :
+		util.createError(err):
 		Promise.all([
 			// 删除文章的评论
 			commentBLL.deleteByArticleIds(articleids),
@@ -227,7 +219,7 @@ exports.delete = function(articleids, userid) {
 exports.addViews = function(articleid) {
 	return validator.isAutoId(articleid) ?
 		articleDAL.addViews(articleid) :
-		Promise.reject( util.createError('无效的文章编号') );
+		util.createError('无效的文章编号');
 };
 
 
