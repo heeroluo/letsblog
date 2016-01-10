@@ -1,3 +1,9 @@
+/*!
+ * LetsBlog
+ * Express setup
+ * Released under MIT license
+ */
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -15,21 +21,45 @@ if (config && config.express) {
 	}
 }
 
-var xtpl = require('./lib/xtpl');
+var xtpl = require('./lib/xtpl'), viewsDir = path.join(__dirname, 'views');
 !function() {
 	var XTemplate = require('xtemplate');
-	
+
 	var xtemplateCmds = require('./lib/xtemplate-command');
 	for (var c in xtemplateCmds) {
 		XTemplate.addCommand(c, xtemplateCmds[c]);
 	}
+
+	// 把某个模板输出为前端模板
+	XTemplate.addCommand('scriptTpl', function(scope, option, buffer) {
+		var tpl = this;
+
+		return buffer.async(function(newBuffer){
+			var tplPath = path.resolve(
+				path.dirname(tpl.name),
+				option.params[0]
+			);
+
+			xtpl.readFile(
+				tplPath,
+				buffer.tpl.root.config,
+				function(err, content) {
+					if (content != null) {
+						content = '<script type="text/template" data-key="' +
+							path.relative(viewsDir, tplPath).replace(/\\/g, '/') + '">' + content + '</script>';
+					}
+					newBuffer.write(content).end();
+				}
+			);
+		});
+	});
 
 	xtpl.config({ XTemplate: XTemplate });
 }();
 
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', viewsDir);
 app.engine('xtpl', xtpl.__express);
 app.set('view engine', 'xtpl');
 
@@ -41,9 +71,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // 静态文件及其过期时间
-app.use(express.static(path.join(__dirname, 'public'), {
-	maxAge: config.staticExpires * 60 * 1000
-}));
+app.use(
+	express.static(
+		path.join(__dirname, 'public'), {
+			maxAge: config.staticExpires * 60 * 1000
+		}
+	)
+);
 
 // iisnode默认不保留REMOTE_ADDR，如果要保留，需添加<iisnode promoteServerVars="REMOTE_ADDR" />
 if (config.iisnode) {
@@ -56,6 +90,7 @@ if (config.iisnode) {
 		next();
 	});
 }
+
 
 // 增加获取实体类工具函数
 app.use(function(req, res, next) {
