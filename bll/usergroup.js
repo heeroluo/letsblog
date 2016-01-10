@@ -93,7 +93,7 @@ exports.update = function(userGroup, groupid) {
 exports.delete = function(groupid) {
 	if ( !validator.isAutoId(groupid) ) { return util.createError('无效的用户组编号'); }
 
-	if (groupid <= 2) { return util.createError('不能删除系统用户组');
+	if (groupid <= 2) { return util.createError('不能删除系统用户组'); }
 
 	return read(groupid).then(function(result) {
 		var err;
