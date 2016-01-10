@@ -1,6 +1,6 @@
 /*!
- * NodeBlog
- * Entity model defination of options (2015-02-07T12:09:27+0800)
+ * LetsBlog
+ * Entity model defination of options
  * Released under MIT license
  */
 

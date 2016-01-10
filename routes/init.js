@@ -1,5 +1,7 @@
 /*!
- * 初始化路由
+ * LetsBlog
+ * Route initialize
+ * Released under MIT license
  */
 
 'use strict';

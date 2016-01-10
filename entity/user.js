@@ -1,6 +1,6 @@
 /*!
- * NodeBlog
- * Entity model defination of user (2015-02-09T15:48:30+0800)
+ * LetsBlog
+ * Entity model defination of user
  * Released under MIT license
  */
 

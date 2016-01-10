@@ -1,6 +1,6 @@
 /*!
- * NodeBlog
- * Entity model defination of article (2015-02-21T16:42:35+0800)
+ * LetsBlog
+ * Entity model defination of article
  * Released under MIT license
  */
 

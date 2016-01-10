@@ -1,6 +1,6 @@
 /*!
- * NodeBlog
- * Entity model defination of user group (2015-02-08T14:52:48+0800)
+ * LetsBlog
+ * Entity model defination of user group
  * Released under MIT license
  */
 

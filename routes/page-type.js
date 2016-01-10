@@ -1,6 +1,7 @@
 /*!
- * 页面类型预执行函数
- * 可以把一批页面的公共逻辑作为一种页面类型
+ * LetsBlog
+ * Pre-execute functions of different page types
+ * Released under MIT license
  */
 
 'use strict';

@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Entity model creator (2015-02-23T18:23:00+0800)
+ * Entity model creator
  * Released under MIT license
  */
 

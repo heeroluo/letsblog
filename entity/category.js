@@ -1,6 +1,6 @@
 /*!
- * NodeBlog
- * Entity model defination of category (2015-02-21T18:42:51+0800)
+ * LetsBlog
+ * Entity model defination of category
  * Released under MIT license
  */
 

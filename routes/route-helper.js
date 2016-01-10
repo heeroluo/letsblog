@@ -1,8 +1,10 @@
 /*!
- * 路由辅助器
- * 为了避免往res对象中挂载过多属性或方法，
- * 把这些逻辑全部封装到RouteHelper对象中，
- * 然后把RouteHelper对象挂载到res对象
+ * LetsBlog
+ * Route helper
+ *   In order to avoid mounting too many properties or methods to the res object,
+ *   move these properties and methods to route helper class.
+ *   And then only mount the route helper object to the res object.
+ * Released under MIT license
  */
 
 'use strict';
