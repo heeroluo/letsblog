@@ -31,6 +31,10 @@ module.exports = function(express, app) {
 	// 处理Promise实例
 	function handlePromise(callback) {
 		return function(req, res, next) {
+			if (res.headersSent) {
+				res.end();
+				return;
+			}
 			var result = callback.apply(this, arguments);
 			if (result instanceof Promise) {
 				// 注意这里不能写成 result.then(next, next)
@@ -45,9 +49,11 @@ module.exports = function(express, app) {
 	util.each(routes, function(subRoutes, mainPath) {
 		var router = express.Router();
 
-		// 当前路由主路径
-		mainPath = mainPath.replace(/__/g, '/');
-		if (mainPath[0] !== '/') { mainPath = '/' + mainPath; }
+		if (mainPath === '__') {
+			mainPath = '/';
+		} else {
+			mainPath = '/' + mainPath;
+		}
 
 		util.each(subRoutes, function(subRoute, subPath) {
 			if ( typeof subRoute === 'function' || Array.isArray(subRoute) ) {
@@ -69,14 +75,14 @@ module.exports = function(express, app) {
 			if (!subRoute.resType || subRoute.resType === 'html') {
 				resType = 'html';
 				// 默认模板路径为 pages/路由主路径/路径子路径
-				template = 'pages/' + (
-					subRoute.template || (mainPath + '/' + subRoute.path)
-				);
+				template = ( 'pages/' + (
+					subRoute.template ||
+					( mainPath + '/' + subRoute.path.replace(/\//g, '__') )
+				) ).replace(/\/{2,}/, '/');
 			} else {
 				resType = subRoute.resType;
 			}
 
-			subRoute.path = subRoute.path.replace(/__/g, '/');
 			if (subRoute.path[0] !== '/') { subRoute.path = '/' + subRoute.path; }
 
 			subRoute.callbacks.unshift(function(req, res, next) {

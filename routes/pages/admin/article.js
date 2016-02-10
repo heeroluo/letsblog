@@ -16,17 +16,16 @@ var Promise = require('bluebird'),
 
 // 基本权限验证
 function checkPermission(req, res, next) {
-	var err;
 	if (!req.currentUser.group.perm_article && !req.currentUser.group.perm_manage_article) {
-		err = util.createError('权限不足', 403);
+		return util.createError('权限不足', 403);
 	}
-	next(err);
+	next();
 }
 
 
 // 发表新文章界面
 exports.create = {
-	template: 'admin/article-form',
+	template: 'admin/article__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -51,7 +50,7 @@ exports.create = {
 };
 
 // 提交新文章
-exports.create__post = {
+exports['create/post'] = {
 	verb: 'post',
 	resType: 'json',
 	callbacks: pageType.admin(
@@ -73,7 +72,7 @@ exports.create__post = {
 // 修改文章界面
 exports.update = {
 	pathPattern: '/article/update/:articleid',
-	template: 'admin/article-form',
+	template: 'admin/article__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -108,7 +107,7 @@ exports.update = {
 };
 
 // 提交文章修改
-exports.update__post = {
+exports['update/post'] = {
 	pathPattern: '/article/update/:articleid/post',
 	verb: 'post',
 	resType: 'json',
@@ -183,7 +182,7 @@ exports.list = pageType.admin(
 
 
 // 批量删除文章
-exports.list__batch = {
+exports['list/batch'] = {
 	verb: 'post',
 	callbacks: pageType.admin(
 		pageType.prepend(
@@ -260,7 +259,7 @@ var upload = multer({
 	}
 }).single('file');
 
-exports.attachment__upload = {
+exports['attachment/upload'] = {
 	verb: 'post',
 	resType: 'json',
 	callbacks: pageType.admin(
@@ -274,50 +273,3 @@ exports.attachment__upload = {
 		)
 	)
 };
-
-
-// exports.multer_upload = addPermissionChecking(
-// 	multer({
-// 		dest: './public/upload/',
-// 		rename: function () {
-// 			var now = new Date();
-// 			// 重命名为 年+月+日+时+分+秒+5位随机数
-// 			return now.getFullYear() +
-// 				( '0' + (now.getMonth() + 1) ).slice(-2) +
-// 				( '0' + now.getDate() ).slice(-2) +
-// 				( '0' + now.getHours() ).slice(-2) +
-// 				( '0' + now.getMinutes() ).slice(-2) +
-// 				( '0' + now.getSeconds() ).slice(-2) +
-// 				parseInt(10000 + Math.random() * 90000);
-// 		}
-// 	})
-// );
-
-// exports.upload_complete = addPermissionChecking(function(req, res, next) {
-// 	var file = req.files.file, fs = require('fs');
-// 	if (file && file.size) {
-// 		if (file.size > 8 * 1024 * 1024) {
-// 			fs.unlink(file.path);	// 从临时路径中移除
-// 			next(util.createError('文件不能大于8MB'));
-// 		} else {
-// 			var	path = require('path');
-// 			// 按年月归档
-// 			util.moveToUploadDir(
-// 				file.path,
-// 				path.join('public', 'upload', 'article'),
-// 				function(err, result) {
-// 					if (err) {
-// 						fs.unlink(file.path);	// 从临时路径中移除
-// 					} else {
-// 						result = result.split(path.sep);
-// 						result[0] = '';
-// 						res.routeHandler.setData('path', result.join('/'));
-// 					}
-// 					next(err);
-// 				}
-// 			);
-// 		}
-// 	} else {
-// 		next(util.createError('请指定要上传的文件'));
-// 	}
-// });

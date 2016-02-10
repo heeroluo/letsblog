@@ -15,7 +15,7 @@ var Promise = require('bluebird'),
 
 // 文章列表
 exports.list = {
-	pathPattern: /\/list\/(\d+)(?:\/[a-z1-9\-]+)?$/,
+	pathPattern: /^\/list\/(\d+)(?:\/[a-zA-Z1-9\-]+)?$/,
 	callbacks: pageType.normal(function(req, res, next) {
 		// 首页文章列表数据和非首页文章列表数据从不同的接口获取
 		// 获取后都需要经过此函数处理
@@ -72,7 +72,7 @@ exports.list = {
 
 // 文章详情
 exports.detail = {
-	pathPattern: /\/detail\/(\d+)(?:\/[a-z1-9\-]+)?$/,
+	pathPattern: /^\/detail\/(\d+)(?:\/[a-zA-Z1-9\-]+)?$/,
 	callbacks: pageType.normal(function(req, res, next) {
 		return articleBLL.read( parseInt(req.params[0]) ).then(function(article) {
 			if (article) {

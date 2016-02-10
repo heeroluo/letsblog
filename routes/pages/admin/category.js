@@ -16,17 +16,16 @@ var Promise = require('bluebird'),
 
 // 创建权限验证函数
 function checkPermission(req, res, next) {
-	var err;
 	if (req.currentUser.group.perm_manage_article < 2) {
-		err = util.createError('权限不足', 403);
+		return util.createError('权限不足', 403);
 	}
-	next(err);
+	next();
 }
 
 
 // 创建分类界面
 exports.create = {
-	template: 'admin/category-form',
+	template: 'admin/category__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -44,7 +43,7 @@ exports.create = {
 };
 
 // 提交新分类
-exports.create__post = {
+exports['create/post'] = {
 	verb: 'post',
 	callbacks: pageType.admin(
 		pageType.prepend(
@@ -65,7 +64,7 @@ exports.create__post = {
 // 修改分类界面
 exports.update = {
 	pathPattern: '/category/update/:categoryid',
-	template: 'admin/category-form',
+	template: 'admin/category__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -88,7 +87,7 @@ exports.update = {
 };
 
 // 提交分类修改
-exports.update__post = {
+exports['update/post'] = {
 	pathPattern: '/category/update/:categoryid/post',
 	verb: 'post',
 	callbacks: pageType.admin(
@@ -126,7 +125,7 @@ exports.list = pageType.admin(
 
 
 // 删除分类
-exports.delete__post = {
+exports['delete/post'] = {
 	pathPattern: '/category/delete/:categoryid/post',
 	verb: 'post',
 	resType: 'json',

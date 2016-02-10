@@ -14,11 +14,10 @@ var util = require('../../../lib/util'),
 
 // 权限验证
 function checkPermission(req, res, next) {
-	var err;
 	if (req.currentUser.group.perm_manage_user < 2) {
-		err = util.createError('权限不足', 403);
+		return util.createError('权限不足', 403);
 	}
-	next(err);
+	next();
 }
 
 
@@ -37,7 +36,7 @@ exports.list = pageType.admin(
 
 // 创建用户组界面
 exports.create = {
-	template: 'admin/usergroup-form',
+	template: 'admin/usergroup__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -50,7 +49,7 @@ exports.create = {
 };
 
 // 提交新用户组
-exports.create__post = {
+exports['create/post'] = {
 	verb: 'post',
 	callbacks: pageType.admin(
 		pageType.prepend(
@@ -71,7 +70,7 @@ exports.create__post = {
 // 修改用户组界面
 exports.update = {
 	pathPattern: '/usergroup/update/:groupid',
-	template: 'admin/usergroup-form',
+	template: 'admin/usergroup__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -89,7 +88,7 @@ exports.update = {
 };
 
 // 提交用户组修改
-exports.update__post = {
+exports['update/post'] = {
 	pathPattern: '/usergroup/update/:groupid/post',
 	verb: 'post',
 	callbacks: pageType.admin(
@@ -112,7 +111,7 @@ exports.update__post = {
 
 
 // 删除用户组
-exports.delete__post = {
+exports['delete/post'] = {
 	pathPattern: '/usergroup/delete/:groupid/post',
 	verb: 'post',
 	resType: 'json',

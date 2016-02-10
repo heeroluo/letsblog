@@ -9,6 +9,6 @@
 var pageType = require('../../page-type');
 
 
-exports.__ = pageType.admin(function(req, res, next) {
+exports['/'] = pageType.admin(function(req, res, next) {
 	next();
 });

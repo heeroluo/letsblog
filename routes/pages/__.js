@@ -9,7 +9,7 @@
 var util = require('../../lib/util');
 
 
-exports.__ = util.extend(
+exports['/'] = util.extend(
 	{ template: 'article/list' },
 	require('./article').list,
 	{ pathPattern: '/' }

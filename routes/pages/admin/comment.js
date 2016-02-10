@@ -14,11 +14,10 @@ var Promise = require('bluebird'),
 
 // 基本权限检查
 function checkPermission(req, res, next) {
-	var err;
 	if (!req.currentUser.group.perm_comment) {
-		err = util.createError('权限不足', 403);
+		return util.createError('权限不足', 403);
 	}
-	next(err);
+	next();
 }
 
 
@@ -44,7 +43,7 @@ exports.list = pageType.admin(
 
 
 // 批量操作（删除或审核）
-exports.list__batch = {
+exports['list/batch'] = {
 	verb: 'post',
 	callbacks: pageType.admin(
 		pageType.prepend(

@@ -17,18 +17,17 @@ var Promise = require('bluebird'),
 // 创建权限验证函数
 function createPermissionChecking(limit) {
 	return function(req, res, next) {
-		var err;
 		if (req.currentUser.group.perm_manage_user < limit) {
-			err = util.createError('权限不足', 403);
+			return util.createError('权限不足', 403);
 		}
-		next(err);
+		next();
 	};
 }
 
 
 // 创建用户界面
 exports.create = {
-	template: 'admin/user-form',
+	template: 'admin/user__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			createPermissionChecking(1),
@@ -50,7 +49,7 @@ exports.create = {
 };
 
 // 提交新用户
-exports.create__post = {
+exports['create/post'] = {
 	verb: 'post',
 	callbacks: pageType.admin(
 		pageType.prepend(
@@ -114,8 +113,8 @@ function submitUpdateForm(userid, isMyProfile, req, res) {
 }
 
 // 修改个人资料界面
-exports.i__update = {
-	template: 'admin/user-form',
+exports['i/update'] = {
+	template: 'admin/user__form',
 	callbacks: pageType.admin(
 		function(req, res, next) {
 			res.routeHelper.viewData('isMyProfile', true);
@@ -125,7 +124,7 @@ exports.i__update = {
 };
 
 // 提交个人资料修改
-exports.i__update__post = {
+exports['i/update/post'] = {
 	verb: 'post',
 	callbacks: pageType.admin(
 		function(req, res, next) {
@@ -137,7 +136,7 @@ exports.i__update__post = {
 // 修改用户资料界面
 exports.update = {
 	pathPattern: '/user/update/:userid',
-	template: 'admin/user-form',
+	template: 'admin/user__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			createPermissionChecking(2),
@@ -149,7 +148,7 @@ exports.update = {
 };
 
 // 提交用户资料修改
-exports.update__post = {
+exports['update/post'] = {
 	pathPattern: '/user/update/:userid/post',
 	verb: 'post',
 	callbacks: pageType.admin(
@@ -164,12 +163,12 @@ exports.update__post = {
 
 
 // 修改个人密码
-exports.i__update__password = pageType.admin(function(req, res, next) {
+exports['i/update/password'] = pageType.admin(function(req, res, next) {
 	next();
 });
 
 // 提交个人密码修改
-exports.i__update__password__post = {
+exports['i/update/password/post'] = {
 	verb: 'post',
 	callbacks: pageType.admin(function(req, res, next) {
 		var newPassword = req.body.newpassword;
@@ -191,7 +190,7 @@ exports.i__update__password__post = {
 };
 
 // 修改用户密码
-exports.update__password = {
+exports['update/password'] = {
 	pathPattern: '/user/update/password/:username',
 	callbacks: pageType.admin(
 		pageType.prepend(
@@ -205,7 +204,7 @@ exports.update__password = {
 };
 
 // 提交用户密码修改
-exports.update__password__post = {
+exports['update/password/post'] = {
 	pathPattern: '/user/update/password/:username/post',
 	verb: 'post',
 	callbacks: pageType.admin(

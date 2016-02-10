@@ -13,17 +13,16 @@ var util = require('../../../lib/util'),
 
 // 权限验证
 function checkPermission(req, res, next) {
-	var err;
 	if (!req.currentUser.group.perm_manage_option) {
-		err = util.createError('权限不足', 403);
+		return util.createError('权限不足', 403);
 	}
-	next(err);
+	next();
 }
 
 
 // 修改网站设置操作界面
 exports.update = {
-	template: 'admin/options-form',
+	template: 'admin/options__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -37,7 +36,7 @@ exports.update = {
 };
 
 // 提交网站设置修改
-exports.update__post = {
+exports['update/post'] = {
 	verb: 'post',
 	callbacks: pageType.admin(
 		pageType.prepend(

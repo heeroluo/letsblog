@@ -12,6 +12,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var app = express();
+app.set('env', process.env.NODE_ENV || 'development');
 
 // 配置express
 var config = require('./config');
@@ -45,7 +46,7 @@ var xtpl = require('./lib/xtpl'), viewsDir = path.join(__dirname, 'views');
 				buffer.tpl.root.config,
 				function(err, content) {
 					if (content != null) {
-						content = '<script type="text/template" data-key="' +
+						content = '<script type="text/xtemplate" data-key="' +
 							path.relative(viewsDir, tplPath).replace(/\\/g, '/') + '">' + content + '</script>';
 					}
 					newBuffer.write(content).end();

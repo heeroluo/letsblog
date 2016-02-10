@@ -18,7 +18,7 @@
 {{#if (categoryList !== undefined && categoryList.length > 0)}}
 	{{#each (categoryList)}}
 		<tr>
-			<td>{{this.categoryname}}</td>
+			<td><a href="/article/list/{{this.categoryid}}/{{this.categoryname_en}}" target="_blank">{{this.categoryname}}</a></td>
 			<td style="text-align: center;">{{this.weight}}</td>
 			<td style="text-align: center;">{{this.totalarticles}}</td>
 			<td style="word-spacing: 1em; text-align: center;">

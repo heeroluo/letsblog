@@ -106,7 +106,6 @@ exports.HTMLRouteHelper = util.createClass(function(template) {
 	this.resetTitle();
 	this.resetKeywords();
 	this._type = 'html';
-	this._template = template;
 }, {
 	/**
 	 * 重置标题

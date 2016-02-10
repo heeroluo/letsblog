@@ -12,10 +12,10 @@ var requireDir = require('require-dir'),
 
 
 util.each(adminRoutes, function(mainRoutes, mainPath) {
-	util.each(mainRoutes, function(subRoutes, subPath) {
+	util.each(mainRoutes, function(route, subPath) {
 		var myPath = mainPath;
-		if (subPath !== '__') { myPath += '__' + subPath; }
+		if (subPath !== '/') { myPath += '/' + subPath; }
 
-		exports[myPath] = subRoutes;
+		exports[myPath] = route;
 	});
 });

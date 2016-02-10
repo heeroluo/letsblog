@@ -22,7 +22,7 @@ exports.login = pageType.basic(function(req, res, next) {
 });
 
 // 登录页提交
-exports.login__post = {
+exports['login/post'] = {
 	verb: 'post',
 	resType: 'json',
 	callbacks: function(req, res, next) {
