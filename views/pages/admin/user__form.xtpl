@@ -1,4 +1,4 @@
-{{extend ('../../_layout/adminpage')}}
+{{ extend ('../../_layouts/admin') }}
 
 {{#block ('mainTitle')}}
 {{#if (isMyProfile === true)}}
@@ -10,7 +10,7 @@
 {{/if}}
 {{/block}}
 
-{{#block ('body')}}
+{{#block ('mainBody')}}
 <form action="./post" method="post" class="form-layout">
 	<div class="form-layout__row form-layout__row--2cols clearfix">
 		<div class="form-layout__col">

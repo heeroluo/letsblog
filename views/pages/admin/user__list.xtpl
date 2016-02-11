@@ -1,10 +1,10 @@
-{{extend ('../../_layout/adminpage')}}
+{{ extend ('../../_layouts/admin') }}
 
 {{#block ('mainTitle')}}
 用户管理
 {{/block}}
 
-{{#block ('body')}}
+{{#block ('mainBody')}}
 <form action="?" method="get" class="form-layout" style="margin-bottom: 2.5em;">
 	<section class="form-layout__section">
 		<h3 class="form-layout__section__title">用户搜索</h3>
@@ -48,7 +48,7 @@
 {{#if (userList.totalPages > 1)}}
 			<tr>
 				<td colspan="8">{{ parse (
-					'../../_partial/paginator',
+					'../../_partials/paginator',
 					currentPage = userList.page,
 					totalPages = userList.totalPages,
 					href = '?' + toQueryString(params, true)

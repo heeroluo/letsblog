@@ -1,10 +1,10 @@
-{{extend ('../../_layout/adminpage')}}
+{{ extend ('../../_layouts/admin') }}
 
 {{#block ('mainTitle')}}
 {{#if (isPersonalPage === true)}}我的文章{{else}}文章管理{{/if}}
 {{/block}}
 
-{{#block ('body')}}
+{{#block ('mainBody')}}
 {{#if (isPersonalPage !== true)}}
 <form action="?" method="get" class="form-layout" style="margin-bottom: 2.5em;">
 	<section class="form-layout__section">
@@ -76,7 +76,7 @@
 {{#if (articleList.totalPages > 1)}}
 			<tr>
 				<td colspan="8">{{ parse (
-					'../../_partial/paginator',
+					'../../_partials/paginator',
 					currentPage = articleList.page,
 					totalPages = articleList.totalPages,
 					href = '?' + toQueryString(params, true)

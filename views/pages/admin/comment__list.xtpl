@@ -1,10 +1,10 @@
-{{extend ('../../_layout/adminpage')}}
+{{ extend ('../../_layouts/admin') }}
 
 {{#block ('mainTitle')}}
 {{#if (params.state === 0)}}审核评论{{else}}评论管理{{/if}}
 {{/block}}
 
-{{#block ('body')}}
+{{#block ('mainBody')}}
 <form id="comment-list-form" action="./batch" method="post" class="form-layout">
 	<table id="article-list-table" class="datatable">
 		<thead>
@@ -21,7 +21,7 @@
 {{#if (commentList.totalPages > 1)}}
 			<tr>
 				<td colspan="6">{{ parse (
-					'../../_partial/paginator',
+					'../../_partials/paginator',
 					currentPage = commentList.page,
 					totalPages = commentList.totalPages,
 					href = '?' + toQueryString(params, true)

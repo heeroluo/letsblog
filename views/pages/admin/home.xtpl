@@ -1,10 +1,10 @@
-{{extend ('../../_layout/adminpage')}}
+{{ extend ('../../_layouts/admin') }}
 
 {{#block ('mainTitle')}}
 后台首页
 {{/block}}
 
-{{#block ('body')}}
+{{#block ('mainBody')}}
 <p>{{currentUser.nickname}}，欢迎回来。</p>
 <ul>
 	<li>文章数：{{currentUser.totalarticles}}</li>

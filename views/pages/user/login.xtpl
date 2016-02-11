@@ -1,8 +1,8 @@
-{{extend ('../../_layout/simplepage')}}
+{{ extend('../../_layouts/basic') }}
 
-{{#block ('title')}}用户登录{{/block}}
+{{ set(fullTitle = '用户登录') }}
 
-{{#block ('style')}}
+{{#block ('inHead')}}
 <link href="/style/login.css" rel="stylesheet" type="text/css" />
 {{/block}}
 

@@ -1,4 +1,4 @@
-{{extend ('../../_layout/frontpage')}}
+{{extend ('../../_layouts/normal')}}
 
 {{#block ('style')}}
 <link href="/style/article-detail.css?20150307" media="all" rel="stylesheet" type="text/css" />

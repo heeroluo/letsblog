@@ -1,10 +1,10 @@
-{{extend ('../../_layout/adminpage')}}
+{{ extend ('../../_layouts/admin') }}
 
 {{#block ('mainTitle')}}
 {{#if (userGroup.groupid > 0)}}编辑{{else}}添加{{/if}}用户组
 {{/block}}
 
-{{#block ('body')}}
+{{#block ('mainBody')}}
 <form action="./post" method="post" class="form-layout">
 	<div class="form-layout__row">
 		<div class="form-item">

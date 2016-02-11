@@ -1,10 +1,10 @@
-{{extend ('../../_layout/adminpage')}}
+{{ extend ('../../_layouts/admin') }}
 
 {{#block ('mainTitle')}}
 分类管理
 {{/block}}
 
-{{#block ('body')}}
+{{#block ('mainBody')}}
 <table class="datatable">
 	<thead>
 		<tr>

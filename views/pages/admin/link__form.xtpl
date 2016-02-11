@@ -1,10 +1,10 @@
-{{extend ('../../_layout/adminpage')}}
+{{ extend ('../../_layouts/admin') }}
 
 {{#block ('mainTitle')}}
 {{#if (link.linkid > 0)}}编辑{{else}}添加{{/if}}链接
 {{/block}}
 
-{{#block ('body')}}
+{{#block ('mainBody')}}
 <form action="./post" method="post" class="form-layout">
 	<div class="form-layout__row">
 		<div class="form-item">

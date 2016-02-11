@@ -1,10 +1,10 @@
-{{extend ('../../_layout/adminpage')}}
+{{ extend ('../../_layouts/admin') }}
 
 {{#block ('mainTitle')}}
 {{#if (category.categoryid > 0)}}编辑{{else}}添加{{/if}}分类
 {{/block}}
 
-{{#block ('body')}}
+{{#block ('mainBody')}}
 <form action="./post" method="post" class="form-layout">
 	<div class="form-layout__row form-layout__row--2cols clearfix">
 		<div class="form-layout__col">

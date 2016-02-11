@@ -1,10 +1,10 @@
-{{extend ('../../_layout/adminpage')}}
+{{ extend ('../../_layouts/admin') }}
 
 {{#block ('mainTitle')}}
 {{#if (article.articleid > 0)}}编辑{{else}}写{{/if}}文章
 {{/block}}
 
-{{#block ('body')}}
+{{#block ('mainBody')}}
 <form id="article-form" action="./post" method="post" class="form-layout">
 	<div class="form-layout__row">
 		<div class="form-item">
