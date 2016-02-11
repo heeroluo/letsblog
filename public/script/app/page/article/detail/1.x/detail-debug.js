@@ -1,14 +1,13 @@
 /*!
  * LetsBlog
- * Article detail page - v1.1 (2016-02-11T11:23:01+0800)
+ * Article detail page - v1.1 (2016-02-11T16:24:45+0800)
  * Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
 
 var $ = require('dom/1.1.x/'),
-	header = require('/common/header/1.0.x/'),
-	share = require('/common/share/1.0.x/'),
-	Comment = require('/common/comment/1.0.x/');
+	share = require('/common/share@1.0.x'),
+	Comment = require('/common/comment@1.0.x');
 
 
 $('.share-btn').click(function(e) {

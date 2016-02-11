@@ -1,13 +1,13 @@
 /*!
  * LetsBlog
- * SNS share - v1.0.1 (2016-02-11T15:29:34+0800)
+ * SNS share - v1.0.1 (2016-02-11T16:25:19+0800)
  * Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
 
 var qs = require('querystring/1.0.x/'),
 	$ = require('dom/1.1.x/'),
-	QRCode = require('/common/qrcode/1.0.x/');
+	QRCode = require('/common/qrcode@1.0.x');
 
 
 var shareTypes = {

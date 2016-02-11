@@ -69,6 +69,22 @@
 <script>
 hljs.configure({ tabReplace: '    ' });
 hljs.initHighlightingOnLoad();
-require('/page/article/list@1.x');
+
+require([
+	'dom/1.1.x/',
+	'/common/share@1.0.x'
+], function($, share) {
+	$('#article-list .article-list__item').forEach(function(item) {
+		var titleLink = $('.article-list__item__header__title a', item);
+
+		$('.share-ico', item).click(function(e) {
+			e.preventDefault();
+			share.to(this.getAttribute('data-sharetype'), {
+				title: titleLink.text(),
+				url: titleLink.prop('href')
+			});
+		});
+	});
+});
 </script>
 {{/block}}

@@ -53,6 +53,7 @@ html.style.overflow = body.style.overflow= 'hidden';
 		</div>
 	</div>
 </header>
+<script>require('/common/header@1.0.x');</script>
 <div class="container clearfix">
 	<div class="boundary container__boundary clearfix">
 		{{{block ('container')}}}
