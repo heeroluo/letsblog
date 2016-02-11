@@ -11,7 +11,7 @@ body {
 h1, h2, h3, h4, h5, h6, p, ul, ol, li, dl, dt, dd { margin: 0; padding: 0; }
 h1, h2, h3, h4, h5, h6 { font-weight: normal; font-size: inherit; }
 ul, ol { list-style-type: none; }
-img { border: none; vertical-align: top; }
+img { border: none; vertical-align: middle; }
 a {
 	text-decoration: none;
 	color: #08c;
@@ -21,6 +21,8 @@ a:hover {
 	text-decoration: underline;
 	color: #f16529 !important;
 }
+input { -webkit-appearance: none; border-radius: 0; }
+input:focus { outline: none; }
 
 
 /* 字体图标 */
@@ -55,6 +57,22 @@ a:hover {
 	height: 0;
 	visibility: hidden;
 	content: '.';
+}
+
+
+/* 遮罩层 */
+.overlayer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10000;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.7);
+	-webkit-animation-name: fadeIn;
+	animation-name: fadeIn;
+	-webkit-animation-duration: 0.4s;
+	animation-duration: 0.4s;
 }
 
 
@@ -206,14 +224,14 @@ textarea.textbox { line-height: 1.5; resize: none; }
 
 /* 分页条 */
 .paginator {
+	position: relative;
 	width: 100%;
 	margin-top: 2.5em;
-	position: relative;
 	font-family: Tahoma;
 	text-align: center;
 }
 .paginator__item { margin: 0 0.5em; display: inline-block; }
-.paginator__item__text {
+.paginator__item__inner {
 	width: 2.2em;
 	height: 2.2em;
 	line-height: 2.2em;
@@ -222,26 +240,27 @@ textarea.textbox { line-height: 1.5; resize: none; }
 	display: block;
 	color: #999;
 }
-a.paginator__item__text:hover {
+a.paginator__item__inner:hover {
 	border-color: #999;
 	color: #666 !important;
 	text-decoration: none;
 }
-.paginator__item--current .paginator__item__text {
+.paginator__item--current .paginator__item__inner {
 	background: #80bd01;
 	border-color: #80bd01;
 	color: #fff;
 }
-.paginator__item--prev, .paginator__item--next {
+.paginator__item-prev, .paginator__item-next {
 	position: absolute;
 	top: 0;
 	margin: 0;
 }
-.paginator__item--prev { left: 0; }
-.paginator__item--next { right: 0; }
-.paginator__item--prev--disabled,
-.paginator__item--next--disabled { display: none; }
-.paginator__item__text__icon {
+.paginator__item-prev { left: 0; }
+.paginator__item-next { right: 0; }
+.paginator__item--disabled { display: none; }
+.paginator__item-ellipsis .paginator__item__inner,
+.paginator__item-prev .paginator__item__inner,
+.paginator__item-next .paginator__item__inner {
 	font-family: 'iconfont';
 	speak: none;
 	font-style: normal;
@@ -251,11 +270,11 @@ a.paginator__item__text:hover {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
-.paginator__item--ellipsis { margin-left: 0; margin-right: 0; }
-.paginator__item--ellipsis .paginator__item__text { border: none; }
-.paginator__item--ellipsis .paginator__item__text__icon:before { content: '\e606'; }
-.paginator__item--prev .paginator__item__text__icon:before { content: '\e618'; }
-.paginator__item--next .paginator__item__text__icon:before { content: '\e617'; }
+.paginator__item-ellipsis { margin-left: 0; margin-right: 0; }
+.paginator__item-ellipsis .paginator__item__inner { border: none; }
+.paginator__item-ellipsis .paginator__item__inner:before { content: '\e606'; }
+.paginator__item-prev .paginator__item__inner:before { content: '\e618'; }
+.paginator__item-next .paginator__item__inner:before { content: '\e617'; }
 
 
 /* 限定左右空白 */

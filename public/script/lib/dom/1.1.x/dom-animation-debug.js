@@ -1,6 +1,6 @@
 /*!
  * JRaiser 2 Javascript Library
- * dom-animation - v1.1.0 (2015-01-30T14:06:57+0800)
+ * dom-animation - v1.1.1 (2015-04-27T15:37:10+0800)
  * http://jraiser.org/ | Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
@@ -13,8 +13,7 @@ define(function(require, exports, module) { 'use strict';
  */
 
 
-var base = require('base/1.0.x/'),
-	animation = require('animation/1.0.x/'),
+var animation = require('animation/1.0.x/'),
 	domBase = require('./dom-base'),
 	domData = require('./dom-data'),
 	domStyle = require('./dom-style'),
@@ -75,9 +74,11 @@ function getRelatedStyle(node, refStyle) {
 function fixEndStyle(endStyle, startStyle) {
 	var name, style = { };
 	for (name in endStyle) {
-		style[name] = domStyle.rRelNumber.test(endStyle[name]) ?
-			(parseFloat(startStyle[name], 10) || 0) + Number(RegExp.$1 + RegExp.$2) :
-			parseStyleValue(name, endStyle[name]);
+		if ( endStyle.hasOwnProperty(name) ) {
+			style[name] = domStyle.rRelNumber.test(endStyle[name]) ?
+				(parseFloat(startStyle[name], 10) || 0) + Number(RegExp.$1 + RegExp.$2) :
+				parseStyleValue(name, endStyle[name]);
+		}
 	}
 
 	return style;
@@ -160,15 +161,17 @@ return {
 		 * @for NodeList
 		 * @param {Object} endStyle 最终样式
 		 * @param {Object} [options] 其他参数
-		 *   @param {Number} [options.duration=400] 动画时长
-		 *   @param {Function} [options.easing='linear'] 缓动函数
+		 *   @param {Number} [options.duration=400] 动画时长（毫秒）
+		 *   @param {String|Function} [options.easing='linear'] 缓动函数
 		 *   @param {Function(value,progress,remaining)} [options.onprogress] 动画每一帧执行后的回调函数
 		 *   @param {Function} [options.oncomplete] 动画执行完成后的回调函数
 		 * @return {NodeList} 当前节点集合
 		 */
 		animate: function(endStyle, options) {
 			for (var name in endStyle) {
-				endStyle[name] = parseStyleValue(name, endStyle[name]);
+				if ( endStyle.hasOwnProperty(name) ) {
+					endStyle[name] = parseStyleValue(name, endStyle[name]);	
+				}
 			}
 
 			this.forEach(function(node) { start(node, endStyle, options); });

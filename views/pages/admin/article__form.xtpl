@@ -83,6 +83,6 @@ CKEDITOR.on('instanceReady', function() {
 	this.instances.content.setData({{{jsonEncode(article.content)}}});
 });
 {{/if}}
-require('/adminpage/article-form/1.x/');
+require('/adminpage/article__form@1.x');
 </script>
 {{/block}}

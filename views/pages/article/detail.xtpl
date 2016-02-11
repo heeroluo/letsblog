@@ -105,6 +105,6 @@ hljs.configure({
 });
 hljs.initHighlightingOnLoad();
 </script>
-<script>require('/page/article-detail/1.x/');</script>
+<script>require('/page/article/detail@1.x');</script>
 <script src="/article/view/{{article.articleid}}"></script>
 {{/block}}

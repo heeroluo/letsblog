@@ -1,6 +1,6 @@
 /*!
  * JRaiser 2 Javascript Library
- * animation - v1.0.0 (2015-01-30T11:36:56+0800)
+ * animation - v1.0.1 (2015-08-04T17:44:55+0800)
  * http://jraiser.org/ | Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
@@ -8,11 +8,11 @@ define(function(require, exports, module) { 'use strict';
 /**
  * 本模块提供基于缓动函数实现动画的相关接口
  * @module animation/1.0.x/
- * @catgory Infrastructure
+ * @category Infrastructure
  */
 
 
-var base = require('base/1.0.x/');
+var base = require('base/1.1.x/');
 
 
 var easings = {
@@ -237,26 +237,37 @@ function exec(animation, percentage, key) {
 	return nextValue;
 }
 
+// 运行动画
+function runAnimation(animation, remaining) {
+	var percentage = 1 - (remaining / animation.duration || 0),
+		stepValue = exec(animation, percentage);
+
+	if (animation.onprogress) {
+		animation.onprogress.call(window, stepValue, percentage, remaining);
+	}
+
+	if (percentage >= 1) {
+		if (animation.oncomplete) {
+			animation.oncomplete.call(window);
+		}
+	}
+
+	return percentage;
+}
+
 // 运行动画队列
-function run() {
+function runAnimationQueue() {
 	var i = 0, animation, remaining, percentage, stepValue;
 
 	while (animation = queue[i]) {
-		remaining = Math.max(0, animation.startTime + animation.duration - new Date);
-		percentage = 1 - (remaining / animation.duration || 0);
-		stepValue = exec(animation, percentage);
-
-		if (animation.onprogress) {
-			animation.onprogress.call(window, stepValue, percentage, remaining);
-		}
+		percentage = runAnimation(
+			animation,
+			Math.max(0, animation.startTime + animation.duration - new Date)
+		);
 
 		if (percentage >= 1) {
 			// 移除已完成动画
 			queue.splice(i, 1);
-
-			if (animation.oncomplete) {
-				animation.oncomplete.call(window, animation.id);
-			}
 		} else {
 			i++;
 		}
@@ -275,10 +286,10 @@ return {
 	 *   @param {Number|Array} options.endValue 结束值
 	 *   @param {Number} [options.duration=400] 持续时间
 	 *   @param {Function} [options.easing='linear'] 缓动函数
-	 *   @param {Function(value,key)} options.step 接收动画过程中每个值的函数
+	 *   @param {Function(value,key)} options.step 对动画过程中每个值进行处理的函数
 	 *   @param {Function(value,progress,remaining)} [options.onprogress] 动画每一帧执行后的回调函数
 	 *   @param {Function(taskId)} [options.oncomplete] 动画执行完成后的回调函数
-	 * @return {Number|Array} 动画任务id
+	 * @return {Number} 动画任务id
 	 */
 	add: function(options) {
 		var easing = options.easing || 'linear';
@@ -293,18 +304,17 @@ return {
 		var taskId = ++autoId;
 
 		queue.push(
-			base.mix({
+			base.customExtend({
 				easing: easing,
 				id: taskId,
 				duration: options.duration || 400,
 				startTime: +new Date
 			}, options, {
-				overwrite: false,
-				ignoreNull: true
+				overwrite: false
 			})
 		);
 
-		if (!timerId) { timerId = setInterval(run, 13); }
+		if (!timerId) { timerId = setInterval(runAnimationQueue, 13); }
 
 		return taskId;
 	},
@@ -318,8 +328,7 @@ return {
 	remove: function(taskId, jumpToEnd) {
 		var i = indexOfTask(taskId);
 		if (i !== -1) {
-			var animation = queue.splice(i, 1)[0];
-			if (jumpToEnd) { exec(animation, 1); }
+			if (jumpToEnd) { runAnimation(queue.splice(i)[0], 0); }
 		}
 
 		checkQueueEmpty();

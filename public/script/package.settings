@@ -1,31 +1,24 @@
 {
 	"app_path": "./app",
 	"lib_path": "./lib",
+	"include_subs": true,
 	"list": [
-		{ "target": "^base/.*/(index(.js)?)?$" },
-		{ "target": "^dom/.*/(index(.js)?)?$" },
+		{ "target": "^dom/.*/$" },
 		{
-			"target": "^ajax/.*/(index(.js)?)?$",
+			"target": "^dom/.*/dom-",
+			"excepts": ["."]
+		},
+		{
+			"target": "^ajax/.*/$",
 			"excepts": ["^base/.*"]
 		},
 		{
-			"target": "^widget/.*/(index(.js)?)?$",
+			"target": "^widget/.*/$",
+			"includes": ["^event-driven/"],
 			"excepts": ["^base/.*", "^dom/.*"]
-		},
-		{
-			"target": "^slideshow/.*/(index(.js)?)?$",
-			"excepts": ["^base/.*", "^dom/.*", "^widget/.*"]
-		},
-		{
-			"target": "^validator/.*/(index(.js)?)?$",
-			"excepts": ["^base/.*", "^dom/.*", "^ajax/.*", "^widget/.*"]
-		},
-		{
-			"target": "^/page/.*/(index(.js)?)?$",
-			"excepts": ["^(?!/)"]
 		}
 	],
-	"ignored_paths": ["_examples_"],
+	"ignored_paths": ["_examples_", "bowl"],
 	"uglify_options": {
 		"comments": "^\\!"
 	}

@@ -1,17 +1,17 @@
 /*!
  * JRaiser 2 Javascript Library
- * dom - v1.1.0 (2014-12-19T15:34:26+0800)
+ * dom - v1.1.1 (2015-10-10T17:47:19+0800)
  * http://jraiser.org/ | Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
 
 /**
  * 本模块提供选择器查询接口以及包含大量DOM操作接口的节点集合类型
- * @module dom/1.0.x/
+ * @module dom/1.1.x/
  * @category Infrastructure
  * @includeFor {NodeList} ./dom-attr-debug.js,
  *   ./dom-data-debug.js,
- *   ./dom-traversal-debug.js
+ *   ./dom-traversal-debug.js,
  *   ./dom-insertion-debug.js,
  *   ./dom-style-debug.js,
  *   ./dom-offset-debug.js,
@@ -20,7 +20,7 @@ define(function(require, exports, module) { 'use strict';
  */
 
 
-var base = require('base/1.0.x/'),
+var base = require('base/1.1.x/'),
 	Sizzle = require('./sizzle'),
 	domBase = require('./dom-base'),
 	domAttr = require('./dom-attr'),
@@ -52,6 +52,7 @@ function query(selector, context) {
 	var result;
 
 	if ( typeof selector === 'string' ) {
+		selector = selector.trim();
 		if (selector.charAt(0) === '<' && selector.charAt(selector.length - 1) === '>') {
 			result = selector.length >= 3 ? domIns.htmlToNodes(selector, context) : [ ];
 		} else {
@@ -196,7 +197,7 @@ var NodeList = base.createClass(function(nodes) {
 		return this;
 	},
 
-	// for internal use only
+	// 仅供内部使用，不建议外部调用
 	sort: arrProto.sort,
 
 	/**
@@ -261,7 +262,7 @@ var NodeList = base.createClass(function(nodes) {
 	map: arrProto.map,
 
 	/**
-	 * 移除当前集合的最后一个节点
+	 * 移出当前集合的最后一个节点
 	 * @method pop
 	 * @for NodeList
 	 * @return {Element} 被移出的节点
@@ -277,7 +278,7 @@ var NodeList = base.createClass(function(nodes) {
 	shift: arrProto.shift,
 
 	/**
-	 * 从当前集合中移出节点或插入节点
+	 * 从当前集合中移出或插入节点
 	 * @method splice
 	 * @for NodeList
 	 * @param {Number} index 操作位置

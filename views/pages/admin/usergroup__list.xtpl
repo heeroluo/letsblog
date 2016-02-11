@@ -41,7 +41,7 @@
 	</tbody>
 </table>
 <script>
-require(['dom/1.1.x/', 'ajax/1.1.x/'], function($, ajax) {
+require(['dom/1.1.x/', 'ajax/1.2.x/'], function($, ajax) {
 	var isDeleting;
 	$('a.delete').click(function(e) {
 		e.preventDefault();

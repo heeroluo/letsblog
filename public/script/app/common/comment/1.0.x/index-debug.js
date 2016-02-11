@@ -1,16 +1,16 @@
 /*!
  * LetsBlog
- * Comment component - v1.0.0 (2015-03-08T11:24:20+0800)
+ * Comment component - v1.0.1 (2016-02-11T15:44:19+0800)
  * Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
 
 var $ = require('dom/1.1.x/'),
 	Tmpl = require('tmpl/2.1.x/'),
-	ajax = require('ajax/1.1.x/'),
-	widget = require('widget/1.0.x/'),
+	ajax = require('ajax/1.2.x/'),
+	widget = require('widget/1.1.x/'),
 	Paginator = require('paginator/1.1.x/'),
-	Validator = require('validator/1.0.x/'),
+	Validator = require('validator/1.1.x/'),
 	currentUser = window.currentUser;
 
 
@@ -32,39 +32,39 @@ var tmpl = new Tmpl({
 });
 
 
-return widget.create(function() {
-
-}, {
+return widget.create({
 	_init: function(options) {
 		var t = this, form = options.form;
 		t._listWrapper = options.listWrapper;
 
 		// 没表单，仅加载列表
-		if (form.length == 0) {
+		if (!form.length) {
 			t.load(options.page);
 			return;
 		}
 
 		var steps = [ ];
 		if (!currentUser.userid) {
-			steps.push({ fields: 'user_nickname', message: '请填写昵称' });
-			steps.push({
-				fields: 'user_nickname',
-				rule: function(val) { return val.length >= 2; },
-				message: '昵称最少要有两个字'
-			});
-			steps.push({
-				fields: 'user_email',
-				rule: 'isEmail',
-				message: 'Email格式错误',
-				required: false
-			});
-			steps.push({
-				fields: 'user_qq',
-				rule: 'isQQ',
-				message: 'QQ号格式错误',
-				required: false
-			});
+			steps.push(
+				{ fields: 'user_nickname', message: '请填写昵称' },
+				{
+					fields: 'user_nickname',
+					rule: function(val) { return val.length >= 2; },
+					message: '昵称最少要有两个字'
+				},
+				{
+					fields: 'user_email',
+					rule: 'isEmail',
+					message: 'Email格式错误',
+					required: false
+				},
+				{
+					fields: 'user_qq',
+					rule: 'isQQ',
+					message: 'QQ号格式错误',
+					required: false
+				}
+			);
 
 			// 从本地存储获取记录的昵称、email和qq
 			form.find('input[type=text]').forEach(function(textbox) {
@@ -81,7 +81,7 @@ return widget.create(function() {
 			steps: steps,
 			submitProxy: function(data, form) {
 				var btn = form.find('input[type=submit]'), btnText = btn.val();
-				btn.prop('disabled', true).val(btn.attr('data-submitingtext'));
+				btn.prop('disabled', true).val( btn.attr('data-submitingtext') );
 
 				// 记录昵称、email和qq到本地存储
 				data.forEach(function(d) {
@@ -112,7 +112,7 @@ return widget.create(function() {
 										$('#header').innerHeight() - document.documentElement.clientHeight 
 								);
 
-								t.trigger('submitsuccess', { result: res });
+								t._trigger('submitsuccess', { result: res });
 							} else {
 								alert('您发表的评论需经过审核才会显示');
 							}
@@ -152,8 +152,7 @@ return widget.create(function() {
 		commentList.forEach(function(comment) {
 			// 编码内容 & 替换换行符
 			comment.content = Tmpl.escape(comment.content)
-				.replace(/\r\n/g, '<br />')
-				.replace(/[\r\n]/g, '<br />');
+				.replace(/\r?\n/g, '<br />');
 		});
 		listWrapper.html(
 			tmpl.render('LIST', {
@@ -169,7 +168,6 @@ return widget.create(function() {
 				prevText: '',
 				nextText: '',
 				ellipsisText: '',
-				numberOfPagesToShow: 3,
 				events: {
 					click: function(e) {
 						t.load(e.page, true);
@@ -188,21 +186,22 @@ return widget.create(function() {
 
 		t._destroyList();
 
-		listWrapper.html(tmpl.render('TIPS', { tips: '正在加载评论...' }));
+		listWrapper.html( tmpl.render('TIPS', { tips: '正在加载评论...' }) );
 
-		ajax.send('/comment/list/' + this._options.articleId, {
+		ajax.send({
+			url: '/comment/list/' + this._options.articleId,
 			data: { page: page },
 			dataType: 'json',
 			onsuccess: function(res) {
 				if (res.status === 1) {
 					res = res.data;
 					if (!res || !res.totalPages) {
-						listWrapper.html(tmpl.render('TIPS', { tips: '暂无评论' }));
+						listWrapper.html( tmpl.render('TIPS', { tips: '暂无评论' }) );
 					} else {
 						t._renderList(res.commentList, res.page, res.totalPages);
 					}
 				} else {
-					listWrapper.html(tmpl.render('TIPS', { tips: res.message }));
+					listWrapper.html( tmpl.render('TIPS', { tips: res.message }) );
 				}
 			}
 		});

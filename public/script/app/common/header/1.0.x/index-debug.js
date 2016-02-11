@@ -1,13 +1,13 @@
 /*!
  * LetsBlog
- * Header - v1.0.0 (2015-02-23T19:53:21+0800)
+ * Header - v1.0.0 (2016-02-11T11:18:50+0800)
  * Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
 
-var base = require('base/1.0.x/'),
+var base = require('base/1.1.x/'),
 	$ = require('dom/1.1.x/'),
-	ajax = require('ajax/1.1.x/'),
+	ajax = require('ajax/1.2.x/'),
 	currentUser = window.currentUser;
 
 

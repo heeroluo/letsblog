@@ -18,8 +18,8 @@
 <script>
 require([
 	'dom/1.1.x/',
-	'ajax/1.1.x/',
-	'validator/1.0.x/'
+	'ajax/1.2.x/',
+	'validator/1.1.x/'
 ], function($, ajax, Validator) {
 	new Validator({
 		form: $('#login-form'),

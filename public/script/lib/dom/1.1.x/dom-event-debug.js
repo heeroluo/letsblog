@@ -1,6 +1,6 @@
 /*!
  * JRaiser 2 Javascript Library
- * dom-event - v1.1.0 (2014-12-15T10:35:06+0800)
+ * dom-event - v1.1.1 (2015-08-05T09:57:13+0800)
  * http://jraiser.org/ | Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
@@ -13,7 +13,7 @@ define(function(require, exports, module) { 'use strict';
  */
 
 
-var base = require('base/1.0.x/'),
+var base = require('base/1.1.x/'),
 	domBase = require('./dom-base'),
 	domData = require('./dom-data'),
 	Sizzle = require('./sizzle'),
@@ -116,7 +116,7 @@ var eventArgNormalizer = {
 			hook = this[eventTypes[e.type] + 'Hook'],
 			props = hook && hook.props ? this.props.concat(hook.props) : this.props;
 
-		e = base.mix(new EventArg(e), originalEvent, {
+		e = base.customExtend(new EventArg(e), originalEvent, {
 			whiteList: props
 		});
 
@@ -284,16 +284,19 @@ var listenerManager = (function() {
 		get: function(node, type) { return listenerSpace.get(node, type); },
 
 		// 移除监听器
-		remove: function(node, trueType, bindType, handler) {
+		remove: function(node, trueType, bindType, namespace, handler) {
 			// 1 - 移除trueType类型的所有监听器
 			// 2 - 移除node的所有监听器
 			var removeWay;
 
-			if (handler) {
+			if (handler || namespace) {
 				var listeners = listenerSpace.get(node, bindType);
 				if (listeners) {
 					for (var i = listeners.length - 1; i >= 0; i--) {
-						if (listeners[i].trueType === trueType && listeners[i].handler === handler) {
+						if (listeners[i].trueType === trueType &&
+							(!handler || listeners[i].handler === handler) &&
+							(!namespace || listeners[i].namespace === namespace)
+						) {
 							listeners.splice(i, 1);
 						}
 					}
@@ -301,7 +304,7 @@ var listenerManager = (function() {
 					if (!listeners.length) { removeWay = 1; }
 				}
 			} else if (trueType) {
-				// 指定了事件类型但没有指定监听函数的情况下，移除该事件类型的整个队列
+				// 指定了事件类型但没有指定监听函数和命名空间的情况下，移除该事件类型的整个队列
 				removeWay = 1;
 			} else {
 				// 移除所有事件类型的队列
@@ -339,13 +342,20 @@ var listenerManager = (function() {
 function on(node, types, handler, options) {
 	if ( !supportEvent(node) ) { return; }
 
-	types.forEach(function(type) {
-		var hook = eventHooks[type];
+	if (typeof handler !== 'function') {
+		throw new Error('handler must be a function');
+	}
 
-		listenerManager.add(node, hook ? hook.bindType : type, base.mix({
+	types.forEach(function(type) {
+		type = type.split('.');
+
+		var hook = eventHooks[ type[0] ];
+
+		listenerManager.add( node, hook ? hook.bindType : type[0], base.customExtend({
 			handler: handler,
-			trueType: type,
-			handle: hook ? hook.handle : null
+			trueType: type[0],
+			handle: hook ? hook.handle : null,
+			namespace: type[1]
 		}, options, {
 			overwrite: false
 		}) );
@@ -358,8 +368,15 @@ function off(node, types, handler) {
 
 	if (types) {
 		types.forEach(function(type) {
-			var hook = eventHooks[type];
-			listenerManager.remove(node, type, hook ? hook.bindType : type, handler);
+			type = type.split('.');
+			var hook = eventHooks[ type[0] ];
+			listenerManager.remove(
+				node,
+				type[0],
+				hook ? hook.bindType : type[0],
+				type[1],
+				handler
+			);
 		});
 	} else {
 		listenerManager.remove(node);

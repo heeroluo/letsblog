@@ -1,13 +1,12 @@
 /*!
  * LetsBlog
- * SNS share - v1.0.0 (2015-03-08T11:14:47+0800)
+ * SNS share - v1.0.1 (2016-02-11T15:29:34+0800)
  * Released under MIT license
  */
 define(function(require, exports, module) { 'use strict';
 
 var qs = require('querystring/1.0.x/'),
 	$ = require('dom/1.1.x/'),
-	Overlayer = require('overlayer/1.0.x/'),
 	QRCode = require('/common/qrcode/1.0.x/');
 
 
@@ -21,19 +20,10 @@ var shareTypes = {
 		);
 	},
 	wechat: function(params) {
-		var overlayer = new Overlayer({
-			wrapper: $('body'),
-			zIndex: 10000,
-			opacity: 0.7,
-			fade: { duration: 200 },
-			visible: true,
-			events: {
-				afterhide: function() { this.destroy(); }
-			}
-		});
+		var overlayer = $('<div class="overlayer overlayer--visible"></div>').appendTo('body');
 
 		var layer;
-		if (/MicroMessenger/.test(window.navigator.userAgent)) {
+		if ( /MicroMessenger/.test(window.navigator.userAgent) ) {
 			layer = $(
 				'<div class="share-wechat--inwechat clearfix">' +
 					'<div class="share-wechat--inwechat__text">点击右上角按钮进行分享<br />(点击任意位置关闭提示)</div>' +
@@ -43,7 +33,6 @@ var shareTypes = {
 					'</div>' +
 				'</div>'
 			);
-			$('body').append(layer);
 		} else {
 			layer = $(
 				'<div class="share-wechat">' +
@@ -52,7 +41,6 @@ var shareTypes = {
 					'<p class="share-wechat__close">点击任意位置关闭</p>' +
 				'</div>'
 			);
-			$('body').append(layer);
 
 			var qrcode = new QRCode(layer.find('.share-wechat__qrcode').get(0), {
 				text: params.url,
@@ -63,15 +51,18 @@ var shareTypes = {
 			});
 		}
 
+		layer.appendTo('body');
+
 		function hide() {
 			layer.remove();
-			overlayer.hide();
+			overlayer.remove();
 		}
 
 		overlayer.on('click', hide);
 		layer.on('click', hide);
 	}
 };
+
 
 exports.to = function(type, params) {
 	return shareTypes[type](params);
