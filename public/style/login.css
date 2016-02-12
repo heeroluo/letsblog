@@ -6,6 +6,7 @@ body {
 	font-size: 14px;
 	font-family: 'Hiragino Sans GB', 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif;
 }
+input { -webkit-appearance: none; }
 
 .container { width: 100%; height: 100%; display: table; }
 
@@ -14,7 +15,7 @@ body {
 	height: 100%;
 	margin: 0;
 	padding: 0;
-	padding-bottom: 2em;
+	padding-bottom: 5%;
 	vertical-align: middle;
 	text-align: center;
 }
@@ -23,7 +24,6 @@ body {
 	width: 180px;
 	background: #4b4b4b;
 	border: none;
-	color: #ececec;
 	border-radius: 2px;
 	padding: 6px 8px;
 	margin: 0;
@@ -31,10 +31,10 @@ body {
 	line-height: 22px;
 	font-size: inherit;
 	font-family: inherit;
-	outline: none;
+	color: #ececec;
 	transition-duration: 0.4s;
 }
-.textbox:focus { background: #606060; }
+.textbox:focus { background: #606060; outline: none; }
 
 .button {
 	background: #76aa09;

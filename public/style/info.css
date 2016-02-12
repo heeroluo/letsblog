@@ -12,7 +12,7 @@ body {
 	margin: 0;
 	padding: 0.3em 0.5em;
 	font-size: 1.8em;
-	font-family: '微软雅黑';
+	font-family: 'Microsoft YaHei';
 	background: #0096ce;
 }
 .title--error { background: #e63636; }

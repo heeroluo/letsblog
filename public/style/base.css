@@ -21,7 +21,7 @@ a:hover {
 	text-decoration: underline;
 	color: #f16529 !important;
 }
-input { -webkit-appearance: none; border-radius: 0; }
+input, textarea { -webkit-appearance: none; border-radius: 0; }
 input:focus { outline: none; }
 
 
@@ -208,7 +208,7 @@ input:focus { outline: none; }
 	font-family: inherit;
 	font-size: inherit;
 	border: none;
-	background: #fcfcfc;
+	background: #fafafa;
 	margin: 0;
 	padding: 0.5em;
 	outline: none;
@@ -514,9 +514,7 @@ a.paginator__item__inner:hover {
 		-webkit-animation-name: fadeIn;
 		animation-name: fadeIn;
 		-webkit-animation-duration: 0.4s;
-		-webkit-animation-fill-mode: both;
 		animation-duration: 0.4s;
-		animation-fill-mode: both;
 		display: block;
 	}
 	.header__nav__list-item {
