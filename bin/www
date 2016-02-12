@@ -12,7 +12,7 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 // 修改为通过配置文件设置端口
-var port = normalizePort(process.env.PORT || require('../config').port || '3000');
+var port = normalizePort(require('../config').port || '3000');
 // var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
