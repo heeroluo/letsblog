@@ -49,7 +49,7 @@ input, textarea, select { outline: none; }
 	z-index: 9000;
 }
 .header__logo {
-	margin: 6px 0 22px 0;
+	margin: 12px 0 25px 0;
 	color: #fefefe;
 	font-family: 'Source Sans Pro', 'Arial';
 	font-size: 30px;
