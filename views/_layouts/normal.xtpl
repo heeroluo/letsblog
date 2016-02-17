@@ -11,7 +11,7 @@ var currentUser = {{{ jsonEncode(currentUser) }}};
 {{#block ('body')}}
 <header id="header" class="header">
 	<div class="boundary header_boundary clearfix">
-		<div class="header__logo"><a href="/"><img src="/images/logo.png" alt="{{options.sitename}}" /></a></div>
+		<div class="header__logo"><a href="/"><img src="/images/logo.png" alt="{{currentOptions.sitename}}" /></a></div>
 		<nav class="header__nav">
 			<span class="header__nav__toggle">&#xe622;</span>
 			<ul class="header__nav__list clearfix">
@@ -52,13 +52,13 @@ var currentUser = {{{ jsonEncode(currentUser) }}};
 				</ul>
 			</nav>
 			<p>本站作品采用 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a> 进行许可。</p>
-			<p>Copyright © 2009-{{currentYear}} <a href="/">{{options.sitename}}</a>. All rights reserved.</p>
+			<p>Copyright © 2009-{{currentYear}} <a href="/">{{currentOptions.sitename}}</a>. All rights reserved.</p>
 		</div>
 		<div class="footer__col-right">
 			<p>Power by <a href="http://nodejs.org/" target="_blank"><img class="footer__nodejs-logo" src="/style/nodejs.svg" alt="node.js" /></a></p>
 		</div>
 	</div>
 </footer>
-{{{block ('script')}}}
-{{#if (options.statcode)}}{{{options.statcode}}}{{/if}}
+{{{ block ('script') }}}
+{{#if (currentOptions.statcode)}}{{{currentOptions.statcode}}}{{/if}}
 {{/block}}
