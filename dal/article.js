@@ -115,7 +115,7 @@ exports.list = function(params, pageSize, page) {
 exports.adjacent = function(articleid, categoryid, prevOrNext) {
 	return db.query(
 		SELECT_ARTICLE_LIST + ' WHERE article.articleid ' +
-			(prevOrNext ? '>' : '<') + ' ? AND article.categoryid = ? ' +
+			(prevOrNext ? '>' : '<') + ' ? AND article.categoryid = ? AND article.state = 1 ' +
 			'ORDER BY article.articleid ' + (prevOrNext ? 'ASC' : 'DESC') + ' LIMIT 1',
 		[articleid, categoryid]
 	);
