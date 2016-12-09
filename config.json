@@ -3,7 +3,7 @@
 	"staticExpires": 4320,
 	"express": {
 		"env": "development",
-		"trust_proxy": false
+		"trust proxy": false
 	},
 	"iisnode": false,
 	"db": {
