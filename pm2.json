@@ -1,0 +1,9 @@
+{
+	"name": "heeroluo.net",
+	"script": "bin/www",
+	"log_date_format": "YYYY-MM-DD HH:mm Z",
+	"exec_mode": "cluster",
+	"instances": 2,
+	"error_file": "logs/stderr.log",
+	"out_file": "logs/stdout.log"
+}
