@@ -23,10 +23,10 @@ body.article__content { margin: 1em; }
 .article__content h5 { font-size: 16px; margin-top: 20px; }
 .article__content h6 { font-size: 16px; margin-top: 20px; }
 
-.article__content p { margin: 0.5em 0; word-break: break-all; word-wrap: break-word; }
+.article__content p { margin: 0.8em 0; word-break: break-all; word-wrap: break-word; }
 .article__content table { width: 60%; border-collapse: collapse; }
 .article__content th, .article__content td { border: 1px solid; padding: 2px 4px; }
-.article__content img { border: none; max-width: 90%; }
+.article__content img { border: none; max-width: 90%; margin: 0.5rem 0; }
 .article__content ul, .article__content ol { margin: 0 0 0 2em; padding: 0; }
 .article__content ul { list-style-type: disc; }
 .article__content ol { list-style-type: decimal; }
