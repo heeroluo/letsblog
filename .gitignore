@@ -12,6 +12,9 @@ pids
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
 node_modules
 
+# VSCode directory
+.vscode
+
 # Upload directory
 public/upload/article/*
 !public/upload/article/useless
