@@ -44,7 +44,6 @@ exports.list = {
 
 				if (category) {
 					params.categoryid = categoryid;
-					res.routeHelper.viewData('categoryid', categoryid);
 					res.routeHelper.prependTitle(category.categoryname);
 				} else {
 					next( util.createError('分类不存在或不可见', 404) );
@@ -58,6 +57,8 @@ exports.list = {
 
 			tasks.push( articleBLL.list(params, 10, page).then(handleArticleList) );
 		}
+
+		res.routeHelper.viewData('categoryid', categoryid);
 
 		tasks.push(
 			articleBLL.getRecommendedList().then(function(result) {
