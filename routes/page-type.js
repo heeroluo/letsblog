@@ -87,7 +87,7 @@ function normalPage(callbacks) {
 		prepend(function(req, res, next) {
 			var isHTMLPage = res.routeHelper.type() === 'html';
 
-			if (isHTMLPage) { res.routeHelper.viewData('categoryid', -1); }
+			if (isHTMLPage) { res.routeHelper.viewData('categoryid', 0); }
 
 			var tasks = [
 				// 加载网站设置
