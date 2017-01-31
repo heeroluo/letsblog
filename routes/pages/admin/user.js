@@ -253,7 +253,7 @@ exports.list = pageType.admin(
 
 
 // 批量删除用户
-exports.list__batch = {
+exports['list/batch'] = {
 	verb: 'post',
 	callbacks: pageType.admin(
 		pageType.prepend(

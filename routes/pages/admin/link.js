@@ -110,7 +110,7 @@ exports.list = pageType.admin(
 
 
 // 删除链接
-exports.delete__post = {
+exports['delete/post'] = {
 	pathPattern: '/link/delete/:linkid/post',
 	resType: 'json',
 	verb: 'post',
