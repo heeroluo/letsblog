@@ -1,0 +1,39 @@
+.footer {
+	padding: 30px 0;
+	background: #444;
+	font-size: 12px;
+	color: #fafafa;
+}
+.footer a { color: #fafafa; }
+.footer a:hover { color: #fafafa !important; }
+.footer__col-left { line-height: 1.6; }
+.footer__col-right {
+	height: 63px;
+	line-height: 63px;
+}
+.footer__nav {
+	padding-bottom: 10px;
+	margin-bottom: 15px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.footer__nav li {
+	float: left;
+	margin-left: 1.5em;
+}
+.footer__nav li:first-child { margin-left: 0; }
+.footer__nodejs-logo {
+	width: 150px;
+	height: 63px;
+	vertical-align: -13px;
+	margin-left: 6px;
+}
+
+@media (min-width: 960px) {
+	.footer__col-left { float: left; }
+	.footer__col-right { float: right; }
+}
+
+@media (max-width: 959px) {
+	.footer__col-right { margin-top: 6px; }
+}

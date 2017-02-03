@@ -1,0 +1,28 @@
+{{ extend('layouts/basic/basic') }}
+
+{{ set(fullTitle = '操作提示') }}
+
+{{#block ('body')}}
+	{{ css('./_info') }}
+	<h1 class="info-title {{#if(info.status === 2)}} info-title--error{{/if}}">
+		{{#if (info.status === 2)}}
+		出错啦！
+		{{elseif (info.status === 1)}}
+		操作成功！
+		{{else}}
+		操作提示
+		{{/if}}
+	</h1>
+	<div class="info-body">
+		<p class="info-body__message">
+			{{ info.message }}{{#if (info.httpStatus)}} (Status code: {{ info.httpStatus }}){{/if}}
+		</p>
+		{{#if (info.httpStatus === 500 && info.stack)}}
+		<pre class="info-body__stack">{{ info.stack }}</pre>
+		{{/if}}
+		<p class="info-body__links">
+			{{#if (info.referrer)}}<a href="{{ info.referrer }}">&laquo; 后退</a>{{/if}}
+			<a href="/">首页 &raquo;</a>
+		</p>
+	</div>
+{{/block}}

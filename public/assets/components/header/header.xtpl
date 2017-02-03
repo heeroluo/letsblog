@@ -1,0 +1,35 @@
+{{ css('./header') }}
+{{ modjs('./header') }}
+<header id="header" class="header">
+	<div class="boundary clearfix header__boundary">
+		<div class="header__logo">
+			<a href="/">
+				<img src="{{ resolvePath('./logo.png') }}" alt="{{currentOptions.sitename}}" />
+			</a>
+		</div>
+		<nav class="header__nav">
+			<i class="iconfont header__nav__toggle"></i>
+			<ul class="header__nav__list clearfix">
+				<li class="header__nav__list-item{{#if (categoryid === 0)}} header__nav__list-item--current{{/if}}">
+					<a href="/">首页</a>
+				</li>
+				{{#each (categoryList)}}
+				<li class="header__nav__list-item{{#if (root.categoryid === this.categoryid)}} header__nav__list-item--current{{/if}}">
+					<a href="{{ this.href }}">{{ this.categoryname }}</a>
+				</li>
+				{{/each}}
+			</ul>
+		</nav>
+		<div class="header__user">
+			{{#if (currentUser && currentUser.userid > 0)}}
+			<i class="iconfont header__user__toggle"></i>
+			<ul class="header__user__menu">
+				<li>Welcome, {{ currentUser.nickname }}</li>
+				<li class="header__user__menu__item__admin"><a href="/admin/home" target="_blank">后台管理</a><span class="header__user__menu__item__admin__pending-reviews"> (<a href="/admin/comment/list?state=0" target="_blank">待审:<em></em>条</a>)</span> | <a href="/user/logout">退出</a></li>
+			</ul>
+			{{else}}
+			<div class="header__user__login"><a href="/user/login">登录</a></div>
+			{{/if}}
+		</div>
+	</div>
+</header>

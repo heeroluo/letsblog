@@ -1,19 +1,19 @@
 /*!
- * LetsBlog
- * Route initialize
- * Released under MIT license
+ * Back2Front
+ * 路由初始化
  */
 
 'use strict';
 
+var util = require('../lib/util'),
+	routeHelpers = require('./route-helpers'),
+	requireDir = require('require-dir'),
+	routes = requireDir('./pages'),
+	assetConfig = require('../asset-config');
+
 
 module.exports = function(express, app) {
-	var Promise = require('bluebird'),
-		requireDir = require('require-dir'),
-		util = require('../lib/util'),
-		routeHelper = require('./route-helper'),
-		routes = requireDir('./pages');
-
+	var env = app.get('env');
 
 	// 调用渲染的callback
 	function render(req, res, next) {
@@ -36,12 +36,13 @@ module.exports = function(express, app) {
 				return;
 			}
 			var result = callback.apply(this, arguments);
-			if (result instanceof Promise) {
+			if (result && typeof result.then === 'function') {
 				// 注意这里不能写成 result.then(next, next)
 				// 因为next一旦有参数就会被判定为出现异常
-				result.then(function() {
-					next();
-				}, next);
+				result.then(function() { next(); }, next);
+			} else if (result !== true) {
+				// 如果不需要next，就return true
+				next();
 			}
 		};
 	}
@@ -66,7 +67,6 @@ module.exports = function(express, app) {
 			}
 			// 增加对Promise实例的包装处理
 			subRoute.callbacks = subRoute.callbacks.map(handlePromise);
-
 			subRoute.callbacks.push(render);
 
 			subRoute.path = subPath;
@@ -74,11 +74,12 @@ module.exports = function(express, app) {
 			var template, resType;
 			if (!subRoute.resType || subRoute.resType === 'html') {
 				resType = 'html';
-				// 默认模板路径为 pages/路由主路径/路径子路径
+				// 默认模板路径为 pages/路由主路径/路径子路径/路径子路径.page
+				var pageName = subRoute.path.replace(/\//g, '__');
 				template = ( 'pages/' + (
 					subRoute.template ||
-					( mainPath + '/' + subRoute.path.replace(/\//g, '__') )
-				) ).replace(/\/{2,}/, '/');
+					(mainPath + '/' + pageName + '/' + pageName)
+				) ).replace(/\/{2,}/, '/') + '.page.xtpl';
 			} else {
 				resType = subRoute.resType;
 			}
@@ -88,17 +89,35 @@ module.exports = function(express, app) {
 			subRoute.callbacks.unshift(function(req, res, next) {
 				var RouteHelper;
 				if (resType === 'json') {
-					RouteHelper = routeHelper.JSONRouteHelper;
+					RouteHelper = routeHelpers.JSONRouteHelper;
 				} else {
-					RouteHelper = routeHelper.HTMLRouteHelper;
+					RouteHelper = routeHelpers.HTMLRouteHelper;
 				}
-
 				res.routeHelper = new RouteHelper(template);
+				res.routeHelper.viewData({
+					ENV: env,
+					currentYear: (new Date).getFullYear()
+				});
+
+				// 把构建后得出的资源列表导进viewData
+				if (assetConfig) {
+					var assets = assetConfig.map[template];
+					if (assets) {
+						Object.keys(assets).forEach(function(assetType) {
+							res.routeHelper.viewData(
+								assetType + 'Files',
+								assets[assetType].slice()
+							);
+						});
+					}
+				}
 
 				next();
 			});
 
-			var verb = subRoute.verb || 'get', pathPattern = subRoute.pathPattern || subRoute.path;
+			var verb = subRoute.verb || 'get',
+				pathPattern = subRoute.pathPattern || subRoute.path;
+
 			subRoute.callbacks.forEach(function(callback) {
 				router[verb](pathPattern, callback);
 			});
@@ -109,24 +128,27 @@ module.exports = function(express, app) {
 
 	// catch 404 and forward to error handler
 	app.use(function(req, res, next) {
-		var err = new Error('Not Found');
+		console.error('Error: "' + req.originalUrl + '" does not exist');
+
+		res.routeHelper = new routeHelpers.HTMLRouteHelper();
+
+		var err = new Error('您访问的页面不存在');
 		err.status = 404;
-
-		// XXX 404模板
-		res.routeHelper = new routeHelper.HTMLRouteHelper();
-
 		next(err);
 	});
 
 	// 异常处理
-	var isDevEnv = app.get('env') !== 'production';
+	var isDevEnv = env !== 'production';
 	app.use(function(err, req, res, next) {
 		if (typeof err === 'string') { err = new Error(err); }
-
 		err.status = err.status || 500;
+
+		if (err.status !== 404) { console.error('Error: ' + err.message); }
+
 		res.status(err.status);
 
 		try {
+			res.routeHelper.viewData('title', '温馨提示');
 			res.routeHelper.renderInfo(res, {
 				status: 2,
 				httpStatus: err.status,

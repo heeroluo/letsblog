@@ -1,35 +1,40 @@
 {
-	"name": "letsblog",
-	"version": "0.2.1",
-	"description": "a blog publishing system",
-	"keywords": "blog",
-	"license": "MIT",
-	"author": {
-		"name": "Heero Luo",
-		"email": "heeroluo@126.com",
-		"url": "http://heeroluo.net/"
-	},
-	"scripts": {
-		"start": "node ./bin/www"
-	},
-	"dependencies": {
-		"body-parser": "~1.15.0",
-		"cookie-parser": "~1.4.1",
-		"debug": "~2.2.0",
-		"express": "~4.13.4",
-		"morgan": "~1.6.1",
-		"serve-favicon": "~2.3.0",
-		"xtemplate": "~4.5.0",
-		"multer": "~1.1.0",
-		"require-dir": "~0.3.0",
-		"bluebird": "~3.2.2",
-		"mysql": "~2.10.2"
-	},
-	"engines": {
-		"node": ">=0.12"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/heeroluo/letsblog"
-	}
+  "name": "letsblog",
+  "version": "0.3.0",
+  "description": "A blog publishing system",
+  "keywords": ["blog", "cms"],
+  "homepage": "https://github.com/heeroluo/letsblog#readme",
+  "bugs": {
+    "url": "https://github.com/heeroluo/letsblog/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Heero.Luo",
+    "email": "heeroluo@126.com",
+    "url": "http://heeroluo.net/"
+  },
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heeroluo/letsblog.git"
+  },
+  "dependencies": {
+	"bluebird": "~3.4.7",
+    "body-parser": "~1.16.0",
+    "cookie-parser": "~1.4.3",
+    "escape-html": "^1.0.3",
+    "express": "~4.14.0",
+    "fs-extra": "^2.0.0",
+    "morgan": "~1.7.0",
+    "multer": "~1.3.0",
+    "mysql": "~2.13.0",
+    "require-dir": "^0.3.1",
+    "serve-favicon": "~2.3.2",
+    "xtemplate": "~4.6.0"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  }
 }

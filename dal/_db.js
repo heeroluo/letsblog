@@ -9,7 +9,7 @@
 
 var mysql = require('mysql'),
 	config = require('../config'),
-	pool = mysql.createPool(config.db),
+	pool = mysql.createPool(config.database),
 	Promise = require('bluebird');
 
 

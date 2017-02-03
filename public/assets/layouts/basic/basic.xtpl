@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ title }}</title>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-touch-fullscreen" content="yes" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
+<meta name="format-detection" content="telephone=no,email=no" />
+{{#if (keywords)}}<meta name="Keywords" content="{{ keywords }}" />{{/if}}
+{{#if (description)}}<meta name="Description" content="{{ description }}" />{{/if}}
+<script>var cssFiles = { }, jsFiles = { };</script>
+{{ headjs('./bowl') }}
+{{ headjs('./bowl-config') }}
+{{#each (headjsFiles)}}
+<script src="{{ this }}"></script>
+{{/each}}
+<!-- Headjs Hook -->
+{{ css('./basic') }}
+{{#each (cssFiles)}}
+<script src="{{ this }}"></script>
+{{/each}}
+<!-- CSS Hook -->
+</head>
+
+<body>
+<!--[if lt IE 9]>
+<script>
+!function(body) {
+	var html = body.parentNode;
+	body.style.width = '100%';
+	body.style.height = '100%';
+	html.style.overflow = body.style.overflow= 'hidden';
+}(document.body);
+</script>
+<iframe src="/4oie.html" frameborder="0" scrolling="no" style="position: absolute; left: 0; top: 0; z-index: 99999; width: 100%; height: 100%;"></iframe>
+<![endif]-->
+{{ block('body') }}
+{{#each (jsFiles)}}
+<script src="{{ this }}"></script>
+{{/each}}
+<!-- JS Hook -->
+{{#each (modjsFiles)}}
+<script src="{{ this }}"></script>
+{{/each}}
+<!-- Modjs Hook -->
+{{ block('end') }}
+</body>
+</html>

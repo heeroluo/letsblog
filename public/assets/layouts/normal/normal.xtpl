@@ -1,0 +1,18 @@
+{{ extend('layouts/basic/basic') }}
+
+{{#block ('body')}}
+	{{ css('./normal') }}
+	{{ include('components/header/header') }}
+	<div class="container clearfix">
+		<div class="boundary clearfix">
+			{{ block ('container') }}
+		</div>
+	</div>
+	{{ include('components/footer/footer') }}
+{{/block}}
+
+{{#block ('end')}}
+{{#if (currentOptions.statcode)}}
+	{{{ currentOptions.statcode }}}
+{{/if}}
+{{/block}}

@@ -1,0 +1,87 @@
+/* 文章内容 */
+.article__content {
+	line-height: 1.7;
+	font-size: 16px;
+	text-align: justify;
+	word-break: break-all; 
+	word-wrap: break-word;
+}
+/* 编辑器中的文章内容 */
+body.article__content { margin: 1em; }
+
+
+.article__content h1,
+.article__content h2,
+.article__content h3,
+.article__content h4,
+.article__content h5,
+.article__content h6 {
+	margin-bottom: 0.5em;
+	font-weight: bold;
+	font-family: 'PingHei', 'Microsoft JhengHei', 'Microsoft YaHei', STHeiti, SimHei;
+}
+.article__content h1 {
+	font-size: 24px;
+	margin-top: 32px;
+}
+.article__content h2 {
+	font-size: 22px;
+	margin-top: 28px;
+}
+.article__content h3 {
+	font-size: 20px;
+	margin-top: 24px;
+}
+.article__content h4 {
+	font-size: 18px;
+	margin-top: 20px;
+}
+.article__content h5 {
+	font-size: 16px;
+	margin-top: 20px;
+}
+.article__content h6 {
+	font-size: 16px;
+	margin-top: 20px;
+}
+
+.article__content p {
+	margin: 0.8em 0;
+	word-break: break-all;
+	word-wrap: break-word;
+}
+.article__content img {
+	max-width: 90%;
+	margin: 0.5rem 0;
+	border: none;
+}
+.article__content ul,
+.article__content ol {
+	margin: 0 0 0 2em;
+	padding: 0;
+}
+.article__content ul { list-style-type: disc; }
+.article__content ol { list-style-type: decimal; }
+.article__content code {
+	font-family: 'Consolas', 'Courier New', Courier, monospace;
+	padding: 0.8em;
+	border-radius: 3px;
+	margin: 0 1em;
+	background-color: #f6f6f6;
+	display: block;
+}
+.article__content blockquote {
+	font-family: Georgia, Times, 'Times New Roman', serif;
+	padding: 0.5em;
+	border-left: 5px solid #ccc;
+	margin: 0.2em 1em;
+}
+.article__content table {
+	width: 60%;
+	border-collapse: collapse;
+}
+.article__content th,
+.article__content td {
+	border: 1px solid;
+	padding: 2px 4px;
+}

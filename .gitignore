@@ -21,3 +21,7 @@ public/upload/article/*
 
 # Database
 bin/*.sql
+
+# Temporary files
+*.mod.defined.js
+*.xtpl.js

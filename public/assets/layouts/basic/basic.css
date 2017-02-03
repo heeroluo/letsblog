@@ -1,0 +1,101 @@
+html { background: #fff; }
+body {
+	margin: 0;
+	background: #444;
+	color: #333;
+	font-family: 'Lantinghei SC', 'Hiragino Sans GB', 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif;
+	font-size: 14px;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-text-size-adjust: none;
+}
+h1, h2, h3, h4, h5, h6, p, ul, ol, li, dl, dt, dd {
+	margin: 0;
+	padding: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+	font-size: inherit;
+}
+ul, ol {
+	list-style-type: none;
+}
+img {
+	border: none;
+	vertical-align: middle;
+}
+a {
+	text-decoration: none;
+	color: #08c;
+	transition-duration: 0.35s;
+}
+a:hover {
+	text-decoration: underline;
+	color: #f16529 !important;
+}
+input, textarea {
+	-webkit-appearance: none;
+	border-radius: 0;
+}
+input:focus { outline: none; }
+input[disabled] { opacity: 1; }
+input[type=submit],
+input[type=reset],
+input[type=button] { border: none; }
+
+
+/* 字体图标 */
+@font-face {
+	font-family: 'iconfont';
+	src:url('iconfont/iconfont.eot');
+	src:url('iconfont/iconfont.eot?#iefix') format('embedded-opentype'),
+		url('iconfont/iconfont.ttf') format('truetype'),
+		url('iconfont/iconfont.woff') format('woff'),
+		url('iconfont/iconfont.svg#iconfont') format('svg');
+}
+.iconfont {
+	font-family: 'iconfont' !important;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-webkit-text-stroke-width: 0.2px;
+	-moz-osx-font-smoothing: grayscale;
+	speak: none;
+}
+
+
+/* 淡入效果 */
+@-webkit-keyframes fadeIn {
+	0% { opacity: 0; }
+	100% { opacity: 1; }
+}
+@keyframes fadeIn {
+	0% { opacity: 0; }
+	100% { opacity: 1; }
+}
+
+
+/* 清浮动 */
+.clearfix:after {
+	display: block;
+	overflow: hidden;
+	clear: both;
+	height: 0;
+	visibility: hidden;
+	content: '.';
+}
+
+
+/* 遮罩层 */
+.overlayer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10000;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.7);
+	-webkit-animation-name: fadeIn;
+	animation-name: fadeIn;
+	-webkit-animation-duration: 0.4s;
+	animation-duration: 0.4s;
+}
