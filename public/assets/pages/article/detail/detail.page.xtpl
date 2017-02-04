@@ -1,0 +1,77 @@
+{{ extend('layouts/normal/normal') }}
+
+{{#block ('container')}}
+	{{ css('components/highlight/theme/tomorrow') }}
+	{{ js('components/highlight/highlight') }}
+	{{ js('components/highlight/run') }}
+	{{ css('components/article/content') }}
+	{{ css('./detail') }}
+	<div class="main">
+		<article class="article">
+			<header class="article__header">
+				<h1 class="article__header__title">{{ article.title }}</h1>
+				<div class="article__header__meta clearfix">
+					{{ author.nickname }}发表于{{ formatDateFromNow(article.pubtime) }}，已被查看{{ article.totalviews }}次
+				</div>
+			</header>
+			<div class="article__content">{{{ article.content }}}</div>
+			<footer class="article__footer">
+				<div class="article__footer__share">
+					{{ include('components/share/share-btn') }}
+				</div>
+				{{#if ( exists(prevArticle) || exists(nextArticle) )}}
+				<div class="article__footer__adjacents">
+					<ol class="clearfix">
+						{{#if ( exists(prevArticle) )}}
+						<li class="article__footer__adjacents__item article__footer__adjacents__item-prev">
+							<a href="{{ prevArticle.href }}">
+								<i class="iconfont article__footer__adjacents__item__icon-prev"></i>{{ prevArticle.title }}
+							</a>
+						</li>
+						{{/if}}
+						{{#if ( exists(nextArticle) )}}
+						<li class="article__footer__adjacents__item article__footer__adjacents__item-next">
+							<a href="{{ nextArticle.href }}">
+								{{ nextArticle.title }}<i class="iconfont article__footer__adjacents__item__icon-next"></i>
+							</a>
+						</li>
+						{{/if}}
+					</ol>
+				</div>
+				{{/if}}
+			</footer>
+		</article>
+		<div id="comment">
+			{{ include('components/comment/comment') }}
+		</div>
+	</div>
+	<script>var articleId = {{{ jsonEncode(article.articleid) }}};</script>
+	<script src="/article/view/{{ article.articleid }}"></script>
+	{{#modjs (
+		'lib/dom@1.1',
+		'components/share/share',
+		'components/comment/comment'
+	)}}
+	function($, share, comment) {
+		$('.share-btn').click(function() {
+			share.to(this.getAttribute('data-sharetype'), {
+				title: document.title,
+				url: window.location.href
+			});
+		});
+
+		var $comment = $('#comment');
+		new Comment({
+			listWrapper: $comment.find('.comment__list'),
+			form: $comment.find('.comment__form'),
+			page: 1,
+			articleId: window.articleId,
+			events: {
+				submitsuccess: function(e) {
+					$('.comment__total').text(e.result.totalRows);
+				}
+			}
+		});
+	}
+	{{/modjs}}
+{{/block}}

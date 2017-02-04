@@ -1,0 +1,7 @@
+{{ css('./share') }}
+<span class="share-btn share-btn--weibo" data-sharetype="weibo">
+	<i class="iconfont share-btn__ico"></i>分享到微博
+</span>
+<span class="share-btn share-btn--wechat" data-sharetype="wechat">
+	<i class="iconfont share-btn__ico"></i>分享到微信
+</span>

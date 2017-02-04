@@ -1,4 +1,4 @@
-/* 分享图标 */
+/* 圆形分享图标 */
 .share-ico {
 	display: inline-block;
 	width: 38px;
@@ -21,18 +21,17 @@
 	color: #fff !important;
 }
 
-/* 微博分享图标 */
 .share-ico-weibo:after { content: '\349f'; }
 .share-ico-weibo:hover {
 	border-color: #f53a24;
 	background-color: #f53a24;
 }
-/* 微信分享图标 */
 .share-ico-wechat:after { content: '\e63c'; }
 .share-ico-wechat:hover {
 	border-color: #6fc107;
 	background-color: #6fc107;
 }
+
 
 /* 分享按钮 */
 .share-btn {
@@ -42,61 +41,74 @@
 	padding: 0 20px;
 	display: inline-block;
 	color: #fff;
+	cursor: pointer;
 }
-.share-btn:hover { color: #fff !important; text-decoration: none; }
+.share-btn:hover {
+	text-decoration: none;
+	color: #fff !important;
+}
 .share-btn__ico {
-	font-family: 'iconfont';
 	font-size: 20px;
 	margin-right: 0.3em;
 }
+
 .share-btn--weibo { background-color: #f53a24; }
+.share-btn--weibo .share-btn__ico:after { content: '\349f'; }
 .share-btn--wechat { background-color: #6fc107; }
+.share-btn--wechat .share-btn__ico:after { content: '\e63c'; }
+
 
 /* 微信分享弹层 */
 .share-wechat {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 12000;
 	width: 128px;
 	height: 186px;
 	padding: 10px 15px;
 	margin-left: -79px;
 	margin-top: -103px;
-	top: 50%;
-	left: 50%;
-	position: fixed;
-	z-index: 12000;
 	background: #fff;
-	text-align: center;
 	line-height: 21px;
+	text-align: center;
 }
 .share-wechat__qrcode { margin: 8px 0; }
-.share-wechat__qrcode img { width: 128px; height: 128px; }
+.share-wechat__qrcode img {
+	width: 128px;
+	height: 128px;
+}
 .share-wechat__close { font-size: 12px; }
 .share-wechat--inwechat {
-	color: #fff;
 	position: fixed;
 	top: 0;
 	right: 0;
 	z-index: 12000;
+	color: #fff;
 }
 .share-wechat--inwechat__text {
 	float: left;
 	margin-top: 8px;
 	line-height: 22px;
-	text-align: center;
 	font-size: 16px;
+	text-align: center;
 }
-.share-wechat--inwechat__arrow { float: right; margin: 0 22px 0 10px; }
+.share-wechat--inwechat__arrow {
+	float: right;
+	margin: 0 22px 0 10px;
+}
 .share-wechat--inwechat__arrow__triangle {
+	display: block;
 	width: 0;
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-bottom: 15px solid #fff;
-    display: block;
 }
 .share-wechat--inwechat__arrow__rectangle {
-	background: #fff;
+	display: block;
 	width: 10px;
 	height: 15px;
 	margin: 0 auto;
-	display: block;
+	background: #fff;
 }

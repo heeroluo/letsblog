@@ -1,0 +1,59 @@
+{{ css('components/form/form') }}
+{{ css('./comment') }}
+<div class="comment">
+	<h2 class="comment__title">评论 (<em class="comment__total">{{ article.totalcomments }}</em>条)</h2>
+	<div id="comment__list" class="comment__list">
+		{{ include('./list?csrOnly') }}
+	</div>
+	{{#if (currentUser.group.perm_comment > 0)}}
+	<form id="comment__form" action="/comment/post" method="post" class="comment__form form-layout">
+		<input type="hidden" name="articleid" value="{{ article.articleid }}" />
+		<h2 class="comment__title">发表评论</h2>
+		{{#if (!exists(currentUser) || currentUser.userid <= 0)}}
+		<div class="form-layout__row form-layout__row--3cols clearfix">
+			<div class="form-layout__col">
+				<div class="form-item">
+					<p class="form-item__label">
+						<label for="comment_user_nickname">昵称</label>
+						<em class="form-item__label__tips form-item__label__tips--required">(必填)</em>
+					</p>
+					<input class="textbox" type="text" id="comment_user_nickname" name="user_nickname" maxlength="20" />
+				</div>
+			</div>
+			<div class="form-layout__col">
+				<div class="form-item">
+					<p class="form-item__label">
+						<label for="comment_user_email">Email</label>
+						<em class="form-item__label__tips">(选填，不公开)</em>
+					</p>
+					<input class="textbox" type="text" id="comment_user_email" name="user_email" maxlength="60" />
+				</div>
+			</div>
+			<div class="form-layout__col">
+				<div class="form-item">
+					<p class="form-item__label">
+						<label for="comment_user_qq">QQ</label>
+						<em class="form-item__label__tips">(选填，不公开)</em>
+					</p>
+					<input class="textbox" type="text" id="comment_user_qq" name="user_qq" maxlength="15" />
+				</div>
+			</div>
+		</div>
+		{{/if}}
+		<div class="form-layout__row">
+			<div class="form-item">
+				<p class="form-item__label">
+					<label for="comment_content">内容</label>
+					<em class="form-item__label__tips form-item__label__tips--required">(必填)</em>
+				</p>
+				<textarea class="textbox" id="comment_content" name="content" cols="50" rows="10"></textarea>
+			</div>
+		</div>
+		<div class="form-layout__row">
+			<div class="form-item">
+				<input type="submit" value="发 表" class="btn" data-submitingtext="发表中，请稍后" />
+			</div>
+		</div>
+	</form>
+	{{/if}}
+</div>

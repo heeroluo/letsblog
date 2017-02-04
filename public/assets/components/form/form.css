@@ -1,0 +1,43 @@
+/* 表单布局 */
+.form-layout__row { clear: both; margin: 15px 0; }
+.form-layout__col { float: left; }
+.form-layout__row--3cols .form-layout__col { width: 33%; }
+.form-layout__row--3cols .form-layout__col:first-child { width: 34%; }
+.form-item__label { margin: 0 3px 5px 3px; }
+.form-item__label__tips { font-size: 12px; color: #999; }
+.form-item__label__tips--required { color: #80bd01; }
+.form-item .textbox { width: 100%; }
+
+/* 普通按钮 */
+.btn {
+	background: #08c;
+	border-radius: 4px;
+	padding: 0 1.3em;
+	border: none;
+	height: 2.3em;
+	line-height: 2.3em;
+	display: inline-block;
+	color: #fff;
+	font-size: inherit;
+	font-family: inherit;
+	cursor: pointer;
+}
+.btn:hover { color: #fff !important; }
+
+/* 表单控件 */
+.textbox {
+	font-family: inherit;
+	font-size: inherit;
+	border: none;
+	background: #fafafa;
+	margin: 0;
+	padding: 0.5em;
+	outline: none;
+	color: inherit;
+	border: 1px solid #ddd;
+	transition-duration: 0.4s;
+	box-sizing: border-box;
+	border-radius: 4px;
+}
+.textbox:focus { border-color: #aaa; background: #fff; }
+textarea.textbox { line-height: 1.5; resize: none; }

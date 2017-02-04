@@ -1,0 +1,79 @@
+.container {
+	background: #fff;
+	padding-top: 40px;
+	padding-bottom: 40px;
+}
+.main {
+	float: none;
+	padding-left: 0;
+	padding-right: 0;
+}
+@media (min-width: 1000px) {
+	.main {
+		width: 960px;
+		margin: 0 auto;
+	}
+}
+@media (max-width: 999px) {
+	.main { width: auto; }
+}
+
+
+.article__header__title {
+	font-family: 'PingHei', 'Microsoft JhengHei', 'Microsoft YaHei', STHeiti, SimHei;
+	font-size: 32px;
+	font-weight: bold;
+}
+.article__header__meta {
+	margin-top: 15px;
+	color: #aaa;
+}
+.article__content { margin-top: 30px; }
+.article__footer { margin-top: 50px; }
+.article__footer__share {
+	text-align: center;
+	word-spacing: 1em;
+}
+.article__footer__adjacents {
+	position: relative;
+	margin-top: 50px;
+}
+.article__footer__adjacents__item {
+	box-sizing: border-box;
+	float: left;
+	width: 50%;
+	line-height: 30px;
+	font-size: 20px;
+}
+.article__footer__adjacents__item-next {
+	float: right;
+	text-align: right;
+}
+.article__footer__adjacents__item a {
+	display: block;
+	overflow: hidden;
+	text-decoration: none;
+	word-wrap: break-word;
+	color: #666;
+}
+.article__footer__adjacents__item-prev a {
+	padding-left: 28px;
+	padding-right: 10%;
+}
+.article__footer__adjacents__item-next a {
+	padding-left: 10%;
+	padding-right: 28px;
+}
+.article__footer__adjacents__item__icon-prev,
+.article__footer__adjacents__item__icon-next {
+	position: absolute;
+	top: 50%;
+	margin-top: -9px;
+	line-height: 20px;
+	font-size: 18px;
+	color: #ccc;
+}
+.article__footer__adjacents__item__icon-prev { left: 0; }
+.article__footer__adjacents__item__icon-prev:after { content: '\e618'; }
+.article__footer__adjacents__item__icon-next { right: 0; }
+.article__footer__adjacents__item__icon-next:after { content: '\e617'; }

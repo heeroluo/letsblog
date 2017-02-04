@@ -121,7 +121,7 @@ exports.detail = {
 // 增加浏览次数
 exports.view = {
 	pathPattern: '/view/:articleid',
-	callbacks: function(req, res, next) {
+	callbacks: function(req, res) {
 		if (req.cookies.seen === '1') {
 			res.end();
 		} else {
@@ -140,6 +140,8 @@ exports.view = {
 
 				res.end();
 			});
+
+			return true;
 		}
 	}
 };

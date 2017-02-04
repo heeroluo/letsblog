@@ -1,0 +1,14 @@
+{{#each (listData)}}
+<article class="comment__list__item{{#if (comment.userid)}} comment__list__item--isuser{{/if}}">
+	<header class="comment__list__item__header clearfix">
+		<div class="comment__list__item__header__author"><em>{{ comment.user_nickname }}</em> 说：</div>
+		<div class="comment__list__item__header__pubtime">发表于{{ comment.pubtime_formatted }}</div>
+	</header>
+	<div class="comment__list__item__content">{{{ comment.content }}}</div>
+</article>
+{{/each}}
+{{#if (totalPages > 1)}}
+<nav class="comment__list__paginator">
+	
+</nav>
+{{/if}}
