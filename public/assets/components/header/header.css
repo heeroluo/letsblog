@@ -90,6 +90,8 @@
 }
 
 @media (max-width: 959px) {
+	body { background: #fff; margin-top: 65px; }
+
 	.header { height: 64px; }
 	.header__boundary { position: relative; }
 	.header__logo {

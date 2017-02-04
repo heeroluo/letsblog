@@ -41,6 +41,7 @@
 	margin-left: 0.5em;
 }
 
+
 @media (min-width: 960px) {
 	.article-list__item__header__title {
 		float: left;

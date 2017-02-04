@@ -1,0 +1,56 @@
+.paginator {
+	position: relative;
+	width: 100%;
+	margin-top: 30px;
+	font-family: Tahoma;
+	text-align: center;
+}
+.paginator__item {
+	display: inline-block;
+	margin: 0 8px;
+}
+.paginator__item__inner {
+	display: block;
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	border-radius: 50%;
+	border: 1px solid #e3e3e3;
+	color: #999;
+}
+a.paginator__item__inner:hover {
+	border-color: #999;
+	color: #666 !important;
+	text-decoration: none;
+}
+.paginator__item--current .paginator__item__inner {
+	background: #80bd01;
+	border-color: #80bd01;
+	color: #fff;
+}
+.paginator__item-prev,
+.paginator__item-next {
+	position: absolute;
+	top: 0;
+	margin: 0;
+}
+.paginator__item-prev { left: 0; }
+.paginator__item-next { right: 0; }
+.paginator__item--disabled { display: none; }
+.paginator__item-ellipsis {
+	margin-left: 0;
+	margin-right: 0;
+}
+.paginator__item-ellipsis .paginator__item__inner { border: none; }
+.paginator__item-ellipsis .paginator__item__inner:after { content: '\e606'; }
+.paginator__item-prev .paginator__item__inner:after { content: '\e618'; }
+.paginator__item-next .paginator__item__inner:after { content: '\e617'; }
+
+@media (max-width: 767px) {
+	.paginator__item {
+		margin-left: 3px;
+		margin-right: 3px;
+	}
+	.paginator__item--prev,
+	.paginator__item--next { margin: 0; }
+}

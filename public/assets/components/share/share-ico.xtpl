@@ -1,0 +1,3 @@
+{{ css('./share') }}
+<i class="iconfont share-ico share-ico-weibo" data-sharetype="weibo"></i>
+<i class="iconfont share-ico share-ico-wechat" data-sharetype="wechat"></i>

@@ -8,10 +8,12 @@
 	border-radius: 20px;
 	overflow: hidden;
 	opacity: 0.5;
+	transition-duration: 0.3s;
 	color: #666;
 	font-size: 24px;
 	text-align: center;
 	vertical-align: middle;
+	cursor: pointer;
 }
 .share-ico:hover {
 	opacity: 1;
@@ -20,11 +22,13 @@
 }
 
 /* 微博分享图标 */
+.share-ico-weibo:after { content: '\349f'; }
 .share-ico-weibo:hover {
 	border-color: #f53a24;
 	background-color: #f53a24;
 }
 /* 微信分享图标 */
+.share-ico-wechat:after { content: '\e63c'; }
 .share-ico-wechat:hover {
 	border-color: #6fc107;
 	background-color: #6fc107;

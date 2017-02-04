@@ -1,37 +1,11 @@
 {{ extend('layouts/normal/normal') }}
 
 {{#block ('container')}}
-	{{ css('components/article/code-highlight') }}
-	{{ css('components/article/list') }}
-	{{ css('components/article/content') }}
-	{{ css('components/share/share') }}
 	<div class="main">
-		{{#if ( exists(articleList.data) )}}
-		<div id="article-list" class="article-list">
-			{{#each (articleList.data)}}
-			<article class="article-list__item">
-				<header class="article-list__item__header clearfix">
-					<h1 class="article-list__item__header__title">
-						<a href="{{ this.href }}">{{ this.title }}</a>
-					</h1>
-					<div class="article-list__item__header__meta">
-						{{#if (root.categoryid <= 0)}}<a href="{{ this.category_href }}">{{ this.categoryname }}</a>&nbsp;&nbsp;|&nbsp;&nbsp;{{/if}}{{ formatDateFromNow(this.pubtime) }}
-					</div>
-				</header>
-				<div class="article__content article-list__item__summary">
-					{{{ this.summary }}}
-				</div>
-				<footer class="article-list__item__footer clearfix">
-					<div class="article-list__item__footer_info"><em>{{ this.totalviews }}</em>次阅读，<em>{{ this.totalcomments }}</em>条评论</div>
-					<div class="article-list__item__footer__share clearfix">
-						<a href="#" class="iconfont share-ico share-ico-weibo" data-sharetype="weibo">&#x349f;</a>
-						<a href="#" class="iconfont share-ico share-ico-wechat" data-sharetype="wechat">&#xe63c;</a>
-					</div>
-				</footer>
-			</article>
-			{{/each}}
-		</div>
-		{{/if}}
+		<div id="article-list" class="article-list">{{ parse(
+			'components/article/list',
+			articleList = articleList, pageCategoryId = categoryid
+		) }}</div>
 	</div>
 	<aside class="sidebar">
 		{{#if ( exists(recommendedArticles) )}}

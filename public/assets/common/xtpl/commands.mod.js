@@ -41,3 +41,92 @@ exports.formatDate = function(scope, option) {
 exports.formatDateFromNow = function(scope, option) {
 	return util.formatDateFromNow(option.params[0]);
 };
+
+
+// 创建分页条数据模型
+exports.createPaginator = function(scope, option) {
+	var currentPage = parseInt(option.params[0]) || 1,
+		totalPages = parseInt(option.params[1]),
+		href = option.params[2] || '?page={{page}}';
+
+	var howManyPageItems = 7,
+		howManyPageItemsPerSide = parseInt( (howManyPageItems - 1) / 2 ),
+		data = [ ];
+
+	var start = currentPage - howManyPageItemsPerSide,
+		end = currentPage + howManyPageItemsPerSide,
+		startOverflow = start - 1,
+		endOverflow = totalPages - end;
+
+	// 把左侧剩余的页码额度移到右侧
+	if (startOverflow < 0) {
+		start = 1;
+		end = Math.min(totalPages, end - startOverflow);
+	}
+	// 把右侧剩余的页码移到左侧
+	if (endOverflow < 0) {
+		end = totalPages;
+		if (startOverflow > 0) { start = Math.max(1, start + endOverflow); }
+	}
+
+	// 处理 howManyPageItems 为双数，减一后除不尽的情况
+	if (howManyPageItems % 2 === 0) {
+		if (start > 1) {
+			start--;
+		} else if (end < totalPages) {
+			end++;
+		}
+	}
+
+	// 开始页码大于1，但第一页一定要显示，所以要减一个额度
+	if (start > 1) { start++; }
+	// 结束页码小于总页数，但最后一页一定要显示，所以要减一个额度
+	if (end < totalPages) { end--; }
+
+	// 补充第一页到开始页
+	if (start - 1) {
+		data.push({
+			page: 1,
+			current: false
+		}, {
+			page: '...'
+		});
+	}
+
+	for (var i = start; i <= end; i++) {
+		data.push({
+			page: i,
+			current: i == currentPage
+		});
+	}
+
+	// 补充结束页到末页
+	if (totalPages - end) {
+		data.push({
+			page: '...'
+		}, {
+			page: totalPages,
+			current: false
+		});
+	}
+
+	var prevHref, nextHref;
+	data.forEach(function(d) {
+		if (typeof d.page === 'number') {
+			d.href = href.replace('{{page}}', d.page);
+			if (d.page === currentPage + 1) {
+				nextHref = d.href;
+			} else if (d.page === currentPage - 1) {
+				prevHref = d.href;
+			}
+		}
+	});
+
+	return {
+		currentPage: currentPage,
+		totalPages: totalPages,
+		pageNumbers: data,
+		nextHref: nextHref,
+		prevHref: prevHref
+	};
+};
