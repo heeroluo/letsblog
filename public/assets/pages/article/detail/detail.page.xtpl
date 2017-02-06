@@ -52,7 +52,7 @@
 		'components/share/share',
 		'components/comment/comment'
 	)}}
-	function($, share, comment) {
+	function($, share, Comment) {
 		$('.share-btn').click(function() {
 			share.to(this.getAttribute('data-sharetype'), {
 				title: document.title,

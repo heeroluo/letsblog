@@ -23,5 +23,5 @@ public/upload/article/*
 bin/*.sql
 
 # Temporary files
-*.mod.defined.js
+*.defined.js
 *.xtpl.js

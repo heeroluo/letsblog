@@ -12,11 +12,47 @@ exports.modjs = function(scope, option, buffer) {
 };
 
 
+function toString(str) {
+	return str == null ? '' : String(str);
+}
+
+// 编码HTML实体
+exports.escape = (function() {
+	// HTML特殊字符及其对应的编码内容
+	var re_entity = [ ], entityMap = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&#x27;'
+	};
+	for (var key in entityMap) { re_entity.push(key); }
+	var re_entity = new RegExp('[' + re_entity.join('') + ']', 'g');
+
+	return function(scope, option) {
+		return toString(option.params[0]).replace(re_entity, function(match) {
+			return entityMap[match];
+		});
+	};
+})();
+
+// 把换行符替换成<br />
+exports.nl2br = function(scope, option) {
+	return toString(option.params[0]).replace(/\r?\n/, '<br />');
+};
+
+// 把空白替换成
+exports.space2nbsp = function(scope, option) {
+	return toString(option.params[0]).replace(/\s{2,}/, function(match) {
+		return new Array(match.length + 1).join('&nbps;');
+	});
+};
+
+
 // JSON序列化
 exports.jsonEncode = function(scope, option) {
 	return JSON.stringify(option.params[0]);
 };
-
 
 // 对象是否存在
 exports.exists = function(scope, option) {

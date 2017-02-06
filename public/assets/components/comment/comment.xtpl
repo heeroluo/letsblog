@@ -2,11 +2,11 @@
 {{ css('./comment') }}
 <div class="comment">
 	<h2 class="comment__title">评论 (<em class="comment__total">{{ article.totalcomments }}</em>条)</h2>
-	<div id="comment__list" class="comment__list">
+	<div  class="comment__list">
 		{{ include('./list?csrOnly') }}
 	</div>
 	{{#if (currentUser.group.perm_comment > 0)}}
-	<form id="comment__form" action="/comment/post" method="post" class="comment__form form-layout">
+	<form action="/comment/post" method="post" class="comment__form form-layout">
 		<input type="hidden" name="articleid" value="{{ article.articleid }}" />
 		<h2 class="comment__title">发表评论</h2>
 		{{#if (!exists(currentUser) || currentUser.userid <= 0)}}

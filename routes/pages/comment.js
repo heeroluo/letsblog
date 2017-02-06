@@ -20,10 +20,9 @@ function getCommentList(articleid, page, res) {
 		state: 1
 	};
 
-	return commentBLL.list(params, 10, page).then(function(result) {
+	return commentBLL.list(params, 5, page).then(function(result) {
 		result.data = result.data.map(function(c) {
 			c = c.toPureData();
-			c.pubtime_formatted = util.formatDateFromNow(c.pubtime);
 			// 删除较为敏感的数据
 			delete c.user_email;
 			delete c.user_qq;

@@ -15,10 +15,6 @@ global.bowljs.config({
 				case '.xtpl':
 					extname = '.xtpl.js';
 					break;
-
-				case '.js':
-					extname = '.mod.js';
-					break;
 			}
 			url.pathname += extname;
 		}

@@ -1,6 +1,7 @@
 {{ extend('layouts/basic/basic') }}
 
 {{#block ('body')}}
+	<script>var currentUser = {{{ jsonEncode(currentUser) }}};</script>
 	{{ css('./normal') }}
 	{{ include('components/header/header') }}
 	<div class="container clearfix">
