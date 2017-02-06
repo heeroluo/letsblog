@@ -1,0 +1,14 @@
+{{ extend('layouts/basic/basic') }}
+
+{{#block ('body')}}
+	{{ css('./login') }}
+	<div class="login-container">
+		<form action="/user/login/post" method="post" class="login-form" id="login-form">
+			<input type="text" name="username" class="textbox" placeholder="用户名" maxlength="20" autofocus="autofocus" />
+			<input type="password" name="password" class="textbox" placeholder="密码" maxlength="16" />
+			<input type="submit" class="button" value="登 录" />
+			<input type="hidden" name="referrer" value="{{ referrer }}" />
+		</form>
+	</div>
+	{{ modjs('./login') }}
+{{/block}}

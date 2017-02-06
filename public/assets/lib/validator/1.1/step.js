@@ -1,6 +1,6 @@
 /*!
  * JRaiser 2 Javascript Library
- * validator-step - v1.1.0 (2017-02-04T08:50:55Z)
+ * validator-step - v1.1.0 (2017-02-06T09:53:43Z)
  * http://jraiser.org/ | Released under MIT license
  */
 
@@ -241,12 +241,11 @@ module.exports = widget.create({
 						ajax.send(
 							options.remoteURL,
 							base.customExtend({
-								data: mapToArray(values, fields[0]),
-								onsuccess: onRemoteSuccess
+								data: mapToArray(values, fields[0])
 							}, options.ajaxSettings || t._vOptions.ajaxSettings, {
 								overwrite: false
 							})
-						);
+						).spread(onRemoteSuccess);
 						return;
 					}
 				} else {
