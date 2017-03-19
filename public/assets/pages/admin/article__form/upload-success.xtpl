@@ -1,0 +1,5 @@
+{{ fileName }} 已被上传到<em class="upload-result-path">{{ path }}</em>
+<a href="#" class="upload-result-insertlink">插入为链接</a>
+{{#if (isImage)}}
+<a href="#" class="upload-result-insertimg">插入为图片</a>
+{{/if}}

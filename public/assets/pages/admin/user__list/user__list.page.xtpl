@@ -1,0 +1,100 @@
+{{ extend('layouts/admin/admin') }}
+
+{{#block ('mainTitle')}}用户管理{{/block}}
+
+{{#block ('mainBody')}}
+	<form action="?" method="get" class="form-layout" style="margin-bottom: 2.5em;">
+		<section class="form-layout__section">
+			<h3 class="form-layout__section__title">用户搜索</h3>
+			<div class="form-layout__row form-layout__row--2cols clearfix">
+				<div class="form-layout__col">
+					<div class="form-item">
+						<input class="textbox" name="name" type="text" placeholder="用户名或昵称" maxlength="20" value="{{ params.name }}" />
+					</div>
+				</div>
+				<div class="form-layout__col">
+					<div class="form-item">
+						<select name="groupid" class="selectbox">
+							<option value="0">用户组</option>
+							{{#each (userGroupList)}}
+							<option value="{{this.groupid}}"{{#if (this.groupid === params.groupid)}} selected="selected"{{/if}}>{{ this.groupname }}</option>
+							{{/each}}
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="form-layout__row">
+				<input id="submit-btn" type="submit" value="搜 索" class="button" />
+			</div>
+		</section>
+	</form>
+	<form id="user-list-form" action="./batch" method="post" class="form-layout">
+		<table id="user-list-table" class="datatable">
+			<thead>
+				<tr>
+					<th><input id="checkall" type="checkbox" /></th>
+					<th>用户名</th>
+					<th>昵称</th>
+					<th>用户组</th>
+					<th>注册时间</th>
+					<th>最后在线</th>
+					<th>文章 / 评论</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tfoot>
+				{{#if (userList.totalPages > 1)}}
+				<tr>
+					<td colspan="8">{{ parse (
+						'components/paginator/paginator',
+						currentPage = userList.page,
+						totalPages = userList.totalPages,
+						href = '?' + toQueryString(params, true)
+					) }}</td>
+				</tr>
+				{{/if}}
+				<tr>
+					<td colspan="8">
+						<input type="submit" value="批量删除" class="button" />
+					</td>
+				</tr>
+			</tfoot>
+			<tbody>
+			{{#if (exists(userList.data))}}
+				{{#each (userList.data)}}
+				<tr>
+					<td style="text-align: center;"><input type="checkbox" name="userids" value="{{ this.userid }}" /></td>
+					<td>{{ this.username }}</td>
+					<td>{{ this.nickname }}</td>
+					<td>{{ this.groupname }}</td>
+					<td style="text-align: center;">{{ formatDate(this.regtime, 'YYYY-MM-DD hh:mm:ss') }}</td>
+					<td style="text-align: center;">{{ formatDate(this.lastactivity, 'YYYY-MM-DD hh:mm:ss') }}</td>
+					<td style="text-align: center;">{{this.totalarticles}} / {{this.totalcomments}}</td>
+					<td style="word-spacing: 1em; text-align: center;">
+						<a href="/admin/user/update/{{ this.userid }}/">编辑</a>
+						<a href="/admin/user/update/password/{{ this.username }}/">修改密码</a>
+					</td>
+				</tr>
+				{{/each}}
+			{{else}}
+				<tr>
+					<td colspan="8">没有符合搜索条件的用户</td>
+				</tr>
+			{{/if}}
+			</tbody>
+		</table>
+	</form>
+	{{#modjs ('lib/dom@1.1')}}
+	function($) {
+		$('#user-list-form').on('submit', function(e) {
+			if ( !window.confirm('确定要删除选定的用户吗？') ) {
+				e.preventDefault();
+			}
+		});
+
+		$('#checkall').click(function() {
+			$('#user-list-form tbody input[type=checkbox]').prop('checked', this.checked);
+		});
+	}
+	{{/modjs}}
+{{/block}}

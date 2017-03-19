@@ -134,15 +134,14 @@ exports.normal = normalPage;
 // 管理后台页面
 function adminPage(callbacks) {
 	return basicPage(
-		prepend(function(req, res, next) {
-			if (req.currentUser.userid) {
-				next();
-			} else {
+		prepend(function(req, res) {
+			if (!req.currentUser.userid) {
 				res.redirect(
 					'/user/login' +
 					'?referrer=' + encodeURIComponent(req.originalUrl) +
 					'&msg=' + encodeURIComponent('请先登录')
 				);
+				return true;
 			}
 		}, callbacks)
 	);

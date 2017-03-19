@@ -79,6 +79,23 @@ exports.formatDateFromNow = function(scope, option) {
 };
 
 
+// 转换成URL参数
+exports.toQueryString = function(scope, option) {
+	var data = option.params[0], addPagePlaceholder = option.params[1];
+
+	var result = [ ];
+	for (var d in data) {
+		if (data[d] != null && data[d] !== '') {
+			result.push( encodeURIComponent(d) + '=' + encodeURIComponent(data[d]) );
+		}
+	}
+
+	// 增加页码参数占位符
+	if (addPagePlaceholder) { result.push('page={{page}}'); }
+
+	return result.join('&');
+};
+
 // 创建分页条数据模型
 exports.createPaginator = function(scope, option) {
 	var currentPage = parseInt(option.params[0]) || 1,

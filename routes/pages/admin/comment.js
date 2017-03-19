@@ -17,7 +17,6 @@ function checkPermission(req, res, next) {
 	if (!req.currentUser.group.perm_comment) {
 		return util.createError('权限不足', 403);
 	}
-	next();
 }
 
 

@@ -15,17 +15,16 @@ var Promise = require('bluebird'),
 
 
 // 创建权限验证函数
-function checkPermission(req, res, next) {
+function checkPermission(req, res) {
 	if (req.currentUser.group.perm_manage_article < 2) {
 		return util.createError('权限不足', 403);
 	}
-	next();
 }
 
 
 // 创建分类界面
 exports.create = {
-	template: 'admin/category__form',
+	template: 'admin/category__form/category__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -64,7 +63,7 @@ exports['create/post'] = {
 // 修改分类界面
 exports.update = {
 	pathPattern: '/category/update/:categoryid',
-	template: 'admin/category__form',
+	template: 'admin/category__form/category__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,

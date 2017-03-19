@@ -32,15 +32,9 @@ a:hover {
 	text-decoration: underline;
 	color: #f16529 !important;
 }
-input, textarea {
-	-webkit-appearance: none;
-	border-radius: 0;
-}
-input:focus { outline: none; }
+input, textarea { border-radius: 0; }
+input, textarea, select { outline: none; }
 input[disabled] { opacity: 1; }
-input[type=submit],
-input[type=reset],
-input[type=button] { border: none; }
 
 
 /* 字体图标 */

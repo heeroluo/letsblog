@@ -11,13 +11,13 @@ var pageType = require('../page-type'),
 
 
 // 登录页
-exports.login = pageType.basic(function(req, res, next) {
+exports.login = pageType.basic(function(req, res) {
 	var referrer = req.get('Referrer') || '/admin/home';
 	if (req.currentUser.userid) {
 		res.redirect(referrer);
+		return true;
 	} else {
 		res.routeHelper.viewData('referrer', referrer);
-		next();
 	}
 });
 

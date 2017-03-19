@@ -13,17 +13,16 @@ var util = require('../../../lib/util'),
 
 
 // 权限验证
-function checkPermission(req, res, next) {
+function checkPermission(req, res) {
 	if (!req.currentUser.group.perm_manage_option) {
 		return util.createError('权限不足', 403);
 	}
-	next();
 }
 
 
 // 创建链接界面
 exports.create = {
-	template: 'admin/link__form',
+	template: 'admin/link__form/link__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -31,7 +30,6 @@ exports.create = {
 				var link = linkModel.createEntity();
 				link.weight = '';
 				res.routeHelper.viewData('link', link);
-				next();
 			}
 		)
 	)
@@ -59,7 +57,7 @@ exports['create/post'] = {
 // 修改链接界面
 exports.update = {
 	pathPattern: '/link/update/:linkid',
-	template: 'admin/link__form',
+	template: 'admin/link__form/link__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,

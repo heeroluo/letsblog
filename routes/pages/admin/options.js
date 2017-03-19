@@ -16,13 +16,12 @@ function checkPermission(req, res, next) {
 	if (!req.currentUser.group.perm_manage_option) {
 		return util.createError('权限不足', 403);
 	}
-	next();
 }
 
 
 // 修改网站设置操作界面
 exports.update = {
-	template: 'admin/options__form',
+	template: 'admin/options__form/options__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,

@@ -1,0 +1,47 @@
+/* 左侧页头 */
+.header {
+	width: 200px;
+	background: #293036;
+	position: fixed;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	z-index: 9000;
+}
+.header__logo {
+	margin: 12px 0 25px 0;
+	color: #fefefe;
+	font-family: 'Source Sans Pro', 'Arial';
+	font-size: 30px;
+	text-align: center;
+}
+.header__logo sup {
+	padding: 2px;
+	border-radius: 3px;
+	background: #80bd01;
+	color: #fff;
+	font-size: 12px;
+	font-family: arial;
+	font-weight: normal;
+}
+/* 导航栏 */
+.header__nav { margin-left: 10px; }
+.header__nav__menu-title {
+	margin: 1em 0 0.5em 0;
+	font-size: 16px;
+	color: #ddd;
+}
+.header__nav__menu-list {
+	margin-left: 1.5em;
+	list-style-type: disc;
+}
+.header__nav__menu-list__item { margin-top: 5px; }
+.header__nav__menu-list__item,
+.header__nav__menu-list__item a { color: #888; }
+.header__nav__menu-list__item a:hover { color: #efefef; }
+.header__nav__menu-list__item--current {
+	padding: 5px 0;
+	border-right: 4px solid #80bd01;
+}
+.header__nav__menu-list__item--current,
+.header__nav__menu-list__item--current a { color: #efefef; }

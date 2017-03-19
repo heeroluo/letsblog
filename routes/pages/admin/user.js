@@ -16,18 +16,17 @@ var Promise = require('bluebird'),
 
 // 创建权限验证函数
 function createPermissionChecking(limit) {
-	return function(req, res, next) {
+	return function(req, res) {
 		if (req.currentUser.group.perm_manage_user < limit) {
 			return util.createError('权限不足', 403);
 		}
-		next();
 	};
 }
 
 
 // 创建用户界面
 exports.create = {
-	template: 'admin/user__form',
+	template: 'admin/user__form/user__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			createPermissionChecking(1),
@@ -114,7 +113,7 @@ function submitUpdateForm(userid, isMyProfile, req, res) {
 
 // 修改个人资料界面
 exports['i/update'] = {
-	template: 'admin/user__form',
+	template: 'admin/user__form/user__form',
 	callbacks: pageType.admin(
 		function(req, res, next) {
 			res.routeHelper.viewData('isMyProfile', true);
@@ -136,7 +135,7 @@ exports['i/update/post'] = {
 // 修改用户资料界面
 exports.update = {
 	pathPattern: '/user/update/:userid',
-	template: 'admin/user__form',
+	template: 'admin/user__form/user__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			createPermissionChecking(2),

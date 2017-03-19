@@ -19,13 +19,12 @@ function checkPermission(req, res, next) {
 	if (!req.currentUser.group.perm_article && !req.currentUser.group.perm_manage_article) {
 		return util.createError('权限不足', 403);
 	}
-	next();
 }
 
 
 // 发表新文章界面
 exports.create = {
-	template: 'admin/article__form',
+	template: 'admin/article__form/article__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -72,7 +71,7 @@ exports['create/post'] = {
 // 修改文章界面
 exports.update = {
 	pathPattern: '/article/update/:articleid',
-	template: 'admin/article__form',
+	template: 'admin/article__form/article__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -238,8 +237,14 @@ var storage = multer.diskStorage({
 	filename: function(req, file, callback) {
 		var path = require('path'), now = new Date();
 
+
 		// 重命名为 年+月+日+时+分+秒+5位随机数
-		var fileName = util.formatDate(now, 'YYYYMMDDhhmmss') +
+		var fileName = now.getFullYear() +
+			('0' + (now.getMonth() + 1)).slice(-2) +
+			('0' + (now.getDate() + 1)).slice(-2) +
+			('0' + (now.getHours() + 1)).slice(-2) +
+			('0' + (now.getMinutes() + 1)).slice(-2) +
+			('0' + (now.getSeconds() + 1)).slice(-2) +
 			parseInt(10000 + Math.random() * 90000) +
 			path.extname(file.originalname);
 
@@ -269,6 +274,7 @@ exports['attachment/upload'] = {
 				upload(req, res, function(err) {
 					next(err);
 				});
+				return true;
 			}
 		)
 	)

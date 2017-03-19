@@ -1,0 +1,52 @@
+{{ extend('layouts/admin/admin') }}
+
+{{#block ('mainTitle')}}
+	{{#if (category.categoryid > 0)}}编辑{{else}}添加{{/if}}分类
+{{/block}}
+
+{{#block ('mainBody')}}
+	<form action="./post" method="post" class="form-layout">
+		<div class="form-layout__row form-layout__row--2cols clearfix">
+			<div class="form-layout__col">
+				<div class="form-item">
+					<input class="textbox textbox--larger" name="categoryname" type="text" placeholder="分类名" maxlength="20" value="{{ category.categoryname }}" />
+					<div class="form-item__side"><em class="form-item__required">*</em></div>
+				</div>
+			</div>
+			<div class="form-layout__col">
+				<input class="textbox textbox--larger" name="categoryname_en" type="text" placeholder="英文分类名" maxlength="20" value="{{ category.categoryname_en }}" />
+			</div>
+		</div>
+		<div class="form-layout__row form-layout__row--2cols clearfix">
+			<div class="form-layout__col">
+				<div class="form-item">
+					<p class="form-item__label">权重 <em class="form-item__required">*</em></p>
+					<input class="textbox" name="weight" type="text" placeholder="0~255" maxlength="3" value="{{ category.weight }}" />
+				</div>
+			</div>
+		</div>
+		<div class="form-layout__row">
+			<input type="submit" value="提 交" class="button" />
+		</div>
+	</form>
+	{{#modjs ('lib/dom@1.1', 'libvalidator@1.1')}}
+	function($, Validator) {
+		new Validator({
+			form: $('form'),
+			steps: [
+				{ fields: 'categoryname', message: '请填写分类名' },
+				{
+					fields: 'title_en',
+					message: '英文分类名只能包含英文、数字和中划线',
+					rule: function(val) {
+						return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(val);
+					},
+					required: false
+				},
+				{ fields: 'weight', message: '权重不能为空' },
+				{ fields: 'weight', rule: 'min:0&&max:255', message: '权重必须为0-255间的整数' }
+			]
+		});
+	}
+	{{/modjs}}
+{{/block}}

@@ -1,0 +1,3 @@
+<p data-taskid="{{ taskId }}">
+	正在上传 {{ fileName }} ... <a href="#" class="upload-cancel">取消</a>
+</p>

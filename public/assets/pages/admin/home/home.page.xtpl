@@ -1,0 +1,11 @@
+{{ extend ('layouts/admin/admin') }}
+
+{{#block ('mainTitle')}}后台首页{{/block}}
+
+{{#block ('mainBody')}}
+<p>{{ currentUser.nickname }}，欢迎回来。</p>
+<ul>
+	<li>文章数：{{ currentUser.totalarticles }}</li>
+	<li>评论数：{{ currentUser.totalcomments }}</li>
+</ul>
+{{/block}}

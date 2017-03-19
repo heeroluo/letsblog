@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Comment component - v1.1 (2017-02-06T08:16:15Z)
+ * Comment component - v1.1 (2017-02-08T01:28:35Z)
  * Released under MIT license
  */
 
@@ -162,21 +162,19 @@ module.exports = widget.create({
 			if (res.status === 1) {
 				res = res.data;
 				if (!res || !res.totalPages) {
-					return xTpl.render(
-						listTpl, { tips: '暂无评论' }
-					).then(function(result) {
-						listWrapper.html(result);
-					});
+					throw new Error('暂无评论');
 				} else {
 					return t._renderList(res.commentList, res.page, res.totalPages);
 				}
 			} else {
-				return xTpl.render(
-					listTpl, { tips: res.message }
-				).then(function(result) {
-					listWrapper.html(result);
-				});
+				throw new Error(res.message);
 			}
+		}).catch(function(e) {
+			return xTpl.render(
+				listTpl, { tips: e.message }
+			).then(function(result) {
+				listWrapper.html(result);
+			});
 		});
 	}
 });

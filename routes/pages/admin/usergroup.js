@@ -17,7 +17,6 @@ function checkPermission(req, res, next) {
 	if (req.currentUser.group.perm_manage_user < 2) {
 		return util.createError('权限不足', 403);
 	}
-	next();
 }
 
 
@@ -36,7 +35,7 @@ exports.list = pageType.admin(
 
 // 创建用户组界面
 exports.create = {
-	template: 'admin/usergroup__form',
+	template: 'admin/usergroup__form/usergroup__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
@@ -56,7 +55,7 @@ exports['create/post'] = {
 			checkPermission,
 			function(req, res, next) {
 				var userGroup = req.getEntity('usergroup', 'insert');
-				userGroupBLL.create(userGroup).then(function() {
+				return userGroupBLL.create(userGroup).then(function() {
 					res.routeHelper.renderInfo(res, {
 						message: '已创建新用户组 ' + userGroup.groupname
 					});
@@ -70,7 +69,7 @@ exports['create/post'] = {
 // 修改用户组界面
 exports.update = {
 	pathPattern: '/usergroup/update/:groupid',
-	template: 'admin/usergroup__form',
+	template: 'admin/usergroup__form/usergroup__form',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
