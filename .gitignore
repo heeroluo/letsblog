@@ -16,8 +16,8 @@ node_modules
 .vscode
 
 # Upload directory
-public/upload/article/*
-!public/upload/article/useless
+upload/*
+!upload/.gitkeep
 
 # Database
 bin/*.sql

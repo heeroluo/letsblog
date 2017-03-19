@@ -2,7 +2,10 @@
   "name": "letsblog",
   "version": "0.3.0",
   "description": "A blog publishing system",
-  "keywords": ["blog", "cms"],
+  "keywords": [
+    "blog",
+    "cms"
+  ],
   "homepage": "https://github.com/heeroluo/letsblog#readme",
   "bugs": {
     "url": "https://github.com/heeroluo/letsblog/issues"
@@ -21,7 +24,7 @@
     "url": "https://github.com/heeroluo/letsblog.git"
   },
   "dependencies": {
-	"bluebird": "~3.4.7",
+    "bluebird": "~3.4.7",
     "body-parser": "~1.16.0",
     "cookie-parser": "~1.4.3",
     "escape-html": "^1.0.3",

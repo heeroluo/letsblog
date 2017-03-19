@@ -41,6 +41,12 @@ app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded({ extended: false }) );
 app.use( cookieParser() );
 
+
+// 上传文件
+app.use('/upload', express.static(
+	path.join(__dirname, 'upload'), appConfig.static)
+);
+
 // 静态文件
 var assetConfig = require('./asset-config');
 // 以下情况都要在Express中处理静态资源:

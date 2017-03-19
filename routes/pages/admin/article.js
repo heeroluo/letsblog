@@ -203,31 +203,34 @@ exports['list/batch'] = {
 
 // 文件上传支持
 var multer  = require('multer');
+var path = require('path');
+var fs = require('fs');
 
 var storage = multer.diskStorage({
 	destination: function(req, file, callback) {
-		function callCallback(err, targetDir) {
+		function callCallback(err, targetDir, localDir) {
 			if (targetDir){
-				req.res.routeHelper.viewData( 'path', targetDir.replace(/^\.\/public/, '') );
+				req.res.routeHelper.viewData('path', targetDir);
 			}
-			callback(err, targetDir);
+			callback(err, localDir);
 		}
 
 		var now = new Date();
-		var targetDir = './public/upload/article/' +
-				now.getFullYear() + ( '0' + (now.getMonth() + 1) ).slice(-2);
+		var targetDir = '/upload/article/' +
+			now.getFullYear() +
+			( '0' + (now.getMonth() + 1) ).slice(-2);
+		var localDir = path.join(process.cwd(), targetDir);
 
-		var fs = require('fs');
 		// 创建年月目录
-		fs.exists(targetDir, function(exists) {
+		fs.exists(localDir, function(exists) {
 			if (exists) {
-				callCallback(null, targetDir);
+				callCallback(null, targetDir, localDir);
 			} else {
-				fs.mkdir(targetDir, function(err) {
+				fs.mkdir(localDir, function(err) {
 					if (err) {
 						callCallback(err);
 					} else {
-						callCallback(null, targetDir);
+						callCallback(null, targetDir, localDir);
 					}
 				});
 			}
@@ -236,7 +239,6 @@ var storage = multer.diskStorage({
 
 	filename: function(req, file, callback) {
 		var path = require('path'), now = new Date();
-
 
 		// 重命名为 年+月+日+时+分+秒+5位随机数
 		var fileName = now.getFullYear() +
