@@ -36,13 +36,9 @@ app.use('/favicon.ico', function(req, res) {
 	res.end();
 });
 
-app.use( logger('dev') );
-app.use( bodyParser.json() );
-app.use( bodyParser.urlencoded({ extended: false }) );
-app.use( cookieParser() );
+app.use(logger('dev'));
 
-
-// 上传文件
+// 上传文件（文章附件）
 app.use('/upload', express.static(
 	path.join(__dirname, 'upload'), appConfig.static)
 );
@@ -60,11 +56,15 @@ if (assetConfig == null || appConfig.isStaticServer) {
 	);
 	// 开发环境才需要处理特殊静态资源的中间件
 	if (assetConfig == null) {
-		app.use( require('./lib/assert-handler')(staticPath) );
+		app.use(require('./lib/assert-handler')(staticPath));
 	}
 	// 处理静态文件的中间件
-	app.use( express.static(staticPath, appConfig.static) );
+	app.use(express.static(staticPath, appConfig.static));
 }
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // 增加获取实体类工具函数
 app.use(function(req, res, next) {
