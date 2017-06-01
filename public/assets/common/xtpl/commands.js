@@ -38,13 +38,13 @@ exports.escape = (function() {
 
 // 把换行符替换成<br />
 exports.nl2br = function(scope, option) {
-	return toString(option.params[0]).replace(/\r?\n/, '<br />');
+	return toString(option.params[0]).replace(/\r?\n/g, '<br />');
 };
 
 // 把空白替换成
 exports.space2nbsp = function(scope, option) {
-	return toString(option.params[0]).replace(/\s{2,}/, function(match) {
-		return new Array(match.length + 1).join('&nbps;');
+	return toString(option.params[0]).replace(/\s{2,}/g, function(match) {
+		return new Array(match.length + 1).join('&nbsp;');
 	});
 };
 
