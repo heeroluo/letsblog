@@ -47,7 +47,7 @@ function basicPage(callbacks) {
 			// error的情况下表示没有登录
 			// 无需处理异常
 		}).then(function() {
-			// 如果用户未登录或不存在，则生成一个访客对象
+			// 如果用户未登录或不存在，则创建一个访客对象
 			user = user || userModel.createEntity({
 				userid: 0,
 				username: '',
@@ -81,7 +81,7 @@ function basicPage(callbacks) {
 exports.basic = basicPage;
 
 
-// 标准页面
+// 前台页面
 function normalPage(callbacks) {
 	return basicPage(
 		prepend(function(req, res, next) {
@@ -99,11 +99,11 @@ function normalPage(callbacks) {
 					} else {
 						if (res.routeHelper.type() === 'html') {
 							res.routeHelper.appendTitle(result.sitename);
-							res.routeHelper.appendKeywords( result.keywords.split(/\s*,\s*/) );
+							res.routeHelper.appendKeywords(result.keywords.split(/\s*,\s*/));
 							res.routeHelper.viewData({
 								description: result.description,
 								currentOptions: result,
-								currentYear: ( new Date() ).getFullYear()
+								currentYear: (new Date()).getFullYear()
 							});
 						}
 					}
@@ -135,6 +135,9 @@ exports.normal = normalPage;
 function adminPage(callbacks) {
 	return basicPage(
 		prepend(function(req, res) {
+			if (res.routeHelper.type() === 'html') {
+				res.routeHelper.appendTitle('LetsBlog后台管理系统');
+			}
 			if (!req.currentUser.userid) {
 				res.redirect(
 					'/user/login' +

@@ -93,7 +93,10 @@ module.exports = function(express, app) {
 				} else {
 					RouteHelper = routeHelpers.HTMLRouteHelper;
 				}
-				res.routeHelper = new RouteHelper(template);
+				res.routeHelper = new RouteHelper();
+				if (resType === 'html') {
+					res.routeHelper.setTemplate(template);
+				} 
 				res.routeHelper.viewData({
 					ENV: env,
 					currentYear: (new Date).getFullYear()

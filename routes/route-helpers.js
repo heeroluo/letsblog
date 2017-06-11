@@ -15,11 +15,9 @@ var util = require('../lib/util');
  * 路由辅助器基类
  * @class BasicRouteHelper
  * @constructor
- * @param {String} template 页面模板路径
  */
 var BasicRouteHelper = util.createClass(function(template) {
 	this._viewData = { };
-	this.setTemplate(template);
 	this._type = 'basic';
 }, {
 	/**
@@ -29,14 +27,6 @@ var BasicRouteHelper = util.createClass(function(template) {
 	 * @return {String} 路由辅助器类型
 	 */
 	type: function() { return this._type; },
-
-	/**
-	 * 设置页面模板
-	 * @method setTemplate
-	 * @for BasicRouteHelper
-	 * @param {String} template 模板路径
-	 */
-	setTemplate: function(template) { this._template = template; },
 
 	/**
 	 * 获取视图数据
@@ -72,35 +62,7 @@ var BasicRouteHelper = util.createClass(function(template) {
 	},
 
 	/**
-	 * 映射数据到viewData
-	 * @method mapToViewData
-	 * @for BasicRouteHelper
-	 * @param {Array} dataSource 源数据
-	 * @param {String|Function} mapWay 映射方式：为字符串时，即为映射的key；为函数时，返回map
-	 */
-	mapToViewData: function(dataSource, config) {
-		var t = this;
-
-		config.forEach(function(mapWay, i) {
-			switch (typeof mapWay) {
-				case 'string':
-					t.viewData(mapWay, dataSource[i]);
-					break;
-
-				case 'function':
-					var map = mapWay(dataSource[i]);
-					if (typeof map === 'object') {
-						util.each(map, function(key, value) {
-							t.viewData(key, value);
-						});
-					}
-					break;
-			}
-		});
-	},
-
-	/**
-	 * 渲染视图
+	 * 渲染视图（由子类实现）
 	 * @method render
 	 * @for BasicRouteHelper
 	 * @param {Object} res Response对象
@@ -111,7 +73,7 @@ var BasicRouteHelper = util.createClass(function(template) {
 	},
 
 	/**
-	 * 渲染提示信息
+	 * 渲染提示信息（由子类实现）
 	 * @method renderInfo
 	 * @for BasicRouteHelper
 	 * @param {Object} res Response对象
@@ -129,29 +91,55 @@ var BasicRouteHelper = util.createClass(function(template) {
 });
 
 
+
+function mergeArray(target, source, isAppend) {
+	if (!Array.isArray(source)) { source = [source]; }
+	return isAppend ? target.concat(source) : source.concat(target);
+}
+
+
 /**
  * HTML路由辅助器
  * @class HTMLRouteHelper
  * @constructor
  * @extends BasicRouteHelper
- * @param {String} template 页面模板路径
  */
-exports.HTMLRouteHelper = util.createClass(function(template) {
+exports.HTMLRouteHelper = util.createClass(function() {
 	this._type = 'html';
+	this._template = '';
+	this._titles = [ ];
+	this._keywords = [ ];
 }, {
-	appendTitle: function() {
+	/**
+	 * 设置页面模板
+	 * @method setTemplate
+	 * @for BasicRouteHelper
+	 * @param {String} template 模板路径
+	 */
+	setTemplate: function(template) { this._template = template; },
 
+
+	appendTitle: function(titles) {
+		this._titles = mergeArray(this._titles, titles, true);
 	},
 
-	prependTitle: function() {
-
+	prependTitle: function(titles) {
+		this._titles = mergeArray(this._titles, titles);
 	},
 
-	appendKeywords: function() {
+	appendKeywords: function(keywords) {
+		this._keywords = mergeArray(this._keywords, keywords, true);
+	},
 
+	prependKeywords: function(keywords) {
+		this._keywords = mergeArray(this._keywords, keywords);
 	},
 
 	render: function(res) {
+		this.viewData({
+			title: this._titles.join(' | '),
+			keywords: this._keywords.join(',')
+		});
 		res.render(this._template, this._viewData);
 		this._rendered = true;
 	},
@@ -163,9 +151,9 @@ exports.HTMLRouteHelper = util.createClass(function(template) {
 		}, info);
 		this.viewData('info', info);
 		this.setTemplate(
-			res.req.originalUrl.indexOf('/admin/') === 0
-				? 'pages/admin/_info/_info.page'
-				: 'pages/_info/_info.page'
+			res.req.originalUrl.indexOf('/admin/') === 0 ?
+				'pages/admin/_info/_info.page' :
+				'pages/_info/_info.page'
 		);
 		this.render(res);
 	}
