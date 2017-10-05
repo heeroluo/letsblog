@@ -40,8 +40,13 @@ app.use(logger('dev'));
 
 // 上传文件（文章附件）
 app.use('/upload', express.static(
-	path.join(__dirname, 'upload'), appConfig.static)
-);
+	path.join(__dirname, 'upload'), appConfig.static
+));
+
+// CKEditor
+app.use('/ckeditor', express.static(
+	path.join(__dirname, 'ckeditor'), appConfig.static
+));
 
 // 静态文件
 var assetConfig = require('./asset-config');
