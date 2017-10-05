@@ -19,10 +19,9 @@ var util = require('../lib/util');
  *   @param {Number} [options.expires] 过期时间（单位毫秒）
  */
 module.exports = util.createClass(function(createPromise, options) {
-	var t = this;
-	t._createPromise = createPromise;
-
-	if (options) { t._expires = Number(options.expires) || 0; }
+	this._createPromise = createPromise;
+	options = options || { };
+	this._expires = Number(options.expires) || 0;
 }, {
 	/**
 	 * 获取请求数据的Promise实例
@@ -38,7 +37,12 @@ module.exports = util.createClass(function(createPromise, options) {
 			t.clear();
 		}
 
-		if (!t._promise) { t._promise = t._createPromise(); }
+		if (!t._promise) {
+			t._promise = t._createPromise().then(function(result) {
+				t._lastTime = Date.now();
+				return result;
+			});
+		}
 
 		return t._promise;
 	},
