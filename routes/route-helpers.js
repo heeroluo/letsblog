@@ -9,6 +9,7 @@
 'use strict';
 
 var util = require('../lib/util');
+var assetConfig = require('../asset-config');
 
 
 /**
@@ -136,12 +137,28 @@ exports.HTMLRouteHelper = util.createClass(function() {
 	},
 
 	render: function(res) {
-		this.viewData({
-			title: this._titles.join(' | '),
-			keywords: this._keywords.join(',')
+		var t = this;
+
+		t.viewData({
+			title: t._titles.join(' | '),
+			keywords: t._keywords.join(',')
 		});
-		res.render(this._template, this._viewData);
-		this._rendered = true;
+
+		if (assetConfig) {
+			// 把构建后得出的资源列表导进viewData
+			var assets = assetConfig.map[t._template];
+			if (assets) {
+				Object.keys(assets).forEach(function(assetType) {
+					t.viewData(
+						assetType + 'Files',
+						assets[assetType].slice()
+					);
+				});
+			}
+		}
+
+		res.render(t._template, t._viewData);
+		t._rendered = true;
 	},
 
 	renderInfo: function(res, info) {

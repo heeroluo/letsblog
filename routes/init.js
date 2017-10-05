@@ -5,11 +5,10 @@
 
 'use strict';
 
-var util = require('../lib/util'),
-	routeHelpers = require('./route-helpers'),
-	requireDir = require('require-dir'),
-	routes = requireDir('./pages'),
-	assetConfig = require('../asset-config');
+var requireDir = require('require-dir');
+var util = require('../lib/util');
+var routeHelpers = require('./route-helpers');
+var routes = requireDir('./pages');
 
 
 module.exports = function(express, app) {
@@ -18,7 +17,7 @@ module.exports = function(express, app) {
 	// 调用渲染的callback
 	function render(req, res, next) {
 		if (res.routeHelper) {
-			if ( res.routeHelper.rendered() ) {
+			if (res.routeHelper.rendered()) {
 				res.end();
 			} else {
 				res.routeHelper.render(res);
@@ -57,12 +56,12 @@ module.exports = function(express, app) {
 		}
 
 		util.each(subRoutes, function(subRoute, subPath) {
-			if ( typeof subRoute === 'function' || Array.isArray(subRoute) ) {
+			if (typeof subRoute === 'function' || Array.isArray(subRoute)) {
 				subRoute = { callbacks: subRoute };
 			} else {
 				subRoute = util.extend({ }, subRoute);
 			}
-			if ( !Array.isArray(subRoute.callbacks) ) {
+			if (!Array.isArray(subRoute.callbacks)) {
 				subRoute.callbacks = [subRoute.callbacks];
 			}
 			// 增加对Promise实例的包装处理
@@ -102,24 +101,11 @@ module.exports = function(express, app) {
 					currentYear: (new Date).getFullYear()
 				});
 
-				// 把构建后得出的资源列表导进viewData
-				if (assetConfig) {
-					var assets = assetConfig.map[template];
-					if (assets) {
-						Object.keys(assets).forEach(function(assetType) {
-							res.routeHelper.viewData(
-								assetType + 'Files',
-								assets[assetType].slice()
-							);
-						});
-					}
-				}
-
 				next();
 			});
 
-			var verb = subRoute.verb || 'get',
-				pathPattern = subRoute.pathPattern || subRoute.path;
+			var verb = subRoute.verb || 'get';
+			var pathPattern = subRoute.pathPattern || subRoute.path;
 
 			subRoute.callbacks.forEach(function(callback) {
 				router[verb](pathPattern, callback);

@@ -10,7 +10,12 @@
 <meta name="format-detection" content="telephone=no,email=no" />
 {{#if (keywords)}}<meta name="Keywords" content="{{ keywords }}" />{{/if}}
 {{#if (description)}}<meta name="Description" content="{{ description }}" />{{/if}}
-<script>var cssFiles = { }, jsFiles = { };</script>
+<script>
+var ENV = {{{ jsonEncode(ENV) }}};
+var ASSET_URL_PREFIX = {{{ jsonEncode(assetURLPrefix()) }}};
+var cssFiles = { };
+var jsFiles = { };
+</script>
 {{ headjs('./bowl') }}
 {{ headjs('./bowl-config') }}
 {{#each (headjsFiles)}}

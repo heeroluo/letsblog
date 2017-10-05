@@ -6,19 +6,19 @@
 
 'use strict';
 
-var Promise = require('bluebird'),
-	util = require('../lib/util'),
-	optionsBLL = require('../bll/options'),
-	categoryBLL = require('../bll/category'),
-	linkBLL = require('../bll/link'),
-	userModel = require('../entity/user'),
-	userBLL = require('../bll/user'),
-	userGroupBLL = require('../bll/usergroup');
+var Promise = require('bluebird');
+var util = require('../lib/util');
+var userModel = require('../entity/user');
+var optionsBLL = require('../bll/options');
+var categoryBLL = require('../bll/category');
+var linkBLL = require('../bll/link');
+var userGroupBLL = require('../bll/usergroup');
+var userBLL = require('../bll/user');
 
 
 // 在数组最前面插入元素
 function prepend(elt, arr) {
-	if ( Array.isArray(arr) ) {
+	if (Array.isArray(arr)) {
 		arr = arr.slice();
 	} else if (arr) {
 		arr = [arr];
@@ -35,7 +35,7 @@ exports.prepend = prepend;
 
 // 基础页面
 function basicPage(callbacks) {
-	return prepend(function(req, res, next) {
+	return prepend(function(req, res) {
 		var user;
 
 		return userBLL.readByUsernameAndPassword(
@@ -53,7 +53,6 @@ function basicPage(callbacks) {
 				username: '',
 				groupid: 2
 			});
-
 			return userGroupBLL.read(user.groupid);
 		}).then(function(result) {
 			if (result) {
@@ -73,7 +72,7 @@ function basicPage(callbacks) {
 					return userBLL.updateActivity(req.ip, user.userid);
 				}
 			} else {
-				throw util.createError('用户组不存在');
+				return util.createError('用户组不存在');
 			}
 		});
 	}, callbacks);
@@ -84,26 +83,28 @@ exports.basic = basicPage;
 // 前台页面
 function normalPage(callbacks) {
 	return basicPage(
-		prepend(function(req, res, next) {
+		prepend(function(req, res) {
 			var isHTMLPage = res.routeHelper.type() === 'html';
 
-			if (isHTMLPage) { res.routeHelper.viewData('categoryid', -1); }
+			if (isHTMLPage) {
+				// 标示当前所在分类（默认不在任何分类）
+				res.routeHelper.viewData('categoryid', -1);
+			}
 
 			var tasks = [
-				// 加载网站设置
+				// 加载网站配置
 				optionsBLL.read().then(function(result) {
 					if (!result) {
-						err = util.createError('网站设置丢失', 500);
+						err = util.createError('网站配置丢失', 500);
 					} else if (!result.isopen) {
 						err = util.createError(result.tipstext || '网站已关闭');
 					} else {
-						if (res.routeHelper.type() === 'html') {
+						if (isHTMLPage) {
 							res.routeHelper.appendTitle(result.sitename);
 							res.routeHelper.appendKeywords(result.keywords.split(/\s*,\s*/));
 							res.routeHelper.viewData({
 								description: result.description,
-								currentOptions: result,
-								currentYear: (new Date()).getFullYear()
+								currentOptions: result
 							});
 						}
 					}
@@ -121,7 +122,7 @@ function normalPage(callbacks) {
 					linkBLL.list(1).then(function(result) {
 						res.routeHelper.viewData('linkList', result);
 					})
-				)
+				);
 			}
 
 			return Promise.all(tasks);
