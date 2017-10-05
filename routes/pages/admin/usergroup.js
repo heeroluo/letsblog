@@ -78,7 +78,7 @@ exports.update = {
 					if (result) {
 						res.routeHelper.viewData('userGroup', result);
 					} else {
-						throw util.createError('用户组不存在', 404);
+						return util.createError('用户组不存在', 404);
 					}
 				});
 			}

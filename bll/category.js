@@ -6,12 +6,12 @@
 
 'use strict';
 
-var Promise = require('bluebird'),
-	util = require('../lib/util'),
-	validator = require('../lib/validator'),
-	Cache = require('./_cache'),
-	categoryModel = require('../entity/category'),
-	categoryDAL = require('../dal/category');
+var Promise = require('bluebird');
+var util = require('../lib/util');
+var validator = require('../lib/validator');
+var Cache = require('./_cache');
+var categoryModel = require('../entity/category');
+var categoryDAL = require('../dal/category');
 
 
 // 分类的改动较少，且需要在导航栏中展示
@@ -21,14 +21,16 @@ var listCache = new Cache(function() {
 		// 冻结对象，防止因意外修改导致脏数据的出现
 		return Object.freeze(
 			(result || [ ]).map(function(category) {
-				return Object.freeze( categoryModel.createEntity(category) );
+				return Object.freeze(categoryModel.createEntity(category));
 			})
 		);
 	});
 });
 
 // 向外暴露清理缓存的接口
-var clearCache = exports.clearCache = function() { listCache.clear(); };
+var clearCache = exports.clearCache = function() {
+	listCache.clear();
+};
 
 
 // 读取分类数据列表
@@ -51,9 +53,10 @@ var list = exports.list = function(minWeight, type) {
 	return listCache.promise().then(function(result) {
 		return type ?
 			util.arrayToMap(result, 'categoryid', filter) :
-			( filter ? result.filter(filter) : result );
+			(filter ? result.filter(filter) : result);
 	});
 };
+
 
 // 读取单条分类数据
 var read = exports.read = function(categoryid) {
@@ -68,7 +71,7 @@ function validate(category) {
 	if (!category.categoryname) {
 		return '分类名不能为空';
 	}
-	if ( category.categoryname_en && !validator.isEnTitle(category.categoryname_en) ) {
+	if (category.categoryname_en && !validator.isEnTitle(category.categoryname_en)) {
 		return '英文分类名只能包含小写字母、数字和连字符';
 	}
 	if (category.weight < 0 || category.weight > 255) {
@@ -81,7 +84,7 @@ exports.create = function(category) {
 	var err = validate(category);
 	return err ? 
 		util.createError(err) :
-		categoryDAL.create( category.toDbRecord() ).then(clearCache);
+		categoryDAL.create(category.toDbRecord()).then(clearCache);
 };
 
 // 更新分类
@@ -95,7 +98,9 @@ exports.update = function(category, categoryid) {
 
 // 删除分类
 exports.delete = function(categoryid) {
-	if ( !validator.isAutoId(categoryid) ) { return util.createError('无效的分类编号'); }
+	if (!validator.isAutoId(categoryid)) {
+		return util.createError('无效的分类编号');
+	}
 
 	return read(categoryid).then(function(result) {
 		var err;

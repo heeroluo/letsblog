@@ -78,7 +78,7 @@ function renderUpdateForm(userid, res) {
 			if (result) {
 				res.routeHelper.viewData('user', result);
 			} else {
-				throw util.createError('用户不存在', 404);
+				return util.createError('用户不存在', 404);
 			}
 		}),
 
@@ -91,7 +91,7 @@ function renderUpdateForm(userid, res) {
 // 更新个人资料时，isMyProfile传true
 function submitUpdateForm(userid, isMyProfile, req, res) {
 	return userBLL.readByUserId(userid).then(function(result) {
-		if (!result) { throw util.createError('用户不存在', 404); }
+		if (!result) { return util.createError('用户不存在', 404); }
 		return result;
 	}).then(function(user) {
 		var newUser = req.getEntity('user', 'update');

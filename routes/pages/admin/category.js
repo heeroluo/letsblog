@@ -73,7 +73,7 @@ exports.update = {
 						if (result) {
 							res.routeHelper.viewData('category', result);
 						} else {
-							throw util.createError('分类不存在', 404);
+							return util.createError('分类不存在', 404);
 						}
 					}),
 					userGroupBLL.list().then(function(result) {

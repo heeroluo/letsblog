@@ -6,14 +6,14 @@
 
 'use strict';
 
-var Promise = require('bluebird'),
-	util = require('../lib/util'),
-	validator = require('../lib/validator'),
-	Cache = require('./_cache'),
-	categoryBLL = require('./category'),
-	commentBLL = require('./comment'),
-	articleModel = require('../entity/article'),
-	articleDAL = require('../dal/article');
+var Promise = require('bluebird');
+var util = require('../lib/util');
+var validator = require('../lib/validator');
+var articleModel = require('../entity/article');
+var articleDAL = require('../dal/article');
+var Cache = require('./_cache');
+var categoryBLL = require('./category');
+var commentBLL = require('./comment');
 
 
 // 读取文章列表（带分页）
@@ -22,8 +22,8 @@ var list = exports.list = function(params, pageSize, page) {
 		if (isNaN(params.minWeight) || params.minWeight < 0) { delete params.minWeight; }
 		if (isNaN(params.maxWeight) || params.maxWeight < 0) { delete params.maxWeight; }
 		if (isNaN(params.state) || params.state < 0) { delete params.state; }
-		if ( !validator.isAutoId(params.categoryid) ) { delete params.categoryid; }
-		if ( !validator.isAutoId(params.userid) ) { delete params.userid; }
+		if (!validator.isAutoId(params.categoryid)) { delete params.categoryid; }
+		if (!validator.isAutoId(params.userid)) { delete params.userid; }
 		if (params.categoryids) {
 			params.categoryids = params.categoryids.filter(function(id) {
 				return validator.isAutoId(id);
@@ -98,18 +98,27 @@ var clearCache = exports.clearCache = function() {
 };
 
 
-// 默认权重
-var DEFAULT_WEIGHT = exports.DEFAULT_WEIGHT = 60;
+// 摘要分隔符
+var re_summarySep = /<div\s+style=(["'])page-break-after:\s*always;?\1>.*?<\/div>/i;
+
+// 移除文章内容中用于截取摘要的分页符
+exports.cleanContent = function(content) {
+	return content.replace(re_summarySep, '');
+};
 
 // 截取文章摘要（分页符前的部分）
 function getSummary(content) {
-	return /<div\s+style=(["'])page-break-after:\s*always;?\1>/i.test(content) ?
-		RegExp.leftContext : content;
+	return re_summarySep.test(content) ? RegExp.leftContext : content;
 }
 
 
 // 行分隔符和段落分隔符（JSON序列化时，这两个字符不会被编码，容易导致异常，清空之）
-var re_separator = new RegExp('[' + String.fromCharCode(8232) + String.fromCharCode(8233) + ']', 'g');
+var re_separator = new RegExp(
+	'[' + String.fromCharCode(8232) + String.fromCharCode(8233) + ']', 'g'
+);
+
+// 默认权重
+var DEFAULT_WEIGHT = exports.DEFAULT_WEIGHT = 60;
 
 // 创建和更新数据前的验证
 function validate(article, user) {
@@ -117,7 +126,7 @@ function validate(article, user) {
 
 	if (!article.title) {
 		err = '标题不能为空';
-	} else if ( article.title_en && !validator.isEnTitle(article.title_en) ) {
+	} else if (article.title_en && !validator.isEnTitle(article.title_en)) {
 		err = '英文标题只能包含小写字母、数字和连字符';
 	} else if (!article.categoryid) {
 		err = '分类不能为空';
@@ -148,11 +157,10 @@ function validate(article, user) {
 		});
 }
 
-
 // 创建文章
 exports.create = function(article, user) {
 	return validate(article, user).then(function() {
-		return articleDAL.create( article.toDbRecord() );
+		return articleDAL.create(article.toDbRecord());
 	}).then(function(result) {
 		categoryBLL.clearCache();
 		clearCache();
@@ -162,7 +170,9 @@ exports.create = function(article, user) {
 
 // 更新文章
 exports.update = function(article, articleid, user) {
-	if ( !validator.isAutoId(articleid) ) { return util.createError('无效的文章编号'); }
+	if (!validator.isAutoId(articleid)) {
+		return util.createError('无效的文章编号');
+	}
 
 	return validate(article, user).then(function() {
 		return articleDAL.update(article.toDbRecord(), articleid);
@@ -173,14 +183,11 @@ exports.update = function(article, articleid, user) {
 };
 
 
-// 移除文章内容中用于截取摘要的分页符
-exports.cleanContent = function(content) {
-	return content.replace(/<div\s+style=(["'])page-break-after:\s*always;?\1>.*?<\/div>/i, '');
-};
-
 // 读取单条文章数据
 exports.read = function(articleid) {
-	if ( !validator.isAutoId(articleid) ) { return util.createError('无效的文章编号'); }
+	if (!validator.isAutoId(articleid)) {
+		return util.createError('无效的文章编号');
+	}
 
 	return articleDAL.read(articleid).then(function(result) {
 		if (result && result[0]) {
@@ -197,12 +204,12 @@ exports.delete = function(articleids, userid) {
 	var err;
 	if (!articleids.length) {
 		err = '请指定要操作的文章';
-	} else if ( articleids.some(function(id) { return !validator.isAutoId(id); }) ) {
+	} else if (articleids.some(function(id) { return !validator.isAutoId(id); })) {
 		err = '无效的文章编号';
 	} 
 
 	return err ?
-		util.createError(err):
+		util.createError(err) :
 		Promise.all([
 			// 删除文章的评论
 			commentBLL.deleteByArticleIds(articleids),
@@ -231,7 +238,7 @@ exports.getAdjacentArticles = function(articleid, categoryid) {
 	]).then(function(results) {
 		return results.map(function(result) {
 			if (result && result[0]) {
-				return articleModel.createEntity(result[0])
+				return articleModel.createEntity(result[0]);
 			}
 		});
 	});

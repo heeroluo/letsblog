@@ -64,7 +64,7 @@ exports.update = {
 			function(req, res, next) {
 				return linkBLL.read( parseInt(req.params.linkid) ).then(function(result) {
 					if (result == null) {
-						throw util.createError('链接不存在', 404);
+						return util.createError('链接不存在', 404);
 					} else {
 						res.routeHelper.viewData('link', result);
 					}

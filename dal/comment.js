@@ -19,6 +19,7 @@ exports.updateState = function(state, commentids) {
 	);
 };
 
+
 exports.deleteByCommentIds = function(commentids) {
 	return db.query('DELETE FROM comment WHERE commentid IN (' + commentids.join(',') + ')');
 };

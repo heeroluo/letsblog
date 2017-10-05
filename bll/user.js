@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Data access layer of user
+ * Business logic layer of user
  * Released under MIT license
  */
 

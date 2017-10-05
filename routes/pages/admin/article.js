@@ -86,11 +86,11 @@ exports.update = {
 				return Promise.all([
 					articleBLL.read(articleid).then(function(result) {
 						if (!result) {
-							throw util.createError('文章不存在', 404);
+							return util.createError('文章不存在', 404);
 						} else if (!req.currentUser.group.perm_manage_article &&
 							req.currentUser.userid != result.userid
 						) {
-							throw util.createError('权限不足', 403);
+							return util.createError('权限不足', 403);
 						}
 
 						res.routeHelper.viewData('article', result);
@@ -118,11 +118,11 @@ exports['update/post'] = {
 
 				return articleBLL.read(articleid).then(function(result) {
 					if (!result) {
-						throw util.createError('文章不存在', 404);
+						return util.createError('文章不存在', 404);
 					} else if (!req.currentUser.group.perm_manage_article &&
 						req.currentUser.userid != result.userid
 					) {
-						throw util.createError('权限不足', 403);
+						return util.createError('权限不足', 403);
 					}
 					return result;
 				}).then(function(article) {

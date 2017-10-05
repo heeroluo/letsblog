@@ -7,6 +7,8 @@
 'use strict';
 
 var EntityModel = require('./_entity-model');
+
+
 module.exports = new EntityModel([
 	{
 		name: 'articleid',
@@ -25,11 +27,26 @@ module.exports = new EntityModel([
 	{ name: 'userid', type: 'int', isUpdateIgnored: true },
 	{ name: 'state', type: 'int' },
 	{ name: 'pubtime', type: 'date' },
-	{ name: 'totalviews', type: 'int', isUpdateIgnored: true, isDbGenerated: true },
-	{ name: 'totalcomments', type: 'int', isUpdateIgnored: true, isDbGenerated: true },
+	{
+		name: 'totalviews',
+		type: 'int',
+		isUpdateIgnored: true,
+		isDbGenerated: true
+	},
+	{
+		name: 'totalcomments',
+		type: 'int',
+		isUpdateIgnored: true,
+		isDbGenerated: true
+	},
 ], function() {
 	this.href = '/article/detail/' + this.articleid;
-	if (this.title_en) { this.href += '/' + this.title_en; }
+	if (this.title_en) {
+		this.href += '/' + this.title_en;
+	}
+
 	this.category_href = '/article/list/' + this.categoryid;
-	if (this.categoryname_en) { this.category_href += '/' + this.categoryname_en; }
+	if (this.categoryname_en) {
+		this.category_href += '/' + this.categoryname_en;
+	}
 });

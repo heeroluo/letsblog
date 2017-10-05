@@ -6,7 +6,6 @@
 
 'use strict';
 
-
 var util = require('../lib/util');
 
 
@@ -53,17 +52,17 @@ var entityProto = {
  * @param {Function} [entityConstructor] 实体类构造函数
  * @param {Function} [entityMethods] 实体类方法
  */
-function EntityModel(props, entityConstructor, entityMethods) {
+module.exports = util.createClass(function(props, entityConstructor, entityMethods) {
 	// 重载，允许省略entityConstructor
 	if (!entityMethods && typeof entityConstructor === 'object') {
 		entityMethods = entityConstructor;
 		entityConstructor = null;
 	}
 
-	var allProps = [ ],
-		propsToInsert = [ ],
-		propsToUpdate = [ ],
-		primaryKeys = [ ];
+	var allProps = [ ];
+	var propsToInsert = [ ];
+	var propsToUpdate = [ ];
+	var primaryKeys = [ ];
 
 	// 分析出主键以及插入、更新数据所需要属性
 	props.forEach(function(prop) {
@@ -95,19 +94,19 @@ function EntityModel(props, entityConstructor, entityMethods) {
 	this._Class = function(source, props) {
 		if (source) {
 			for (var p in source) {
-				if ( source.hasOwnProperty(p) ) { this[p] = source[p]; }
+				if (source.hasOwnProperty(p)) {
+					this[p] = source[p];
+				}
 			}
 		}
 		if (props) {
-			this._props = Object.freeze( props.slice() );
+			this._props = Object.freeze(props.slice());
 		}
 
 		if (entityConstructor) { entityConstructor.apply(this); }
 	};
 	util.extend(this._Class.prototype, entityProto, entityMethods);
-}
-
-util.extend(EntityModel.prototype, {
+}, {
 	/**
 	 * 获取实体模型属性集合
 	 * @method props
@@ -169,7 +168,7 @@ util.extend(EntityModel.prototype, {
 		// 没有指定属性类型时，把数据源的其他属性也加到对象中
 		if (!type && source && typeof source.body !== 'object') {
 			for (var p in source) {
-				if ( source.hasOwnProperty(p) && !(p in obj) ) {
+				if (source.hasOwnProperty(p) && !(p in obj)) {
 					obj[p] = source[p];
 				}
 			}
@@ -178,6 +177,3 @@ util.extend(EntityModel.prototype, {
 		return new this._Class(obj, props);
 	}
 });
-
-
-module.exports = EntityModel;

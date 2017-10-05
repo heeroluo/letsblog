@@ -27,6 +27,7 @@ exports.delete = function(articleids, userid) {
 	return db.query(sql);
 };
 
+
 exports.addViews = function(articleid) {
 	return db.query(
 		'UPDATE article SET totalviews = totalviews + 1 WHERE articleid = ?', articleid

@@ -7,6 +7,8 @@
 'use strict';
 
 var EntityModel = require('./_entity-model');
+
+
 module.exports = new EntityModel([
 	{
 		name: 'categoryid',
@@ -18,7 +20,12 @@ module.exports = new EntityModel([
 	'categoryname',
 	'categoryname_en',
 	{ name: 'weight', type: 'int' },
-	{ name: 'totalarticles', type: 'int', isUpdateIgnored: true, isDbGenerated: true }
+	{
+		name: 'totalarticles',
+		type: 'int',
+		isUpdateIgnored: true,
+		isDbGenerated: true
+	}
 ], function() {
 	this.href = '/article/list/' + this.categoryid;
 	if (this.categoryname_en) { this.href += '/' + this.categoryname_en; }

@@ -5,18 +5,8 @@
 var config = require('../config');
 var app = require('../app');
 var http = require('http');
+var path = require('path');
 
-
-// Get port from environment and store in Express.
-app.set('port', config.port);
-
-// Create HTTP server.
-var server = http.createServer(app);
-
-// Listen on provided port, on all network interfaces.
-server.listen(config.port);
-server.on('error', onError);
-server.on('listening', onListening);
 
 // Event listener for HTTP server "error" event.
 function onError(error) {
@@ -50,3 +40,15 @@ function onListening() {
 
 	console.log('Listening on ' + bind);
 }
+
+
+// Get port from environment and store in Express.
+app.set('port', config.port);
+
+// Create HTTP server.
+var server = http.createServer(app);
+
+// Listen on provided port, on all network interfaces.
+server.listen(config.port);
+server.on('error', onError);
+server.on('listening', onListening);

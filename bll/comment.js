@@ -6,14 +6,13 @@
 
 'use strict';
 
-var crypto = require('crypto'),
-	Promise = require('bluebird'),
-	util = require('../lib/util'),
-	validator = require('../lib/validator'),
-	userBLL = require('./user'),
-	articleBLL = require('./article'),
-	commentModel = require('../entity/comment'),
-	commentDAL = require('../dal/comment');
+var Promise = require('bluebird');
+var util = require('../lib/util');
+var validator = require('../lib/validator');
+var userBLL = require('./user');
+var articleBLL = require('./article');
+var commentModel = require('../entity/comment');
+var commentDAL = require('../dal/comment');
 
 
 // 发表评论前的验证
@@ -44,22 +43,22 @@ function validate(comment, user) {
 		});
 	} else {
 		comment.userid = 0;
-		if ( comment.user_email && !validator.isEmail(comment.user_email) ) {
+		if (comment.user_email && !validator.isEmail(comment.user_email)) {
 			err = 'Email格式错误';
-		} else if ( comment.user_qq && !validator.isQQ(comment.user_qq) ) {
+		} else if (comment.user_qq && !validator.isQQ(comment.user_qq)) {
 			err = 'QQ号码格式错误';
-		} else if ( !comment.user_nickname ) {
+		} else if (!comment.user_nickname) {
 			err = '昵称不能为空';
-		} else if ( !validator.isNickname(comment.user_nickname) ) {
+		} else if (!validator.isNickname(comment.user_nickname)) {
 			err = '昵称必须为2-20个字符';
 		}
 
 		tasks.push(function() {
 			return commentDAL.getTotalCommentsAfterTime(
-				new Date(Date.now() - 5000), comment.ip
+				new Date(Date.now() - 60000), comment.ip
 			).then(function(result) {
-				if (result > 0) {
-					return util.createError('发表评论的间隔不能小于5秒');
+				if (result > 6) {
+					return util.createError('1分钟内发表的评论不能超过6条');
 				}
 			});
 		});
@@ -71,9 +70,7 @@ function validate(comment, user) {
 		});
 	});
 
-	return err ?
-		util.createError(err):
-		util.promiseSeries(tasks);
+	return err ? util.createError(err) : util.promiseSeries(tasks);
 }
 
 // 发表评论
@@ -82,7 +79,7 @@ exports.create = function(comment, user) {
 	return validate(comment, user).then(function(result) {
 		// 如果用户本身有审核评论的权限，就直接把评论设为审核通过，否则为待审核状态
 		comment.state = user.group.perm_comment >= 2 || user.group.perm_manage_comment ? 1 : 0;
-		return commentDAL.create( comment.toDbRecord() );
+		return commentDAL.create(comment.toDbRecord());
 	});
 };
 
@@ -90,8 +87,8 @@ exports.create = function(comment, user) {
 // 读取评论数据列表（带分页）
 exports.list = function(params, pageSize, page, callback) {
 	if (params) {
-		if ( !validator.isAutoId(params.articleid) ) { delete params.articleid; }
-		if ( [0, 1].indexOf(params.state) === -1 ) { delete params.state; }
+		if (!validator.isAutoId(params.articleid)) { delete params.articleid; }
+		if ([0, 1].indexOf(params.state) === -1) { delete params.state; }
 	}
 
 	return commentDAL.list(params, pageSize, page).then(function(result) {
@@ -112,8 +109,14 @@ exports.list = function(params, pageSize, page, callback) {
 };
 
 
+// 获取未审核评论数
+exports.getTotalPendingReviews = function() {
+	return commentDAL.getTotalPendingReviews();
+};
+
+
 // 更新评论状态
-exports.updateState = Promise.method(function(state, commentids) {
+exports.updateState = function(state, commentids) {
 	var err;
 	if ([0, 1].indexOf(state) === -1) {
 		err = '无效的评论状态';
@@ -126,11 +129,6 @@ exports.updateState = Promise.method(function(state, commentids) {
 	return err ?
 		util.createError(err) :
 		commentDAL.updateState(state, commentids);
-});
-
-// 获取未审核评论数
-exports.getTotalPendingReviews = function() {
-	return commentDAL.getTotalPendingReviews();
 };
 
 
@@ -147,6 +145,7 @@ exports.deleteByCommentIds = function(commentids) {
 		util.createError(err) :
 		commentDAL.deleteByCommentIds(commentids);
 };
+
 
 // 根据文章编号批量删除评论
 exports.deleteByArticleIds = function(articleids) {

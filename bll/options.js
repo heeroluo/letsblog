@@ -6,24 +6,28 @@
 
 'use strict';
 
-var	Promise = require('bluebird'),
-	util = require('../lib/util'),
-	Cache = require('./_cache'),
-	optionsModel = require('../entity/options'),
-	optionsDAL = require('../dal/options');
+var	Promise = require('bluebird');
+var util = require('../lib/util');
+var optionsModel = require('../entity/options');
+var optionsDAL = require('../dal/options');
+var Cache = require('./_cache');
 
 
 // 网站设置只有一条记录，缓存之
 var myCache = new Cache(function() {
 	return optionsDAL.list().then(function(result) {
-		if (result) {
-			return Object.freeze( optionsModel.createEntity(result[0]) )
+		if (result && result.length) {
+			return Object.freeze(
+				optionsModel.createEntity(result[0])
+			);
 		}
 	});
 });
 
 // 向外暴露清空缓存的接口
-var clearCache = exports.clearCache = function() { myCache.clear(); };
+var clearCache = exports.clearCache = function() {
+	myCache.clear();
+};
 
 
 // 读取单条网站设置记录
@@ -45,5 +49,5 @@ exports.update = function(options) {
 	var err = validate(options);
 	return err ?
 		util.createError(err) :
-		optionsDAL.update( options.toDbRecord() ).then(clearCache);
+		optionsDAL.update(options.toDbRecord()).then(clearCache);
 };

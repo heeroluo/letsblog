@@ -6,11 +6,11 @@
 
 'use strict';
 
-var Promise = require('bluebird'),
-	util = require('../../lib/util'),
-	pageType = require('../page-type'),
-	userBLL = require('../../bll/user'),
-	articleBLL = require('../../bll/article');
+var Promise = require('bluebird');
+var util = require('../../lib/util');
+var userBLL = require('../../bll/user');
+var articleBLL = require('../../bll/article');
+var pageType = require('../page-type');
 
 
 // 文章列表
@@ -23,12 +23,14 @@ exports.list = {
 			res.routeHelper.viewData('articleList', result);
 		}
 
-		var categoryid = parseInt(req.params[0]) || 0,
-			page = parseInt(req.query.page) || 1,
-			tasks = [ ];
+		var categoryid = parseInt(req.params[0]) || 0;
+		var page = parseInt(req.query.page) || 1;
+		var tasks = [ ];
 
 		if (!categoryid && page === 1) {
-			tasks.push( articleBLL.getHomePageList().then(handleArticleList) );
+			tasks.push(
+				articleBLL.getHomePageList().then(handleArticleList)
+			);
 		} else {
 			var params = { };
 
@@ -46,7 +48,7 @@ exports.list = {
 					params.categoryid = categoryid;
 					res.routeHelper.prependTitle(category.categoryname);
 				} else {
-					next( util.createError('分类不存在或不可见', 404) );
+					next(util.createError('分类不存在或不可见', 404));
 					return;
 				}
 			}
@@ -55,16 +57,18 @@ exports.list = {
 			params.minWeight = 1;
 			params.state = 1;
 
-			tasks.push( articleBLL.list(params, 10, page).then(handleArticleList) );
+			tasks.push(
+				articleBLL.list(params, 10, page).then(handleArticleList)
+			);
 		}
-
-		res.routeHelper.viewData('categoryid', categoryid);
 
 		tasks.push(
 			articleBLL.getRecommendedList().then(function(result) {
 				res.routeHelper.viewData('recommendedArticles', result);
 			})
 		);
+
+		res.routeHelper.viewData('categoryid', categoryid);
 
 		return Promise.all(tasks);
 	})
@@ -75,9 +79,11 @@ exports.list = {
 exports.detail = {
 	pathPattern: /^\/detail\/(\d+)(?:\/[a-zA-Z1-9\-]+)?$/,
 	callbacks: pageType.normal(function(req, res, next) {
-		return articleBLL.read( parseInt(req.params[0]) ).then(function(article) {
+		return articleBLL.read(parseInt(req.params[0])).then(function(article) {
 			if (article) {
-				var categoryList = res.routeHelper.viewData('categoryList'), category;
+				var categoryList = res.routeHelper.viewData('categoryList');
+				var category;
+				// 找到文章所在分类
 				for (var i = categoryList.length - 1; i >= 0; i--) {
 					if (categoryList[i].categoryid == article.categoryid) {
 						category = categoryList[i];
@@ -88,20 +94,21 @@ exports.detail = {
 				if (category) {
 					res.routeHelper.prependTitle(category.categoryname);
 					res.routeHelper.prependTitle(article.title);
-
 					article.content = articleBLL.cleanContent(article.content);
-
-					res.routeHelper.viewData('category', category);
-					res.routeHelper.viewData('categoryid', article.categoryid);
-					res.routeHelper.viewData('article', article);
 					if (article.keywords) {
-						res.routeHelper.appendKeywords( article.keywords.split(/\s*,\s*/) );	
+						res.routeHelper.appendKeywords(article.keywords.split(/\s*,\s*/));	
 					}
+
+					res.routeHelper.viewData({
+						category: category,
+						categoryid: article.categoryid,
+						article: article
+					});
 				} else {
-					throw util.createError('您没有权限查看此文章', 403);
+					return util.createError('您没有权限查看此文章', 403);
 				}
 			} else {
-				throw util.createError('文章不存在', 404);
+				return util.createError('文章不存在', 404);
 			}
 			return article;
 		}).then(function(article) {
@@ -110,9 +117,11 @@ exports.detail = {
 				articleBLL.getAdjacentArticles(article.articleid, article.categoryid)
 			]);
 		}).then(function(results) {
-			res.routeHelper.viewData('author', results[0]);
-			res.routeHelper.viewData('prevArticle', results[1][0]);
-			res.routeHelper.viewData('nextArticle', results[1][1]);
+			res.routeHelper.viewData({
+				author: results[0],
+				prevArticle: results[1][0],
+				nextArticle: results[1][1]
+			});
 		});
 	})
 };
@@ -131,12 +140,12 @@ exports.view = {
 				var expires = new Date(Date.now() + 60 * 60 * 1000);
 
 				// 设置过期时间，但如果用户按了刷新，就依靠cookie中的标识判断是否浏览过
-				res.setHeader( 'Cache-Control', 'public, max-age=' + parseInt(expires / 1000) );
-				res.setHeader( 'Expires', expires.toUTCString() );
-				res.cookie( 'seen', '1', {
+				res.setHeader('Cache-Control', 'public, max-age=' + parseInt(expires / 1000));
+				res.setHeader('Expires', expires.toUTCString());
+				res.cookie('seen', '1', {
 					expires: expires,
 					path: '/article/detail/' + articleid
-				} );
+				});
 
 				res.end();
 			});

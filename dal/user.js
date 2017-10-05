@@ -13,6 +13,7 @@ exports.create = function(user) {
 	return db.query('INSERT INTO user SET ?', user);
 };
 
+
 exports.readByUserId = function(userid) {
 	return db.query('SELECT * FROM user WHERE userid = ? LIMIT 1', userid);
 };
@@ -29,6 +30,7 @@ exports.readByUsername = function(username, password) {
 
 	return db.query(sql, params);
 };
+
 
 exports.update = function(user, userid) {
 	return db.query('UPDATE user SET ? WHERE userid = ?', [user, userid]);
@@ -48,9 +50,11 @@ exports.updatePassword = function(password, username) {
 	);
 };
 
+
 exports.delete = function(userids) {
 	return db.query('DELETE FROM user WHERE userid IN (' + userids.join(',') + ')');
 };
+
 
 exports.findByName = function(username, nickname) {
 	var sql = 'SELECT * FROM user', whereStr = [ ], params = [ ];

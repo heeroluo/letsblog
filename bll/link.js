@@ -6,11 +6,11 @@
 
 'use strict';
 
-var util = require('../lib/util'),
-	validator = require('../lib/validator'),
-	Cache = require('./_cache'),
-	linkModel = require('../entity/link'),
-	linkDAL = require('../dal/link');
+var util = require('../lib/util');
+var validator = require('../lib/validator');
+var Cache = require('./_cache');
+var linkModel = require('../entity/link');
+var linkDAL = require('../dal/link');
 
 
 // 链接的改动较少，且需要在列表页（首页）展示
@@ -20,7 +20,7 @@ var listCache = new Cache(function() {
 		// 冻结对象，防止因意外修改导致脏数据的出现
 		return Object.freeze(
 			(result || [ ]).map(function(link) {
-				return Object.freeze( linkModel.createEntity(link) );
+				return Object.freeze(linkModel.createEntity(link));
 			})
 		);
 	});
@@ -45,6 +45,7 @@ var list = exports.list = function(minWeight) {
 		return filter ? result.filter(filter) : result;
 	});
 };
+
 
 // 读取单条链接数据
 exports.read = function(linkid) {
@@ -73,7 +74,7 @@ exports.create = function(link) {
 	var err = validate(link);
 	return err ?
 		util.createError(err) :
-		linkDAL.create( link.toDbRecord() ).then(clearCache);
+		linkDAL.create(link.toDbRecord()).then(clearCache);
 };
 
 // 更新链接
@@ -81,7 +82,7 @@ exports.update = function(link, linkid) {
 	var err = validator.isAutoId(linkid) ? validate(link) : '无效的链接编号';
 	return err ? 
 		util.createError(err) :
-		linkDAL.update( link.toDbRecord(), linkid ).then(clearCache);
+		linkDAL.update(link.toDbRecord(), linkid).then(clearCache);
 };
 
 

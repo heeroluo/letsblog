@@ -6,12 +6,12 @@
 
 'use strict';
 
-var Promise = require('bluebird'),
-	util = require('../lib/util'),
-	validator = require('../lib/validator'),
-	Cache = require('./_cache'),
-	userGroupModel = require('../entity/usergroup'),
-	userGroupDAL = require('../dal/usergroup');
+var Promise = require('bluebird');
+var util = require('../lib/util');
+var validator = require('../lib/validator');
+var userGroupModel = require('../entity/usergroup');
+var userGroupDAL = require('../dal/usergroup');
+var Cache = require('./_cache');
 
 
 // 用户组的改动较少，且经常用于权限判断
@@ -21,7 +21,7 @@ var listCache = new Cache(function() {
 		// 冻结对象，防止因意外修改导致脏数据的出现
 		return Object.freeze(
 			(result || [ ]).map(function(group) {
-				return Object.freeze( userGroupModel.createEntity(group) );
+				return Object.freeze(userGroupModel.createEntity(group));
 			})
 		);
 	});
@@ -38,6 +38,7 @@ var list = exports.list = function(type) {
 		return type ? util.arrayToMap(result, 'groupid') : result;
 	});
 };
+
 
 // 读取单条用户组数据
 var read = exports.read = function(groupid) {
@@ -77,7 +78,7 @@ exports.create = function(userGroup) {
 	var err = validate(userGroup);
 	return err ?
 		util.createError(err) :
-		userGroupDAL.create( userGroup.toDbRecord() ).then(clearCache);
+		userGroupDAL.create(userGroup.toDbRecord()).then(clearCache);
 };
 
 // 更新用户组
@@ -91,7 +92,9 @@ exports.update = function(userGroup, groupid) {
 
 // 删除用户组
 exports.delete = function(groupid) {
-	if ( !validator.isAutoId(groupid) ) { return util.createError('无效的用户组编号'); }
+	if (!validator.isAutoId(groupid)) {
+		return util.createError('无效的用户组编号');
+	}
 
 	if (groupid <= 2) { return util.createError('不能删除系统用户组'); }
 

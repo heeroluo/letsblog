@@ -6,11 +6,10 @@
 
 'use strict';
 
-
-var mysql = require('mysql'),
-	config = require('../config'),
-	pool = mysql.createPool(config.database),
-	Promise = require('bluebird');
+var Promise = require('bluebird');
+var mysql = require('mysql');
+var config = require('../config');
+var pool = mysql.createPool(config.database);
 
 
 /**
@@ -20,7 +19,7 @@ var mysql = require('mysql'),
  * @param {Any} [args] 命令参数
  * @return {Promise} 执行数据库请求的Promise实例
  */
-function query(cmd, args) {
+var query = exports.query = function(cmd, args) {
 	return new Promise(function(resolve, reject) {
 		pool.getConnection(function(err, conn) {
 			if (err) {
@@ -37,8 +36,7 @@ function query(cmd, args) {
 			}
 		});
 	});
-}
-exports.query = query;
+};
 
 
 /**
@@ -58,7 +56,7 @@ exports.dataPaging = Promise.method(function(sql, options) {
 	// 默认取10条记录
 	options.pageSize = parseInt(options.pageSize) || 10;
 
-	// 加载数据，无需分页
+	// 无需分页
 	if (options.pageSize === -1) {
 		return query(sql, options.params).then(function(result_data) {
 			return { data: result_data };

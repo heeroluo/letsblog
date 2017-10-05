@@ -7,6 +7,8 @@
 'use strict';
 
 var EntityModel = require('./_entity-model');
+
+
 module.exports = new EntityModel([
 	'sitename',
 	'siteurl',
