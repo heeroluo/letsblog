@@ -29,7 +29,7 @@
 			<input type="submit" value="提 交" class="button" />
 		</div>
 	</form>
-	{{#modjs ('lib/dom@1.1', 'libvalidator@1.1')}}
+	{{#modjs ('lib/dom@1.1', 'lib/validator@1.1')}}
 	function($, Validator) {
 		new Validator({
 			form: $('form'),
