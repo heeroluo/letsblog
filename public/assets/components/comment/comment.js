@@ -1,9 +1,8 @@
 /*!
  * LetsBlog
- * Comment component - v1.1 (2017-02-08T01:28:35Z)
+ * Comment component - v1.1 (2017-10-06T07:56:25Z)
  * Released under MIT license
  */
-
 
 var $ = require('lib/dom@1.1'),
 	ajax = require('lib/ajax@1.3'),

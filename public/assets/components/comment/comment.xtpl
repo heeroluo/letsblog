@@ -1,8 +1,6 @@
-{{ css('components/form/form') }}
-{{ css('./comment') }}
 <div class="comment">
 	<h2 class="comment__title">评论 (<em class="comment__total">{{ article.totalcomments }}</em>条)</h2>
-	<div  class="comment__list">
+	<div class="comment__list">
 		{{ include('./list?csrOnly') }}
 	</div>
 	{{#if (currentUser.group.perm_comment > 0)}}
@@ -57,3 +55,6 @@
 	</form>
 	{{/if}}
 </div>
+
+{{ css('components/form/form') }}
+{{ css('./comment') }}

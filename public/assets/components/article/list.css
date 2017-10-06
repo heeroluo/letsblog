@@ -53,8 +53,8 @@
 	.article-list__item__header__meta {
 		float: right;
 		width: 25%;
-		text-align: right;
 		overflow: hidden;
+		text-align: right;
 	}
 }
 

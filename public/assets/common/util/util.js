@@ -18,7 +18,7 @@ exports.formatDate = function(date, formation) {
 	return formation.replace(/Y+|M+|D+|h+|m+|s+/g, function(match) {
 		var result = values[ match[0] ];
 		if (match.length > 1 && result.toString().length !== match.length) {
-			result = ( ( new Array(match.length) ).join('0') + result ).slice(-2);
+			result = ((new Array(match.length)).join('0') + result).slice(-match.length);
 		}
 		return result;
 	});

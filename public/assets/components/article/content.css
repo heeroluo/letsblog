@@ -25,24 +25,24 @@ body.article__content { margin: 1em; }
 	margin-top: 32px;
 }
 .article__content h2 {
-	font-size: 22px;
 	margin-top: 28px;
+	font-size: 22px;
 }
 .article__content h3 {
-	font-size: 20px;
 	margin-top: 24px;
+	font-size: 20px;
 }
 .article__content h4 {
-	font-size: 18px;
 	margin-top: 20px;
+	font-size: 18px;
 }
 .article__content h5 {
-	font-size: 16px;
 	margin-top: 20px;
+	font-size: 16px;
 }
 .article__content h6 {
-	font-size: 16px;
 	margin-top: 20px;
+	font-size: 16px;
 }
 
 .article__content p {
@@ -63,18 +63,18 @@ body.article__content { margin: 1em; }
 .article__content ul { list-style-type: disc; }
 .article__content ol { list-style-type: decimal; }
 .article__content code {
-	font-family: 'Consolas', 'Courier New', Courier, monospace;
+	display: block;
 	padding: 0.8em;
 	border-radius: 3px;
 	margin: 0 1em;
 	background-color: #f6f6f6;
-	display: block;
+	font-family: 'Consolas', 'Courier New', Courier, monospace;
 }
 .article__content blockquote {
-	font-family: Georgia, Times, 'Times New Roman', serif;
 	padding: 0.5em;
 	border-left: 5px solid #ccc;
 	margin: 0.2em 1em;
+	font-family: Georgia, Times, 'Times New Roman', serif;
 }
 .article__content table {
 	width: 60%;

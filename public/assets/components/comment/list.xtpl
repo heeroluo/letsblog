@@ -7,9 +7,7 @@
 			<div class="comment__list__item__header__author"><em>{{ this.user_nickname }}</em> 说：</div>
 			<div class="comment__list__item__header__pubtime">发表于{{ formatDateFromNow(this.pubtime_formatted) }}</div>
 		</header>
-		<div class="comment__list__item__content">
-			{{{ nl2br( space2nbsp( escape(this.content) ) ) }}}
-		</div>
+		<div class="comment__list__item__content">{{ this.content }}</div>
 	</article>
 	{{/each}}
 	{{#if (totalPages > 1)}}

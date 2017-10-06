@@ -39,8 +39,10 @@
 .comment__list__item__header__pubtime { float: right; }
 .comment__list__item__content {
 	margin-top: 8px;
-	font-size: 16px;
 	line-height: 1.5;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	font-size: 16px;
 }
 .comment__list__paginator .paginator { margin-top: 25px; }
 
@@ -49,7 +51,7 @@
 
 
 @media (max-width: 679px) {
-	.form-layout__col {
+	.comment__form .form-layout__col {
 		width: 100% !important;
 		float: none;
 		margin-top: 15px;
