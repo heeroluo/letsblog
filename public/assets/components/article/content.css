@@ -78,6 +78,7 @@ body.article__content { margin: 1em; }
 }
 .article__content table {
 	width: 60%;
+	margin: 0 auto;
 	border-collapse: collapse;
 }
 .article__content th,

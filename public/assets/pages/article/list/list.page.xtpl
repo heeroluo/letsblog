@@ -8,7 +8,7 @@
 		) }}</div>
 	</div>
 	<aside class="sidebar">
-		{{#if ( exists(recommendedArticles) )}}
+		{{#if (exists(recommendedArticles))}}
 		<section class="sidebar__section">
 			<h2 class="sidebar__section__title">推荐文章</h2>
 			<ol class="sidebar-article-list">
@@ -18,7 +18,7 @@
 			</ol>
 		</section>
 		{{/if}}
-		{{#if ( exists(linkList) )}}
+		{{#if (exists(linkList))}}
 		<section class="sidebar__section">
 			<h2 class="sidebar__section__title">友情链接</h2>
 			<dl class="sidebar-link-list">

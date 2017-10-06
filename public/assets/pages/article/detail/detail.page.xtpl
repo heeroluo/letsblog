@@ -1,11 +1,6 @@
 {{ extend('layouts/normal/normal') }}
 
 {{#block ('container')}}
-	{{ css('components/highlight/theme/tomorrow') }}
-	{{ js('components/highlight/highlight') }}
-	{{ js('components/highlight/run') }}
-	{{ css('components/article/content') }}
-	{{ css('./detail') }}
 	<div class="main">
 		<article class="article">
 			<header class="article__header">
@@ -47,6 +42,12 @@
 	</div>
 	<script>var articleId = {{{ jsonEncode(article.articleid) }}};</script>
 	<script src="/article/view/{{ article.articleid }}"></script>
+	
+	{{ css('components/highlight/theme/tomorrow') }}
+	{{ js('components/highlight/highlight') }}
+	{{ js('components/highlight/run') }}
+	{{ css('components/article/content') }}
+	{{ css('./detail') }}
 	{{#modjs (
 		'lib/dom@1.1',
 		'components/share/share',

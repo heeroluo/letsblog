@@ -6,6 +6,7 @@
 }
 .article-list__item:first-child { margin-top: 0; }
 .article-list__item:last-child { border-bottom: none; }
+
 .article-list__item__header { line-height: 28px; }
 .article-list__item__header__title {
 	font-size: 22px;
@@ -18,10 +19,12 @@
 	font-size: 14px;
 	color: #aaa;
 }
+
 .article-list__item__summary {
 	margin-top: 25px;
 	color: #666;
 }
+
 .article-list__item__footer { margin-top: 25px; }
 .article-list__item__footer_info {
 	float: left;

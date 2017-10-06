@@ -1,5 +1,5 @@
 {{ css('./paginator') }}
-{{ set( paginator = createPaginator(currentPage, totalPages, href) ) }}
+{{ set(paginator = createPaginator(currentPage, totalPages, href)) }}
 <ol class="paginator">
 	{{#if (paginator.currentPage > 1)}}
 	<li class="paginator__item paginator__item-prev">

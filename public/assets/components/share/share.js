@@ -1,6 +1,6 @@
-var qs = require('lib/querystring@1.0'),
-	$ = require('lib/dom@1.1'),
-	QRCode = require('lib/qrcode@1.0');
+var qs = require('lib/querystring@1.0');
+var $ = require('lib/dom@1.1');
+var QRCode = require('lib/qrcode@1.0');
 
 
 var shareTypes = {
@@ -12,11 +12,12 @@ var shareTypes = {
 			})
 		);
 	},
+
 	wechat: function(params) {
 		var overlayer = $('<div class="overlayer overlayer--visible"></div>').appendTo('body');
 
 		var layer;
-		if ( /MicroMessenger/.test(window.navigator.userAgent) ) {
+		if (/MicroMessenger/.test(window.navigator.userAgent)) {
 			layer = $(
 				'<div class="share-wechat--inwechat clearfix">' +
 					'<div class="share-wechat--inwechat__text">点击右上角按钮进行分享<br />(点击任意位置关闭提示)</div>' +
