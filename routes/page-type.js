@@ -7,6 +7,7 @@
 'use strict';
 
 var Promise = require('bluebird');
+var packageJSON = require('../package');
 var util = require('../lib/util');
 var userModel = require('../entity/user');
 var optionsBLL = require('../bll/options');
@@ -37,6 +38,11 @@ exports.prepend = prepend;
 function basicPage(callbacks) {
 	return prepend(function(req, res) {
 		var user;
+
+		// 版本号
+		if (res.routeHelper.type() === 'html') {
+			res.routeHelper.viewData('version', packageJSON.version);
+		}
 
 		return userBLL.readByUsernameAndPassword(
 			req.cookies.username,

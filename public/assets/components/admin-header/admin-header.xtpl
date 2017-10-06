@@ -1,6 +1,5 @@
-{{ css('./admin-header') }}
 <header class="header">
-	<h1 class="header__logo">LetsBlog <sup>0.2.0</sup></h1>
+	<h1 class="header__logo">LetsBlog <sup>{{ version }}</sup></h1>
 	<nav class="header__nav">
 		<h2 class="header__nav__menu-title">我的操作</h2>
 		<ul class="header__nav__menu-list">
@@ -46,3 +45,5 @@
 		{{/if}}
 	</nav>
 </header>
+
+{{ css('./admin-header') }}
