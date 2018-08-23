@@ -8,26 +8,41 @@
 
 'use strict';
 
-var util = require('../lib/util');
-var assetConfig = require('../asset-config');
+const assetConfig = require('../asset-config');
 
 
 /**
  * 路由辅助器基类
  * @class BasicRouteHelper
  * @constructor
+ * @param {String} template 页面模板路径
  */
-var BasicRouteHelper = util.createClass(function(template) {
-	this._viewData = { };
-	this._type = 'basic';
-}, {
+class BasicRouteHelper {
+	constructor(template) {
+		this._viewData = { };
+		this.setTemplate(template);
+		this._type = 'basic';
+	}
+
 	/**
 	 * 获取路由辅助器类型
 	 * @method type
 	 * @for BasicRouteHelper
 	 * @return {String} 路由辅助器类型
 	 */
-	type: function() { return this._type; },
+	type() {
+		return this._type;
+	}
+
+	/**
+	 * 设置页面模板
+	 * @method setTemplate
+	 * @for BasicRouteHelper
+	 * @param {String} template 模板路径
+	 */
+	setTemplate(template) {
+		this._template = template;
+	}
 
 	/**
 	 * 获取视图数据
@@ -49,38 +64,40 @@ var BasicRouteHelper = util.createClass(function(template) {
 	 * @for BasicRouteHelper
 	 * @param {Object} map 键值对
 	 */
-	viewData: function(key, value) {
-		var viewData = this._viewData;
+	viewData(key, value) {
+		const viewData = this._viewData;
 		if (arguments.length === 1 && typeof key === 'string') {
 			return viewData[key];
 		} else {
 			if (typeof key === 'object') {
-				util.extend(viewData, key);
+				Object.assign(viewData, key);
 			} else {
 				viewData[key] = value;
 			}
 		}
-	},
+	}
 
 	/**
-	 * 渲染视图（由子类实现）
+	 * 渲染视图
 	 * @method render
 	 * @for BasicRouteHelper
 	 * @param {Object} res Response对象
 	 */
-	render: function(res) {
+	render(res) {
 		this._rendered = true;
 		res.end();
-	},
+	}
 
 	/**
-	 * 渲染提示信息（由子类实现）
+	 * 渲染提示信息
 	 * @method renderInfo
 	 * @for BasicRouteHelper
 	 * @param {Object} res Response对象
 	 * @param {Object} info 提示信息
 	 */
-	renderInfo: function(res, info) { this.render(res); },
+	renderInfo(res) {
+		this.render(res);
+	}
 
 	/**
 	 * 获取是否已渲染视图
@@ -88,9 +105,10 @@ var BasicRouteHelper = util.createClass(function(template) {
 	 * @for BasicRouteHelper
 	 * @return {Boolean} 是否已渲染视图
 	 */
-	rendered: function() { return !!this._rendered; }
-});
-
+	rendered() {
+		return !!this._rendered;
+	}
+}
 
 
 function mergeArray(target, source, isAppend) {
@@ -104,65 +122,52 @@ function mergeArray(target, source, isAppend) {
  * @class HTMLRouteHelper
  * @constructor
  * @extends BasicRouteHelper
+ * @param {String} template 页面模板路径
  */
-exports.HTMLRouteHelper = util.createClass(function() {
-	this._type = 'html';
-	this._template = '';
-	this._titles = [ ];
-	this._keywords = [ ];
-}, {
-	/**
-	 * 设置页面模板
-	 * @method setTemplate
-	 * @for BasicRouteHelper
-	 * @param {String} template 模板路径
-	 */
-	setTemplate: function(template) { this._template = template; },
+class HTMLRouteHelper extends BasicRouteHelper {
+	constructor(template) {
+		super(template);
+		this._type = 'html';
+		this._titles = [];
+		this._keywords = [];
+	}
 
-
-	appendTitle: function(titles) {
+	appendTitle(titles) {
 		this._titles = mergeArray(this._titles, titles, true);
-	},
+	}
 
-	prependTitle: function(titles) {
+	prependTitle(titles) {
 		this._titles = mergeArray(this._titles, titles);
-	},
+	}
 
-	appendKeywords: function(keywords) {
+	appendKeywords(keywords) {
 		this._keywords = mergeArray(this._keywords, keywords, true);
-	},
+	}
 
-	prependKeywords: function(keywords) {
+	prependKeywords(keywords) {
 		this._keywords = mergeArray(this._keywords, keywords);
-	},
+	}
 
-	render: function(res) {
-		var t = this;
-
-		t.viewData({
-			title: t._titles.join(' | '),
-			keywords: t._keywords.join(',')
-		});
-
+	render(res) {
+		const t = this;
 		if (assetConfig) {
 			// 把构建后得出的资源列表导进viewData
-			var assets = assetConfig.map[t._template];
+			const assets = assetConfig.map[t._template];
 			if (assets) {
 				Object.keys(assets).forEach(function(assetType) {
 					t.viewData(
-						assetType + 'Files',
+						'__' + assetType + 'Files',
 						assets[assetType].slice()
 					);
 				});
 			}
 		}
-
 		res.render(t._template, t._viewData);
 		t._rendered = true;
-	},
+	}
 
-	renderInfo: function(res, info) {
-		info = util.extend({
+	renderInfo(res, info) {
+		info = Object.assign({
 			backURL: res.req.get('Referer'),
 			status: 1
 		}, info);
@@ -174,7 +179,7 @@ exports.HTMLRouteHelper = util.createClass(function() {
 		);
 		this.render(res);
 	}
-}, BasicRouteHelper);
+}
 
 
 /**
@@ -183,20 +188,28 @@ exports.HTMLRouteHelper = util.createClass(function() {
  * @constructor
  * @extends BasicRouteHelper
  */
-exports.JSONRouteHelper = util.createClass(function() {
-	this._viewDataWrap = { status: 1 };
-	this._type = 'json';
-}, {
-	render: function(res) {
-		var viewDataWrap = this._viewDataWrap;
+class JSONRouteHelper extends BasicRouteHelper {
+	constructor(template) {
+		super(template);
+		this._viewDataWrap = { status: 1 };
+		this._type = 'json';
+	}
+
+	render(res) {
+		const viewDataWrap = this._viewDataWrap;
 		viewDataWrap.data = this._viewData;
 		res.json(viewDataWrap);
 		this._rendered = true;
-	},
+	}
 
-	renderInfo: function(res, info) {
-		util.extend(this._viewDataWrap, info);
+	renderInfo(res, info) {
+		Object.assign(this._viewDataWrap, info);
 		this._viewData = null;
 		this.render(res);
 	}
-}, BasicRouteHelper);
+}
+
+
+exports.BasicRouteHelper = BasicRouteHelper;
+exports.HTMLRouteHelper = HTMLRouteHelper;
+exports.JSONRouteHelper = JSONRouteHelper;

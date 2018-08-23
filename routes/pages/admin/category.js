@@ -6,16 +6,15 @@
 
 'use strict';
 
-var Promise = require('bluebird'),
-	util = require('../../../lib/util'),
-	pageType = require('../../page-type'),
-	userGroupBLL = require('../../../bll/usergroup'),
-	categoryModel = require('../../../entity/category'),
-	categoryBLL = require('../../../bll/category');
+const util = require('../../../lib/util');
+const pageType = require('../../page-type');
+const userGroupBLL = require('../../../bll/usergroup');
+const categoryModel = require('../../../entity/category');
+const categoryBLL = require('../../../bll/category');
 
 
 // 创建权限验证函数
-function checkPermission(req, res) {
+function checkPermission(req) {
 	if (req.currentUser.group.perm_manage_article < 2) {
 		return util.createError('权限不足', 403);
 	}
@@ -28,12 +27,12 @@ exports.create = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var category = categoryModel.createEntity();
+			(req, res) => {
+				const category = categoryModel.createEntity();
 				category.weight = '';
 				res.routeHelper.viewData('category', category);
 
-				return userGroupBLL.list().then(function(result) {
+				return userGroupBLL.list().then((result) => {
 					res.routeHelper.viewData('userGroupList', result);
 				});
 			}
@@ -47,9 +46,9 @@ exports['create/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var category = req.getEntity('category', 'insert');
-				return categoryBLL.create(category).then(function() {
+			(req, res) => {
+				const category = req.getEntity('category', 'insert');
+				return categoryBLL.create(category).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '已创建新分类 ' + category.categoryname
 					});
@@ -67,16 +66,16 @@ exports.update = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
+			(req, res) => {
 				return Promise.all([
-					categoryBLL.read( parseInt(req.params.categoryid) ).then(function(result) {
+					categoryBLL.read(parseInt(req.params.categoryid)).then((result) => {
 						if (result) {
 							res.routeHelper.viewData('category', result);
 						} else {
 							return util.createError('分类不存在', 404);
 						}
 					}),
-					userGroupBLL.list().then(function(result) {
+					userGroupBLL.list().then((result) => {
 						res.routeHelper.viewData('userGroupList', result);
 					})
 				]);
@@ -92,9 +91,11 @@ exports['update/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var category = req.getEntity('category', 'update');
-				return categoryBLL.update( category, parseInt(req.params.categoryid) ).then(function() {
+			(req, res) => {
+				const category = req.getEntity('category', 'update');
+				return categoryBLL.update(
+					category, parseInt(req.params.categoryid)
+				).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '已更新分类 ' + category.categoryname
 					});
@@ -109,12 +110,12 @@ exports['update/post'] = {
 exports.list = pageType.admin(
 	pageType.prepend(
 		checkPermission,
-		function(req, res, next) {
+		(req, res) => {
 			return Promise.all([
-				categoryBLL.list().then(function(result) {
+				categoryBLL.list().then((result) => {
 					res.routeHelper.viewData('categoryList', result);
 				}),
-				userGroupBLL.list(1).then(function(result) {
+				userGroupBLL.list(1).then((result) => {
 					res.routeHelper.viewData('userGroupMap', result);
 				})
 			]);
@@ -131,8 +132,10 @@ exports['delete/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				return categoryBLL.delete( parseInt(req.params.categoryid) ).then(function() {
+			(req, res) => {
+				return categoryBLL.delete(
+					parseInt(req.params.categoryid)
+				).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '已删除指定分类'
 					});

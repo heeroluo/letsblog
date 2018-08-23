@@ -6,14 +6,13 @@
 
 'use strict';
 
-var Promise = require('bluebird'),
-	util = require('../../../lib/util'),
-	pageType = require('../../page-type'),
-	commentBLL = require('../../../bll/comment');
+const util = require('../../../lib/util');
+const pageType = require('../../page-type');
+const commentBLL = require('../../../bll/comment');
 
 
 // 基本权限检查
-function checkPermission(req, res, next) {
+function checkPermission(req) {
 	if (!req.currentUser.group.perm_comment) {
 		return util.createError('权限不足', 403);
 	}
@@ -24,16 +23,16 @@ function checkPermission(req, res, next) {
 exports.list = pageType.admin(
 	pageType.prepend(
 		checkPermission,
-		function(req, res, next) {
-			var params = {
-					state: req.query.state ? parseInt(req.query.state) : null
-				},
-				page = parseInt(req.query.page) || -1;
+		(req, res) => {
+			const params = {
+				state: req.query.state ? parseInt(req.query.state) : null
+			};
+			const page = parseInt(req.query.page) || -1;
 
-			return commentBLL.list(params, 20, page).then(function(result) {				
+			return commentBLL.list(params, 20, page).then((result) => {
 				res.routeHelper.viewData({
 					commentList: result,
-					params: params
+					params
 				});
 			});
 		}
@@ -47,24 +46,25 @@ exports['list/batch'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var commentids = util.convert(req.body.commentids, 'array<int>'), promise;
+			(req, res) => {
+				const commentids = util.convert(req.body.commentids, 'array<int>');
+				let promise;
 				switch (req.body.action) {
 					case 'approve':
-						promise = commentBLL.updateState(1, commentids).then(function() {
+						promise = commentBLL.updateState(1, commentids).then(() => {
 							res.routeHelper.renderInfo(res, {
 								message: '已审核指定评论'
 							});
 						});
-					break;
+						break;
 
 					case 'delete':
-						promise = commentBLL.deleteByCommentIds(commentids).then(function() {
+						promise = commentBLL.deleteByCommentIds(commentids).then(() => {
 							res.routeHelper.renderInfo(res, {
 								message: '已删除指定评论'
 							});
 						});
-					break;
+						break;
 				}
 
 				if (promise) {
@@ -87,8 +87,8 @@ exports.totalpendingreviews = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				return commentBLL.getTotalPendingReviews(function(result) {
+			(req, res) => {
+				return commentBLL.getTotalPendingReviews((result) => {
 					res.routeHelper.viewData('total', result);
 				});
 			}

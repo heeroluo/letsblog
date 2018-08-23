@@ -6,22 +6,20 @@
 
 'use strict';
 
-var Promise = require('bluebird'),
-	util = require('../../lib/util'),
-	pageType = require('../page-type'),
-	commentBLL = require('../../bll/comment');
+const pageType = require('../page-type');
+const commentBLL = require('../../bll/comment');
 
 
 // 列表页及发表评论后都要加载列表数据
 // 把这个过程写成函数
 function getCommentList(articleid, page, res) {
-	var params = {
+	const params = {
 		articleid: articleid,
 		state: 1
 	};
 
-	return commentBLL.list(params, 5, page).then(function(result) {
-		result.data = result.data.map(function(c) {
+	return commentBLL.list(params, 5, page).then((result) => {
+		result.data = result.data.map((c) => {
 			c = c.toPureData();
 			// 删除较为敏感的数据
 			delete c.user_email;
@@ -30,10 +28,12 @@ function getCommentList(articleid, page, res) {
 
 			return c;
 		});
-		res.routeHelper.viewData('commentList', result.data);
-		res.routeHelper.viewData('totalPages', result.totalPages);
-		res.routeHelper.viewData('totalRows', result.totalRows);
-		res.routeHelper.viewData('page', result.page);
+		res.routeHelper.viewData({
+			commentList: result.data,
+			totalPages: result.totalPages,
+			totalRows: result.totalRows,
+			page: result.page
+		});
 	});
 }
 
@@ -42,15 +42,15 @@ function getCommentList(articleid, page, res) {
 exports.create = {
 	verb: 'post',
 	resType: 'json',
-	callbacks: pageType.normal(function(req, res, next) {
-		var comment = req.getEntity('comment', 'insert');
+	callbacks: pageType.normal((req, res) => {
+		const comment = req.getEntity('comment', 'insert');
 		comment.pubtime = new Date();
 		comment.ip = req.ip;
 
-		return commentBLL.create(comment, req.currentUser).then(function(result) {
+		return commentBLL.create(comment, req.currentUser).then((result) => {
 			comment.commentid = result.insertId;
-			res.routeHelper.viewData( 'lastComment', comment.toPureData() );
-		}).then(function() {
+			res.routeHelper.viewData('lastComment', comment.toPureData());
+		}).then(() => {
 			return getCommentList(comment.articleid, -1, res);
 		});
 	})
@@ -61,7 +61,7 @@ exports.create = {
 exports.list = {
 	pathPattern: '/list/:articleid',
 	resType: 'json',
-	callbacks: pageType.normal(function(req, res, next) {
+	callbacks: pageType.normal((req, res) => {
 		return getCommentList(
 			parseInt(req.params.articleid),
 			parseInt(req.query.page),

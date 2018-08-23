@@ -6,38 +6,38 @@
 
 'use strict';
 
-var Promise = require('bluebird');
-var util = require('../../lib/util');
-var userBLL = require('../../bll/user');
-var articleBLL = require('../../bll/article');
-var pageType = require('../page-type');
+const util = require('../../lib/util');
+const userBLL = require('../../bll/user');
+const articleBLL = require('../../bll/article');
+const pageType = require('../page-type');
 
 
 // 文章列表
 exports.list = {
 	pathPattern: /^\/list\/(\d+)(?:\/[a-zA-Z1-9\-]+)?$/,
-	callbacks: pageType.normal(function(req, res, next) {
+	callbacks: pageType.normal((req, res) => {
 		// 首页文章列表数据和非首页文章列表数据从不同的接口获取
 		// 获取后都需要经过此函数处理
 		function handleArticleList(result) {
 			res.routeHelper.viewData('articleList', result);
 		}
 
-		var categoryid = parseInt(req.params[0]) || 0;
-		var page = parseInt(req.query.page) || 1;
-		var tasks = [ ];
+		const categoryid = parseInt(req.params[0]) || 0;
+		const page = parseInt(req.query.page) || 1;
+		const tasks = [];
 
 		if (!categoryid && page === 1) {
 			tasks.push(
 				articleBLL.getHomePageList().then(handleArticleList)
 			);
 		} else {
-			var params = { };
+			const params = {};
 
 			if (categoryid) {
 				// 检查分类是否存在
-				var categoryList = res.routeHelper.viewData('categoryList'), category;
-				for (var i = categoryList.length - 1; i >= 0; i--) {
+				const categoryList = res.routeHelper.viewData('categoryList');
+				let category;
+				for (let i = categoryList.length - 1; i >= 0; i--) {
 					if (categoryList[i].categoryid == categoryid) {
 						category = categoryList[i];
 						break;
@@ -48,8 +48,7 @@ exports.list = {
 					params.categoryid = categoryid;
 					res.routeHelper.prependTitle(category.categoryname);
 				} else {
-					next(util.createError('分类不存在或不可见', 404));
-					return;
+					return util.createError('分类不存在或不可见', 404);
 				}
 			}
 
@@ -63,7 +62,7 @@ exports.list = {
 		}
 
 		tasks.push(
-			articleBLL.getRecommendedList().then(function(result) {
+			articleBLL.getRecommendedList().then((result) => {
 				res.routeHelper.viewData('recommendedArticles', result);
 			})
 		);
@@ -78,13 +77,13 @@ exports.list = {
 // 文章详情
 exports.detail = {
 	pathPattern: /^\/detail\/(\d+)(?:\/[a-zA-Z1-9\-]+)?$/,
-	callbacks: pageType.normal(function(req, res, next) {
-		return articleBLL.read(parseInt(req.params[0])).then(function(article) {
+	callbacks: pageType.normal((req, res) => {
+		return articleBLL.read(parseInt(req.params[0])).then((article) => {
 			if (article) {
-				var categoryList = res.routeHelper.viewData('categoryList');
-				var category;
+				const categoryList = res.routeHelper.viewData('categoryList');
+				let category;
 				// 找到文章所在分类
-				for (var i = categoryList.length - 1; i >= 0; i--) {
+				for (let i = categoryList.length - 1; i >= 0; i--) {
 					if (categoryList[i].categoryid == article.categoryid) {
 						category = categoryList[i];
 						break;
@@ -96,7 +95,7 @@ exports.detail = {
 					res.routeHelper.prependTitle(article.title);
 					article.content = articleBLL.cleanContent(article.content);
 					if (article.keywords) {
-						res.routeHelper.appendKeywords(article.keywords.split(/\s*,\s*/));	
+						res.routeHelper.appendKeywords(article.keywords.split(/\s*,\s*/));
 					}
 
 					res.routeHelper.viewData({
@@ -111,12 +110,12 @@ exports.detail = {
 				return util.createError('文章不存在', 404);
 			}
 			return article;
-		}).then(function(article) {
+		}).then((article) => {
 			return Promise.all([
 				userBLL.readByUserId(article.userid),
 				articleBLL.getAdjacentArticles(article.articleid, article.categoryid)
 			]);
-		}).then(function(results) {
+		}).then((results) => {
 			res.routeHelper.viewData({
 				author: results[0],
 				prevArticle: results[1][0],
@@ -130,14 +129,14 @@ exports.detail = {
 // 增加浏览次数
 exports.view = {
 	pathPattern: '/view/:articleid',
-	callbacks: function(req, res) {
+	callbacks: (req, res) => {
 		if (req.cookies.seen === '1') {
 			res.end();
 		} else {
-			var articleid = req.params.articleid;
-			articleBLL.addViews(articleid).then(function() {
+			const articleid = req.params.articleid;
+			articleBLL.addViews(articleid).then(() => {
 				// 1小时内重复查看不增加浏览次数
-				var expires = new Date(Date.now() + 60 * 60 * 1000);
+				const expires = new Date(Date.now() + 60 * 60 * 1000);
 
 				// 设置过期时间，但如果用户按了刷新，就依靠cookie中的标识判断是否浏览过
 				res.setHeader('Cache-Control', 'public, max-age=' + parseInt(expires / 1000));

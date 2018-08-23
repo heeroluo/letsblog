@@ -6,7 +6,7 @@
 
 'use strict';
 
-var pageType = require('../../page-type');
+const pageType = require('../../page-type');
 
 
 exports['/'] = pageType.admin();

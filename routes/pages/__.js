@@ -6,10 +6,8 @@
 
 'use strict';
 
-var util = require('../../lib/util');
 
-
-exports['/'] = util.extend(
+exports['/'] = Object.assign(
 	{ template: 'article/list/list' },
 	require('./article').list,
 	{ pathPattern: '/' }

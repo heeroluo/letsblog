@@ -6,13 +6,13 @@
 
 'use strict';
 
-var util = require('../../../lib/util'),
-	pageType = require('../../page-type'),
-	optionsBLL = require('../../../bll/options');
+const util = require('../../../lib/util');
+const pageType = require('../../page-type');
+const optionsBLL = require('../../../bll/options');
 
 
 // 权限验证
-function checkPermission(req, res, next) {
+function checkPermission(req) {
 	if (!req.currentUser.group.perm_manage_option) {
 		return util.createError('权限不足', 403);
 	}
@@ -25,8 +25,8 @@ exports.update = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				return optionsBLL.read().then(function(result) {
+			(req, res) => {
+				return optionsBLL.read().then((result) => {
 					res.routeHelper.viewData('options', result);
 				});
 			}
@@ -40,9 +40,9 @@ exports['update/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var options = req.getEntity('options', 'update');
-				return optionsBLL.update(options).then(function() {
+			(req, res) => {
+				const options = req.getEntity('options', 'update');
+				return optionsBLL.update(options).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '更新成功'
 					});

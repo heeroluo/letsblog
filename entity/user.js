@@ -6,7 +6,7 @@
 
 'use strict';
 
-var EntityModel = require('./_entity-model');
+const EntityModel = require('./_entity-model');
 
 
 module.exports = new EntityModel([
@@ -17,14 +17,34 @@ module.exports = new EntityModel([
 		isDbGenerated: true,
 		isUpdateIgnored: true
 	},
-	{ name: 'username', isUpdateIgnored: true },
-	{ name: 'password', isUpdateIgnored: true },
-	{ name: 'groupid', type: 'int' },
+	{
+		name: 'username',
+		isUpdateIgnored: true
+	},
+	{
+		name: 'password',
+		isUpdateIgnored: true
+	},
+	{
+		name: 'groupid',
+		type: 'int'
+	},
 	'nickname',
 	'email',
-	{ name: 'regtime', type: 'date', isUpdateIgnored: true },
-	{ name: 'lastactivity', type: 'date', isUpdateIgnored: true },
-	{ name: 'lastip', isUpdateIgnored: true },
+	{
+		name: 'regtime',
+		type: 'date',
+		isUpdateIgnored: true
+	},
+	{
+		name: 'lastactivity',
+		type: 'date',
+		isUpdateIgnored: true
+	},
+	{
+		name: 'lastip',
+		isUpdateIgnored: true
+	},
 	{
 		name: 'totalarticles',
 		type: 'int',

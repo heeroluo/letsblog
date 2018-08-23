@@ -6,30 +6,30 @@
 
 'use strict';
 
-var db = require('./_db');
+const db = require('./_db');
 
 
-exports.create = function(comment) {
+exports.create = (comment) => {
 	return db.query('INSERT INTO comment SET ?', comment);
 };
 
-exports.updateState = function(state, commentids) {
+exports.updateState = (state, commentids) => {
 	return db.query(
 		'UPDATE comment SET state = ' + state + ' WHERE commentid IN (' + commentids.join(',') + ')'
 	);
 };
 
 
-exports.deleteByCommentIds = function(commentids) {
+exports.deleteByCommentIds = (commentids) => {
 	return db.query('DELETE FROM comment WHERE commentid IN (' + commentids.join(',') + ')');
 };
 
-exports.deleteByArticleIds = function(articleids) {
+exports.deleteByArticleIds = (articleids) => {
 	return db.query('DELETE FROM comment WHERE articleid IN (' + articleids.join(',') + ')');
 };
 
 
-var SELECT_USER_LIST = 'SELECT ' +
+const SELECT_USER_LIST = 'SELECT ' +
 	'comment.commentid,' +
 	'comment.userid,' +
 	'comment.user_nickname,' +
@@ -47,10 +47,10 @@ var SELECT_USER_LIST = 'SELECT ' +
 ' LEFT JOIN user ON comment.userid = user.userid' +
 ' LEFT JOIN article ON comment.articleid = article.articleid';
 
-exports.list = function(params, pageSize, page) {
-	var sql = SELECT_USER_LIST;
+exports.list = (params, pageSize, page) => {
+	let sql = SELECT_USER_LIST;
 
-	var whereStr = [ ], whereParams = [ ];
+	const whereStr = [], whereParams = [];
 	if (params) {
 		// 文章id
 		if (params.articleid != null) {
@@ -58,7 +58,7 @@ exports.list = function(params, pageSize, page) {
 			whereParams.push(params.articleid);
 		}
 		// 文章标题
-		if (params.title != null){
+		if (params.title != null) {
 			whereStr.push('LOCATE(?, article.title) > 0');
 			whereParams.push(params.title);
 		}
@@ -80,20 +80,20 @@ exports.list = function(params, pageSize, page) {
 };
 
 
-exports.getTotalPendingReviews = function() {
+exports.getTotalPendingReviews = () => {
 	return db.query(
 		'SELECT COUNT(*) AS total FROM comment WHERE state = 0'
-	).then(function(result) {
+	).then((result) => {
 		return result[0].total;
 	});
 };
 
 
-exports.getTotalCommentsAfterTime = function(time, ip) {
+exports.getTotalCommentsAfterTime = (time, ip) => {
 	return db.query(
 		'SELECT COUNT(*) AS total FROM comment WHERE pubtime >= ? AND IP = ?',
 		[time, ip]
-	).then(function(result) {
+	).then((result) => {
 		return result[0].total;
 	});
 };

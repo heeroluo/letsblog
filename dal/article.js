@@ -6,36 +6,36 @@
 
 'use strict';
 
-var db = require('./_db');
+const db = require('./_db');
 
 
-exports.create = function(article) {
+exports.create = (article) => {
 	return db.query('INSERT INTO article SET ?', article);
 };
 
-exports.read = function(articleid) {
+exports.read = (articleid) => {
 	return db.query('SELECT * FROM article WHERE articleid = ? LIMIT 1', articleid);
 };
 
-exports.update = function(article, articleid) {
+exports.update = (article, articleid) => {
 	return db.query('UPDATE article SET ? WHERE articleid = ?', [article, articleid]);
 };
 
-exports.delete = function(articleids, userid) {
-	var sql = 'DELETE FROM article WHERE articleid IN (' + articleids.join(',') + ')';
+exports.delete = (articleids, userid) => {
+	let sql = 'DELETE FROM article WHERE articleid IN (' + articleids.join(',') + ')';
 	if (userid) { sql += ' AND userid = ' + userid; }
 	return db.query(sql);
 };
 
 
-exports.addViews = function(articleid) {
+exports.addViews = (articleid) => {
 	return db.query(
 		'UPDATE article SET totalviews = totalviews + 1 WHERE articleid = ?', articleid
 	);
 };
 
 
-var SELECT_ARTICLE_LIST = 'SELECT ' +
+const SELECT_ARTICLE_LIST = 'SELECT ' +
 	'article.articleid,' +
 	'article.title,' +
 	'article.title_en,' +
@@ -56,10 +56,10 @@ var SELECT_ARTICLE_LIST = 'SELECT ' +
 ' LEFT JOIN category ON article.categoryid = category.categoryid' +
 ' LEFT JOIN user ON article.userid = user.userid';
 
-exports.list = function(params, pageSize, page) {
-	var sql = SELECT_ARTICLE_LIST;
+exports.list = (params, pageSize, page) => {
+	let sql = SELECT_ARTICLE_LIST;
 
-	var whereStr = [ ], whereParams = [ ];
+	const whereStr = [], whereParams = [];
 	if (params) {
 		// 最小权重
 		if (params.minWeight != null) {
@@ -113,7 +113,7 @@ exports.list = function(params, pageSize, page) {
 
 
 // 获取同分类下的相邻文章
-exports.adjacent = function(articleid, categoryid, prevOrNext) {
+exports.adjacent = (articleid, categoryid, prevOrNext) => {
 	return db.query(
 		SELECT_ARTICLE_LIST + ' WHERE article.articleid ' +
 			(prevOrNext ? '>' : '<') + ' ? AND article.categoryid = ? AND article.state = 1 ' +

@@ -6,13 +6,13 @@
 
 'use strict';
 
-var pageType = require('../page-type'),
-	userBLL = require('../../bll/user');
+const pageType = require('../page-type');
+const userBLL = require('../../bll/user');
 
 
 // 登录页
-exports.login = pageType.basic(function(req, res) {
-	var referrer = req.get('Referrer') || '/admin/home';
+exports.login = pageType.basic((req, res) => {
+	const referrer = req.get('Referrer') || '/admin/home';
 	if (req.currentUser.userid) {
 		res.redirect(referrer);
 		return true;
@@ -25,11 +25,11 @@ exports.login = pageType.basic(function(req, res) {
 exports['login/post'] = {
 	verb: 'post',
 	resType: 'json',
-	callbacks: function(req, res, next) {
-		var username = req.body.username, password = req.body.password;
+	callbacks: function(req, res) {
+		const username = req.body.username, password = req.body.password;
 
 		return userBLL.login(username, password, req.ip).then(function(user) {
-			var cookieOptions = {
+			const cookieOptions = {
 				path: '/',
 				expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
 			};
@@ -41,13 +41,13 @@ exports['login/post'] = {
 			delete user.password;
 
 			res.routeHelper.viewData('currentUser', user);
-		})
+		});
 	}
 };
 
 // 退出登录
-exports.logout = function(req, res, next) {
-	var expires = new Date(0);
+exports.logout = function(req, res) {
+	const expires = new Date(0);
 	res.cookie('username', '', { expires: expires });
 	res.cookie('password', '', { expires: expires });
 

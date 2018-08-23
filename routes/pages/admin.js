@@ -6,16 +6,14 @@
 
 'use strict';
 
-var requireDir = require('require-dir'),
-	util = require('../../lib/util'),
-	adminRoutes = requireDir('./admin');
+const requireDir = require('require-dir');
+const util = require('../../lib/util');
 
 
-util.each(adminRoutes, function(mainRoutes, mainPath) {
-	util.each(mainRoutes, function(route, subPath) {
-		var myPath = mainPath;
+util.each(requireDir('./admin'), (mainRoutes, mainPath) => {
+	util.each(mainRoutes, (route, subPath) => {
+		let myPath = mainPath;
 		if (subPath !== '/') { myPath += '/' + subPath; }
-
 		exports[myPath] = route;
 	});
 });

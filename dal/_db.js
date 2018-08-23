@@ -6,10 +6,9 @@
 
 'use strict';
 
-var Promise = require('bluebird');
-var mysql = require('mysql');
-var config = require('../config');
-var pool = mysql.createPool(config.database);
+const mysql = require('mysql');
+const appConfig = require('../config');
+const pool = mysql.createPool(appConfig.database);
 
 
 /**
@@ -19,13 +18,13 @@ var pool = mysql.createPool(config.database);
  * @param {Any} [args] 命令参数
  * @return {Promise} 执行数据库请求的Promise实例
  */
-var query = exports.query = function(cmd, args) {
-	return new Promise(function(resolve, reject) {
-		pool.getConnection(function(err, conn) {
+const query = exports.query = (cmd, args) => {
+	return new Promise((resolve, reject) => {
+		pool.getConnection((err, conn) => {
 			if (err) {
 				reject(err);
 			} else {
-				conn.query(cmd, args, function(err, rows) {
+				conn.query(cmd, args, (err, rows) => {
 					conn.release();
 					if (err) {
 						reject(err);
@@ -49,47 +48,54 @@ var query = exports.query = function(cmd, args) {
  *   @param {Number} [options.params] 命令参数
  *   @param {Boolean} [options.onlyTotal=false] 是否只计算记录总数
  */
-exports.dataPaging = Promise.method(function(sql, options) {
-	if (!sql) { throw new Error('please specify SQL command'); }
+exports.dataPaging = (sql, options) => {
+	return new Promise((resolve) => {
+		if (!sql) { throw new Error('please specify a SQL query'); }
 
-	options = options || { };
-	// 默认取10条记录
-	options.pageSize = parseInt(options.pageSize) || 10;
+		options = options || { };
+		// 默认取10条记录
+		options.pageSize = parseInt(options.pageSize) || 10;
 
-	// 无需分页
-	if (options.pageSize === -1) {
-		return query(sql, options.params).then(function(result_data) {
-			return { data: result_data };
-		});
-	}
-
-	// XXX 通过正则简单替换，不能适应复杂的SQL语句
-	var sqlToCount = sql.replace(/^select\s+.*?\s+from\s+/i, function() {
-		return 'SELECT COUNT(*) as total FROM ';
-	});
-
-	// 默认取第一页
-	options.page = parseInt(options.page) || 1;
-
-	var result = { };
-	return query(sqlToCount, options.params).then(function(result_total) {
-		result.pageSize = options.pageSize;
-		result.totalRows = result_total[0].total;
-		result.totalPages = Math.ceil(result.totalRows / result.pageSize);
-		result.page = options.page === -1 ?
-			result.totalPages : Math.min(options.page, result.totalPages);
-
-		if (options.onlyTotal) {
-			return result;
-		} else {
-			sql += ' LIMIT ';
-			if (result.page > 1) { sql += (result.page - 1) * result.pageSize + ','; }
-			sql += result.pageSize;
-
-			return query(sql, options.params).then(function(result_data) {
-				result.data = result_data;
-				return result;
-			});
+		// 无需分页
+		if (options.pageSize === -1) {
+			return resolve(query(sql, options.params).then((data) => {
+				return { data };
+			}));
 		}
+
+		// XXX 通过正则简单替换，不能适应复杂的SQL语句
+		const sqlToCount = sql.replace(
+			/^select\s+.*?\s+from\s+/i,
+			'SELECT COUNT(*) as total FROM '
+		);
+
+		// 默认取第一页
+		options.page = parseInt(options.page) || 1;
+
+		const result = { };
+		resolve(
+			query(sqlToCount, options.params).then((resultTotal) => {
+				result.pageSize = options.pageSize;
+				result.totalRows = resultTotal[0].total;
+				result.totalPages = Math.ceil(result.totalRows / result.pageSize);
+				result.page = options.page === -1 ?
+					result.totalPages : Math.min(options.page, result.totalPages);
+
+				if (options.onlyTotal) {
+					return result;
+				} else {
+					sql += ' LIMIT ';
+					if (result.page > 1) {
+						sql += (result.page - 1) * result.pageSize + ',';
+					}
+					sql += result.pageSize;
+
+					return query(sql, options.params).then((resultData) => {
+						result.data = resultData;
+						return result;
+					});
+				}
+			})
+		);
 	});
-});
+};

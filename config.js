@@ -1,26 +1,40 @@
-var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+const argvs = require('minimist')(process.argv.slice(2));
+
+const isProd = argvs.prod !== false;
+[argvs.env, process.env.NODE_ENV].some((item) => {
+	// 统一环境写法
+	item = {
+		'development': 'dev',
+		'pre-release': 'pre',
+		'production': 'prod'
+	}[item] || item;
+
+	if (['dev', 'test', 'pre', 'prod'].indexOf(item) !== -1) {
+		process.env.NODE_ENV = isProd ? 'production' : 'development';
+		process.env.BACK2FRONT_ENV = item;
+		return true;
+	}
+});
+
 
 module.exports = {
 	// 环境
-	env: env,
+	env: process.env.BACK2FRONT_ENV,
+	nodeEnv: process.env.NODE_ENV,
 
-	// 服务端口
+	// 占用的端口
 	port: 3000,
 
-	// Express配置
-	express: {
-		'trust proxy': false
-	},
-
-	// 非开发环境时，是否把Express作为静态文件服务器
+	// 本应用发布后是否作为静态文件服务器
 	isStaticServer: true,
 
-	// 静态文件配置
+	// 静态文件设置
 	static: {
-		maxAge: env === 'development'
-			? 0
-			: 3 * 24 * 60 * 60 * 1000
+		maxAge: isProd ? 30 * 24 * 60 * 60 * 1000 : 0
 	},
+
+	// 前后端同构的XTemplate指令模块（路径相对于 lib/xtpl.js）
+	xTplCommands: '../public/assets/xtpl/commands',
 
 	// 数据库配置
 	database: {

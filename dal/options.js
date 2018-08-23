@@ -6,13 +6,13 @@
 
 'use strict';
 
-var db = require('./_db');
+const db = require('./_db');
 
 
-exports.list = function() {
+exports.list = () => {
 	return db.query('SELECT * FROM options LIMIT 1');
 };
 
-exports.update = function(options) {
+exports.update = (options) => {
 	return db.query('UPDATE options SET ?', options);
 };

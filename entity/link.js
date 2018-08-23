@@ -6,7 +6,7 @@
 
 'use strict';
 
-var EntityModel = require('./_entity-model');
+const EntityModel = require('./_entity-model');
 
 
 module.exports = new EntityModel([
@@ -21,5 +21,8 @@ module.exports = new EntityModel([
 	'siteurl',
 	'logourl',
 	'introduction',
-	{ name: 'weight', type: 'int' }
+	{
+		name: 'weight',
+		type: 'int'
+	}
 ]);

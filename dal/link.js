@@ -6,21 +6,21 @@
 
 'use strict';
 
-var db = require('./_db');
+const db = require('./_db');
 
 
-exports.create = function(link) {
+exports.create = (link) => {
 	return db.query('INSERT INTO link SET ?', link);
 };
 
-exports.update = function(link, linkid) {
+exports.update = (link, linkid) => {
 	return db.query('UPDATE link SET ? WHERE linkid = ?', [link, linkid]);
 };
 
-exports.delete = function(linkid) {
+exports.delete = (linkid) => {
 	return db.query('DELETE FROM link WHERE linkid = ?', linkid);
 };
 
-exports.list = function() {
+exports.list = () => {
 	return db.query('SELECT * FROM link ORDER BY weight DESC');
 };

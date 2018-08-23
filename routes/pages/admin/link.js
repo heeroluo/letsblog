@@ -6,14 +6,14 @@
 
 'use strict';
 
-var util = require('../../../lib/util'),
-	pageType = require('../../page-type'),
-	linkBLL = require('../../../bll/link'),
-	linkModel = require('../../../entity/link');
+const util = require('../../../lib/util');
+const pageType = require('../../page-type');
+const linkBLL = require('../../../bll/link');
+const linkModel = require('../../../entity/link');
 
 
 // 权限验证
-function checkPermission(req, res) {
+function checkPermission(req) {
 	if (!req.currentUser.group.perm_manage_option) {
 		return util.createError('权限不足', 403);
 	}
@@ -26,8 +26,8 @@ exports.create = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var link = linkModel.createEntity();
+			(req, res) => {
+				const link = linkModel.createEntity();
 				link.weight = '';
 				res.routeHelper.viewData('link', link);
 			}
@@ -41,9 +41,9 @@ exports['create/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var link = req.getEntity('link', 'insert');
-				return linkBLL.create(link).then(function() {
+			(req, res) => {
+				const link = req.getEntity('link', 'insert');
+				return linkBLL.create(link).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '已创建新链接 ' + link.linkname
 					});
@@ -61,8 +61,8 @@ exports.update = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				return linkBLL.read( parseInt(req.params.linkid) ).then(function(result) {
+			(req, res) => {
+				return linkBLL.read(parseInt(req.params.linkid)).then((result) => {
 					if (result == null) {
 						return util.createError('链接不存在', 404);
 					} else {
@@ -81,9 +81,9 @@ exports['update/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var link = req.getEntity('link', 'update');
-				return linkBLL.update( link, parseInt(req.params.linkid) ).then(function() {
+			(req, res) => {
+				const link = req.getEntity('link', 'update');
+				return linkBLL.update(link, parseInt(req.params.linkid)).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '已更新链接 ' + link.linkname
 					});
@@ -98,8 +98,8 @@ exports['update/post'] = {
 exports.list = pageType.admin(
 	pageType.prepend(
 		checkPermission,
-		function(req, res, next) {
-			return linkBLL.list().then(function(result) {
+		(req, res) => {
+			return linkBLL.list().then((result) => {
 				res.routeHelper.viewData('linkList', result);
 			});
 		}
@@ -115,8 +115,8 @@ exports['delete/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				return linkBLL.delete( parseInt(req.params.linkid) ).then(function() {
+			(req, res) => {
+				return linkBLL.delete(parseInt(req.params.linkid)).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '已删除指定链接'
 					});

@@ -1,27 +1,27 @@
 # Logs
-logs
 *.log
+npm-debug.log*
 
-# Runtime data
-pids
-*.pid
-*.seed
-
-# Dependency directory
-# Commenting this out is preferred by some people, see
-# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
+# Dependency directories
 node_modules
+jspm_packages
 
-# VSCode directory
+# Optional npm cache directory
+.npm
+
+# IDE directory
 .vscode
+.idea
+
+# Temporary files
+public/~assets/*
+
+# Test files
+/test.*
+
+# System files
+.DS_Store
 
 # Upload directory
 upload/*
 !upload/.gitkeep
-
-# Database
-bin/*.sql
-
-# Temporary files
-*.defined.js
-*.xtpl.js

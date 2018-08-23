@@ -6,20 +6,19 @@
 
 'use strict';
 
-var util = require('../lib/util');
+const util = require('../lib/util');
 
 
-var entityProto = {
+const entityProto = {
 	// 转换成数据库记录
 	toDbRecord: function() {
-		var t = this, record = { }, props = this._props;
+		const record = {}, props = this._props;
 		if (props) {
-			props.forEach(function(prop) {
-				record[prop.name] = t[prop.name];
+			props.forEach((prop) => {
+				record[prop.name] = this[prop.name];
 			});
 		}
-
-		return t._toDbRecord(record) || record;
+		return this._toDbRecord(record) || record;
 	},
 
 	// 可以在此方法中进一步修改record
@@ -27,9 +26,10 @@ var entityProto = {
 
 	// 转换为纯数据对象
 	toPureData: function() {
-		var data = { }, temp;
-		for (var i in this) {
-			if ( this.hasOwnProperty(i) && !/^_/.test(i) ) {
+		const data = { };
+		let temp;
+		for (let i in this) {
+			if (this.hasOwnProperty(i) && !/^_/.test(i)) {
 				if (this[i] !== null && typeof this[i].toPureData === 'function') {
 					temp = this[i].toPureData();
 				} else {
@@ -52,61 +52,63 @@ var entityProto = {
  * @param {Function} [entityConstructor] 实体类构造函数
  * @param {Function} [entityMethods] 实体类方法
  */
-module.exports = util.createClass(function(props, entityConstructor, entityMethods) {
-	// 重载，允许省略entityConstructor
-	if (!entityMethods && typeof entityConstructor === 'object') {
-		entityMethods = entityConstructor;
-		entityConstructor = null;
-	}
-
-	var allProps = [ ];
-	var propsToInsert = [ ];
-	var propsToUpdate = [ ];
-	var primaryKeys = [ ];
-
-	// 分析出主键以及插入、更新数据所需要属性
-	props.forEach(function(prop) {
-		var propObj = { };
-		if (typeof prop === 'string') {
-			propObj.name = prop;
-		} else {
-			propObj.name = prop.name;
-			propObj.type = prop.type;
+class EntityModel {
+	constructor(props, entityConstructor, entityMethods) {
+		// 重载，允许省略entityConstructor
+		if (!entityMethods && typeof entityConstructor === 'object') {
+			entityMethods = entityConstructor;
+			entityConstructor = null;
 		}
-		propObj.type = propObj.type || 'string';
+
+		const allProps = [];
+		const propsToInsert = [];
+		const propsToUpdate = [];
+		const primaryKeys = [];
+
+		// 分析出主键以及插入、更新数据所需要属性
+		props.forEach((prop) => {
+			const propObj = {};
+			if (typeof prop === 'string') {
+				propObj.name = prop;
+			} else {
+				propObj.name = prop.name;
+				propObj.type = prop.type;
+			}
+			propObj.type = propObj.type || 'string';
+			// 为防止意外修改，将其冻结
+			Object.freeze(propObj);
+
+			if (!prop.isDbGenerated) { propsToInsert.push(propObj); }
+			if (!prop.isUpdateIgnored) { propsToUpdate.push(propObj); }
+			if (prop.isPrimary) { primaryKeys.push(propObj); }
+
+			allProps.push(propObj);
+		});
+
 		// 为防止意外修改，将其冻结
-		Object.freeze(propObj);
+		this._allProps = Object.freeze(allProps);
+		this._propsToInsert = Object.freeze(propsToInsert);
+		this._propsToUpdate = Object.freeze(propsToUpdate);
+		this._primaryKeys = Object.freeze(primaryKeys);
 
-		if (!prop.isDbGenerated) { propsToInsert.push(propObj); }
-		if (!prop.isUpdateIgnored) { propsToUpdate.push(propObj); }
-		if (prop.isPrimary) { primaryKeys.push(propObj); }
-
-		allProps.push(propObj);
-	});
-
-	// 为防止意外修改，将其冻结
-	this._allProps = Object.freeze(allProps);
-	this._propsToInsert = Object.freeze(propsToInsert);
-	this._propsToUpdate = Object.freeze(propsToUpdate);
-	this._primaryKeys = Object.freeze(primaryKeys);
-
-	// 实体类
-	this._Class = function(source, props) {
-		if (source) {
-			for (var p in source) {
-				if (source.hasOwnProperty(p)) {
-					this[p] = source[p];
+		// 实体类
+		this._Class = function(source, props) {
+			if (source) {
+				for (let p in source) {
+					if (source.hasOwnProperty(p)) {
+						this[p] = source[p];
+					}
 				}
 			}
-		}
-		if (props) {
-			this._props = Object.freeze(props.slice());
-		}
+			if (props) {
+				this._props = Object.freeze(props.slice());
+			}
 
-		if (entityConstructor) { entityConstructor.apply(this); }
-	};
-	util.extend(this._Class.prototype, entityProto, entityMethods);
-}, {
+			if (entityConstructor) { entityConstructor.apply(this); }
+		};
+		Object.assign(this._Class.prototype, entityProto, entityMethods);
+	}
+
 	/**
 	 * 获取实体模型属性集合
 	 * @method props
@@ -118,7 +120,7 @@ module.exports = util.createClass(function(props, entityConstructor, entityMetho
 	 *   其他-所有属性
 	 * @return {Array<Object>} 属性集合
 	 */
-	props: function(type) {
+	props(type) {
 		switch (type) {
 			case 'insert':
 				return this._propsToInsert;
@@ -128,11 +130,11 @@ module.exports = util.createClass(function(props, entityConstructor, entityMetho
 
 			case 'primary':
 				return this._primaryKeys;
-			
+
 			default:
 				return this._allProps;
 		}
-	},
+	}
 
 	/**
 	 * 创建实体对象
@@ -146,11 +148,11 @@ module.exports = util.createClass(function(props, entityConstructor, entityMetho
 	 *   其他-所有属性
 	 * @return {Object} 实体对象
 	 */
-	createEntity: function(source, type) {
-		var obj = { }, props = this.props(type);
+	createEntity(source, type) {
+		const obj = {}, props = this.props(type);
 		if (props) {
-			props.forEach(function(prop) {
-				var val;
+			props.forEach((prop) => {
+				let val;
 				if (source) {
 					// 兼容直接从req.body获取属性值
 					val = typeof source.body === 'object' ?
@@ -167,7 +169,7 @@ module.exports = util.createClass(function(props, entityConstructor, entityMetho
 
 		// 没有指定属性类型时，把数据源的其他属性也加到对象中
 		if (!type && source && typeof source.body !== 'object') {
-			for (var p in source) {
+			for (let p in source) {
 				if (source.hasOwnProperty(p) && !(p in obj)) {
 					obj[p] = source[p];
 				}
@@ -176,4 +178,6 @@ module.exports = util.createClass(function(props, entityConstructor, entityMetho
 
 		return new this._Class(obj, props);
 	}
-});
+}
+
+module.exports = EntityModel;

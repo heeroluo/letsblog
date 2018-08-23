@@ -6,15 +6,14 @@
 
 'use strict';
 
-var Promise = require('bluebird');
-var packageJSON = require('../package');
-var util = require('../lib/util');
-var userModel = require('../entity/user');
-var optionsBLL = require('../bll/options');
-var categoryBLL = require('../bll/category');
-var linkBLL = require('../bll/link');
-var userGroupBLL = require('../bll/usergroup');
-var userBLL = require('../bll/user');
+const packageJSON = require('../package');
+const util = require('../lib/util');
+const userModel = require('../entity/user');
+const optionsBLL = require('../bll/options');
+const categoryBLL = require('../bll/category');
+const linkBLL = require('../bll/link');
+const userGroupBLL = require('../bll/usergroup');
+const userBLL = require('../bll/user');
 
 
 // 在数组最前面插入元素
@@ -24,7 +23,7 @@ function prepend(elt, arr) {
 	} else if (arr) {
 		arr = [arr];
 	} else {
-		arr = [ ];
+		arr = [];
 	}
 
 	if (elt) { arr.unshift(elt); }
@@ -36,8 +35,8 @@ exports.prepend = prepend;
 
 // 基础页面
 function basicPage(callbacks) {
-	return prepend(function(req, res) {
-		var user;
+	return prepend((req, res) => {
+		let user;
 
 		// 版本号
 		if (res.routeHelper.type() === 'html') {
@@ -47,12 +46,12 @@ function basicPage(callbacks) {
 		return userBLL.readByUsernameAndPassword(
 			req.cookies.username,
 			req.cookies.password
-		).then(function(result) {
+		).then((result) => {
 			user = result;
-		}).catch(function(e) {
+		}).catch(() => {
 			// error的情况下表示没有登录
 			// 无需处理异常
-		}).then(function() {
+		}).then(() => {
 			// 如果用户未登录或不存在，则创建一个访客对象
 			user = user || userModel.createEntity({
 				userid: 0,
@@ -60,12 +59,12 @@ function basicPage(callbacks) {
 				groupid: 2
 			});
 			return userGroupBLL.read(user.groupid);
-		}).then(function(result) {
+		}).then((result) => {
 			if (result) {
 				user.group = result;
 				req.currentUser = user;
 
-				var userData = user.toPureData();
+				const userData = user.toPureData();
 				// 删除较为敏感的密码信息，防止误输出
 				delete userData.password;
 
@@ -89,21 +88,21 @@ exports.basic = basicPage;
 // 前台页面
 function normalPage(callbacks) {
 	return basicPage(
-		prepend(function(req, res) {
-			var isHTMLPage = res.routeHelper.type() === 'html';
+		prepend((req, res) => {
+			const isHTMLPage = res.routeHelper.type() === 'html';
 
 			if (isHTMLPage) {
 				// 标示当前所在分类（默认不在任何分类）
 				res.routeHelper.viewData('categoryid', -1);
 			}
 
-			var tasks = [
+			const tasks = [
 				// 加载网站配置
-				optionsBLL.read().then(function(result) {
+				optionsBLL.read().then((result) => {
 					if (!result) {
-						err = util.createError('网站配置丢失', 500);
+						return util.createError('网站配置丢失', 500);
 					} else if (!result.isopen) {
-						err = util.createError(result.tipstext || '网站已关闭');
+						return util.createError(result.tipstext || '网站已关闭');
 					} else {
 						if (isHTMLPage) {
 							res.routeHelper.appendTitle(result.sitename);
@@ -120,12 +119,12 @@ function normalPage(callbacks) {
 			if (isHTMLPage) {
 				tasks.push(
 					// 加载可见分类
-					categoryBLL.list(1).then(function(result) {
+					categoryBLL.list(1).then((result) => {
 						res.routeHelper.viewData('categoryList', result);
 					}),
 
 					// 加载可见链接
-					linkBLL.list(1).then(function(result) {
+					linkBLL.list(1).then((result) => {
 						res.routeHelper.viewData('linkList', result);
 					})
 				);
@@ -141,7 +140,7 @@ exports.normal = normalPage;
 // 管理后台页面
 function adminPage(callbacks) {
 	return basicPage(
-		prepend(function(req, res) {
+		prepend((req, res) => {
 			if (res.routeHelper.type() === 'html') {
 				res.routeHelper.appendTitle('LetsBlog后台管理系统');
 			}

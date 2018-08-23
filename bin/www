@@ -2,19 +2,25 @@
 
 'use strict';
 
-var config = require('../config');
-var app = require('../app');
-var http = require('http');
-var path = require('path');
+const http = require('http');
+const appConfig = require('../config');
+const app = require('../app');
 
 
-// Event listener for HTTP server "error" event.
-function onError(error) {
+// Get port from environment and store in Express.
+app.set('port', appConfig.port);
+
+// Create HTTP server.
+const server = http.createServer(app);
+
+// Listen on provided port, on all network interfaces.
+server.listen(appConfig.port);
+server.on('error', (error) => {
 	if (error.syscall !== 'listen') { throw error; }
 
-	var bind = typeof config.port === 'string'
-		? 'Pipe ' + config.port
-		: 'Port ' + config.port;
+	const bind = typeof appConfig.port === 'string' ?
+		'Pipe ' + appConfig.port :
+		'Port ' + appConfig.port;
 
 	// handle specific listen errors with friendly messages
 	switch (error.code) {
@@ -29,26 +35,29 @@ function onError(error) {
 		default:
 			throw error;
 	}
+});
+server.on('listening', () => {
+	const addr = server.address();
+	const bind = typeof addr === 'string' ?
+		'pipe ' + addr :
+		'port ' + addr.port;
+
+	console.info('Listening on ' + bind);
+	console.info('BACK2FRONT_ENV: ' + appConfig.env);
+	console.info('NODE_ENV: ' + appConfig.nodeEnv);
+});
+
+// Delete temporary folder on closing
+if (appConfig.nodeEnv === 'development') {
+	const exitHook = require('exit-hook');
+	exitHook(() => {
+		const fse = require('fs-extra');
+		const path = require('path');
+		const basePath = path.join(__dirname, '../public');
+		fse.readdirSync(basePath).forEach((p) => {
+			if (p[0] === '~') {
+				fse.removeSync(path.join(basePath, p));
+			}
+		});
+	});
 }
-
-// Event listener for HTTP server "listening" event.
-function onListening() {
-	var addr = server.address();
-	var bind = typeof addr === 'string'
-		? 'pipe ' + addr
-		: 'port ' + addr.port;
-
-	console.log('Listening on ' + bind);
-}
-
-
-// Get port from environment and store in Express.
-app.set('port', config.port);
-
-// Create HTTP server.
-var server = http.createServer(app);
-
-// Listen on provided port, on all network interfaces.
-server.listen(config.port);
-server.on('error', onError);
-server.on('listening', onListening);

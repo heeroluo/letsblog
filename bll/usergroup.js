@@ -6,21 +6,20 @@
 
 'use strict';
 
-var Promise = require('bluebird');
-var util = require('../lib/util');
-var validator = require('../lib/validator');
-var userGroupModel = require('../entity/usergroup');
-var userGroupDAL = require('../dal/usergroup');
-var Cache = require('./_cache');
+const util = require('../lib/util');
+const validator = require('../lib/validator');
+const userGroupModel = require('../entity/usergroup');
+const userGroupDAL = require('../dal/usergroup');
+const Cache = require('./_cache');
 
 
 // 用户组的改动较少，且经常用于权限判断
 // 缓存在内存中可以避免频繁访问数据库
-var listCache = new Cache(function() {
-	return userGroupDAL.list().then(function(result) {
+const listCache = new Cache(() => {
+	return userGroupDAL.list().then((result) => {
 		// 冻结对象，防止因意外修改导致脏数据的出现
 		return Object.freeze(
-			(result || [ ]).map(function(group) {
+			(result || []).map((group) => {
 				return Object.freeze(userGroupModel.createEntity(group));
 			})
 		);
@@ -28,21 +27,21 @@ var listCache = new Cache(function() {
 });
 
 // 向外暴露清理缓存的接口
-var clearCache = exports.clearCache = function() { listCache.clear(); };
+const clearCache = exports.clearCache = () => { listCache.clear(); };
 
 
 // 读取用户组数据列表
 // type为true时返回map，否则返回数组
-var list = exports.list = function(type) {
-	return listCache.promise().then(function(result) {
+const list = exports.list = (type) => {
+	return listCache.promise().then((result) => {
 		return type ? util.arrayToMap(result, 'groupid') : result;
 	});
 };
 
 
 // 读取单条用户组数据
-var read = exports.read = function(groupid) {
-	return list(true).then(function(result) {
+const read = exports.read = (groupid) => {
+	return list(true).then((result) => {
 		return result[groupid];
 	});
 };
@@ -74,16 +73,16 @@ function validate(userGroup) {
 }
 
 // 创建用户组
-exports.create = function(userGroup) {
-	var err = validate(userGroup);
+exports.create = (userGroup) => {
+	const err = validate(userGroup);
 	return err ?
 		util.createError(err) :
 		userGroupDAL.create(userGroup.toDbRecord()).then(clearCache);
 };
 
 // 更新用户组
-exports.update = function(userGroup, groupid) {
-	var err = validator.isAutoId(groupid) ? validate(userGroup) : '无效的用户组编号';
+exports.update = (userGroup, groupid) => {
+	const err = validator.isAutoId(groupid) ? validate(userGroup) : '无效的用户组编号';
 	return err ?
 		util.createError(err) :
 		userGroupDAL.update(userGroup.toDbRecord(), groupid).then(clearCache);
@@ -91,15 +90,15 @@ exports.update = function(userGroup, groupid) {
 
 
 // 删除用户组
-exports.delete = function(groupid) {
+exports.delete = (groupid) => {
 	if (!validator.isAutoId(groupid)) {
 		return util.createError('无效的用户组编号');
 	}
 
 	if (groupid <= 2) { return util.createError('不能删除系统用户组'); }
 
-	return read(groupid).then(function(result) {
-		var err;
+	return read(groupid).then((result) => {
+		let err;
 		if (!result) {
 			err = '用户组不存在';
 		} else if (result.totalusers) {

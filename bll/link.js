@@ -6,20 +6,20 @@
 
 'use strict';
 
-var util = require('../lib/util');
-var validator = require('../lib/validator');
-var Cache = require('./_cache');
-var linkModel = require('../entity/link');
-var linkDAL = require('../dal/link');
+const util = require('../lib/util');
+const validator = require('../lib/validator');
+const Cache = require('./_cache');
+const linkModel = require('../entity/link');
+const linkDAL = require('../dal/link');
 
 
 // 链接的改动较少，且需要在列表页（首页）展示
 // 缓存在内存中可以避免频繁访问数据库
-var listCache = new Cache(function() {
-	return linkDAL.list().then(function(result) {
+const listCache = new Cache(() => {
+	return linkDAL.list().then((result) => {
 		// 冻结对象，防止因意外修改导致脏数据的出现
 		return Object.freeze(
-			(result || [ ]).map(function(link) {
+			(result || []).map((link) => {
 				return Object.freeze(linkModel.createEntity(link));
 			})
 		);
@@ -27,31 +27,31 @@ var listCache = new Cache(function() {
 });
 
 // 向外暴露清理缓存的接口
-var clearCache = exports.clearCache = function() { listCache.clear(); };
+const clearCache = exports.clearCache = () => { listCache.clear(); };
 
 
 // 读取链接数据列表
 // minWeight为最小（>=）权重值
-var list = exports.list = function(minWeight) {
+const list = exports.list = (minWeight) => {
 	minWeight = Number(minWeight) || 0;
 
-	var filter;
+	let filter;
 	// 根据最小权重过滤
 	if (minWeight > 0) {
-		filter = function(link) { return link.weight >= minWeight; };
+		filter = (link) => { return link.weight >= minWeight; };
 	}
 
-	return listCache.promise().then(function(result) {
+	return listCache.promise().then((result) => {
 		return filter ? result.filter(filter) : result;
 	});
 };
 
 
 // 读取单条链接数据
-exports.read = function(linkid) {
+exports.read = (linkid) => {
 	return validator.isAutoId(linkid) ?
-		list().then(function(result) {
-			for (var i = result.length - 1; i >= 0; i--) {
+		list().then((result) => {
+			for (let i = result.length - 1; i >= 0; i--) {
 				if (result[i].linkid == linkid) { return result[i]; }
 			}
 		}) :
@@ -70,24 +70,24 @@ function validate(link) {
 }
 
 // 创建链接
-exports.create = function(link) {
-	var err = validate(link);
+exports.create = (link) => {
+	const err = validate(link);
 	return err ?
 		util.createError(err) :
 		linkDAL.create(link.toDbRecord()).then(clearCache);
 };
 
 // 更新链接
-exports.update = function(link, linkid) {
-	var err = validator.isAutoId(linkid) ? validate(link) : '无效的链接编号';
-	return err ? 
+exports.update = (link, linkid) => {
+	const err = validator.isAutoId(linkid) ? validate(link) : '无效的链接编号';
+	return err ?
 		util.createError(err) :
 		linkDAL.update(link.toDbRecord(), linkid).then(clearCache);
 };
 
 
 // 删除链接
-exports.delete = function(linkid) {
+exports.delete = (linkid) => {
 	return validator.isAutoId(linkid) ?
 		linkDAL.delete(linkid).then(clearCache) :
 		util.createError('无效的链接编号');

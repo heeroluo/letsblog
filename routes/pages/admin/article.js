@@ -6,16 +6,15 @@
 
 'use strict';
 
-var Promise = require('bluebird'),
-	util = require('../../../lib/util'),
-	pageType = require('../../page-type'),
-	articleModel = require('../../../entity/article'),
-	articleBLL = require('../../../bll/article'),
-	categoryBLL = require('../../../bll/category');
+const util = require('../../../lib/util');
+const pageType = require('../../page-type');
+const articleModel = require('../../../entity/article');
+const articleBLL = require('../../../bll/article');
+const categoryBLL = require('../../../bll/category');
 
 
 // 基本权限验证
-function checkPermission(req, res, next) {
+function checkPermission(req) {
 	if (!req.currentUser.group.perm_article && !req.currentUser.group.perm_manage_article) {
 		return util.createError('权限不足', 403);
 	}
@@ -28,19 +27,19 @@ exports.create = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
+			(req, res) => {
 				// 有文章管理权限的用户才能设置权重
 				res.routeHelper.viewData(
 					'canSetWeight',
 					req.currentUser.group.perm_manage_article > 0
 				);
 
-				var article = articleModel.createEntity();
+				const article = articleModel.createEntity();
 				// 默认权重
 				article.weight = articleBLL.DEFAULT_WEIGHT;
 				res.routeHelper.viewData('article', article);
 
-				return categoryBLL.list().then(function(result) {
+				return categoryBLL.list().then((result) => {
 					res.routeHelper.viewData('categoryList', result);
 				});
 			}
@@ -55,11 +54,11 @@ exports['create/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var article = req.getEntity('article', 'insert');
+			(req, res) => {
+				const article = req.getEntity('article', 'insert');
 				article.pubtime = new Date();
 
-				return articleBLL.create(article, req.currentUser).then(function(result) {
+				return articleBLL.create(article, req.currentUser).then((result) => {
 					res.routeHelper.viewData('articleid', result.insertId);
 				});
 			}
@@ -75,16 +74,16 @@ exports.update = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
+			function(req, res) {
 				// 有文章管理权限的用户才能设置权重
 				res.routeHelper.viewData(
 					'canSetWeight',
 					req.currentUser.group.perm_manage_article > 0
 				);
 
-				var articleid = parseInt(req.params.articleid);
+				const articleid = parseInt(req.params.articleid);
 				return Promise.all([
-					articleBLL.read(articleid).then(function(result) {
+					articleBLL.read(articleid).then((result) => {
 						if (!result) {
 							return util.createError('文章不存在', 404);
 						} else if (!req.currentUser.group.perm_manage_article &&
@@ -96,7 +95,7 @@ exports.update = {
 						res.routeHelper.viewData('article', result);
 					}),
 
-					categoryBLL.list().then(function(result) {
+					categoryBLL.list().then((result) => {
 						res.routeHelper.viewData('categoryList', result);
 					})
 				]);
@@ -113,10 +112,10 @@ exports['update/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var articleid = parseInt(req.params.articleid);
+			function(req, res) {
+				const articleid = parseInt(req.params.articleid);
 
-				return articleBLL.read(articleid).then(function(result) {
+				return articleBLL.read(articleid).then((result) => {
 					if (!result) {
 						return util.createError('文章不存在', 404);
 					} else if (!req.currentUser.group.perm_manage_article &&
@@ -125,11 +124,11 @@ exports['update/post'] = {
 						return util.createError('权限不足', 403);
 					}
 					return result;
-				}).then(function(article) {
-					var newArticle = req.getEntity('article', 'update');
+				}).then((article) => {
+					const newArticle = req.getEntity('article', 'update');
 					newArticle.pubtime = req.body['update-pubtime'] ? new Date() : article.pubtime;
 					return articleBLL.update(newArticle, articleid, req.currentUser);
-				}).then(function() {
+				}).then(() => {
 					// 更新成功后返回文章的id
 					res.routeHelper.viewData('articleid', articleid);
 				});
@@ -143,35 +142,35 @@ exports['update/post'] = {
 exports.list = pageType.admin(
 	pageType.prepend(
 		checkPermission,
-		function(req, res, next) {
+		function(req, res) {
 			// 没有管理权限的用户只能看到自己的文章
-			var isPersonalPage =
+			const isPersonalPage =
 				req.query.type == 'personal' || !req.currentUser.group.perm_manage_article;
 
-			var page = parseInt(req.query.page) || 1,
-				params = isPersonalPage ?
-					{ userid: req.currentUser.userid } :
-					{
-						minWeight: parseInt(req.query.min_weight),
-						maxWeight: parseInt(req.query.max_weight),
-						categoryid: parseInt(req.query.categoryid),
-						state: parseInt(req.query.state),
-						username: req.query.username || '',
-						title: req.query.title || ''
-					};
+			const page = parseInt(req.query.page) || 1;
+			const params = isPersonalPage ? {
+				userid: req.currentUser.userid
+			} : {
+				minWeight: parseInt(req.query.min_weight),
+				maxWeight: parseInt(req.query.max_weight),
+				categoryid: parseInt(req.query.categoryid),
+				state: parseInt(req.query.state),
+				username: req.query.username || '',
+				title: req.query.title || ''
+			};
 
 			return Promise.all([
-				articleBLL.list(params, 15, page).then(function(result) {
+				articleBLL.list(params, 15, page).then((result) => {
 					if (isPersonalPage) { params.type = 'personal'; }
 
 					res.routeHelper.viewData({
 						articleList: result,
-						params: params,
-						isPersonalPage: isPersonalPage,
+						params,
+						isPersonalPage
 					});
 				}),
 
-				categoryBLL.list().then(function(result) {
+				categoryBLL.list().then((result) => {
 					res.routeHelper.viewData('categoryList', result);
 				})
 			]);
@@ -186,11 +185,11 @@ exports['list/batch'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
+			(req, res) => {
 				return articleBLL.delete(
 					util.convert(req.body.articleids, 'array<int>'),
 					req.currentUser.group.perm_manage_article ? 0 : req.currentUser.userid
-				).then(function() {
+				).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '已删除指定文章'
 					});
@@ -202,31 +201,31 @@ exports['list/batch'] = {
 
 
 // 文件上传支持
-var multer  = require('multer');
-var path = require('path');
-var fs = require('fs');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-var storage = multer.diskStorage({
-	destination: function(req, file, callback) {
+const storage = multer.diskStorage({
+	destination(req, file, callback) {
 		function callCallback(err, targetDir, localDir) {
-			if (targetDir){
+			if (targetDir) {
 				req.res.routeHelper.viewData('path', targetDir);
 			}
 			callback(err, localDir);
 		}
 
-		var now = new Date();
-		var targetDir = '/upload/article/' +
+		const now = new Date();
+		const targetDir = '/upload/article/' +
 			now.getFullYear() +
-			( '0' + (now.getMonth() + 1) ).slice(-2);
-		var localDir = path.join(process.cwd(), targetDir);
+			('0' + (now.getMonth() + 1)).slice(-2);
+		const localDir = path.join(process.cwd(), targetDir);
 
 		// 创建年月目录
-		fs.exists(localDir, function(exists) {
+		fs.exists(localDir, (exists) => {
 			if (exists) {
 				callCallback(null, targetDir, localDir);
 			} else {
-				fs.mkdir(localDir, function(err) {
+				fs.mkdir(localDir, (err) => {
 					if (err) {
 						callCallback(err);
 					} else {
@@ -237,11 +236,11 @@ var storage = multer.diskStorage({
 		});
 	},
 
-	filename: function(req, file, callback) {
-		var path = require('path'), now = new Date();
+	filename(req, file, callback) {
+		const now = new Date();
 
 		// 重命名为 年+月+日+时+分+秒+5位随机数
-		var fileName = now.getFullYear() +
+		const fileName = now.getFullYear() +
 			('0' + (now.getMonth() + 1)).slice(-2) +
 			('0' + (now.getDate() + 1)).slice(-2) +
 			('0' + (now.getHours() + 1)).slice(-2) +
@@ -250,16 +249,17 @@ var storage = multer.diskStorage({
 			parseInt(10000 + Math.random() * 90000) +
 			path.extname(file.originalname);
 
-		req.res.routeHelper.viewData(
+		const res = req.res;
+		res.routeHelper.viewData(
 			'path',
-			req.res.routeHelper.viewData('path') + '/' + fileName
+			res.routeHelper.viewData('path') + '/' + fileName
 		);
 
 		callback(null, fileName);
 	}
 });
 
-var upload = multer({
+const upload = multer({
 	storage: storage,
 	limits: {
 		fileSize: 5 * 1024 * 1024
@@ -272,8 +272,8 @@ exports['attachment/upload'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				upload(req, res, function(err) {
+			(req, res, next) => {
+				upload(req, res, (err) => {
 					next(err);
 				});
 				return true;

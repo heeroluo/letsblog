@@ -6,14 +6,14 @@
 
 'use strict';
 
-var util = require('../../../lib/util'),
-	pageType = require('../../page-type'),
-	userGroupModel = require('../../../entity/usergroup'),
-	userGroupBLL = require('../../../bll/usergroup');
+const util = require('../../../lib/util');
+const pageType = require('../../page-type');
+const userGroupModel = require('../../../entity/usergroup');
+const userGroupBLL = require('../../../bll/usergroup');
 
 
 // 权限验证
-function checkPermission(req, res, next) {
+function checkPermission(req) {
 	if (req.currentUser.group.perm_manage_user < 2) {
 		return util.createError('权限不足', 403);
 	}
@@ -24,8 +24,8 @@ function checkPermission(req, res, next) {
 exports.list = pageType.admin(
 	pageType.prepend(
 		checkPermission,
-		function(req, res, next) {
-			return userGroupBLL.list().then(function(result) {
+		(req, res) => {
+			return userGroupBLL.list().then((result) => {
 				res.routeHelper.viewData('userGroupList', result);
 			});
 		}
@@ -39,8 +39,8 @@ exports.create = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				res.routeHelper.viewData( 'userGroup', userGroupModel.createEntity() );
+			(req, res, next) => {
+				res.routeHelper.viewData('userGroup', userGroupModel.createEntity());
 				next();
 			}
 		)
@@ -53,9 +53,9 @@ exports['create/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var userGroup = req.getEntity('usergroup', 'insert');
-				return userGroupBLL.create(userGroup).then(function() {
+			(req, res) => {
+				const userGroup = req.getEntity('usergroup', 'insert');
+				return userGroupBLL.create(userGroup).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '已创建新用户组 ' + userGroup.groupname
 					});
@@ -73,8 +73,8 @@ exports.update = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				return userGroupBLL.read( parseInt(req.params.groupid) ).then(function(result) {
+			(req, res) => {
+				return userGroupBLL.read(parseInt(req.params.groupid)).then((result) => {
 					if (result) {
 						res.routeHelper.viewData('userGroup', result);
 					} else {
@@ -93,12 +93,12 @@ exports['update/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				var userGroup = req.getEntity('usergroup', 'update');
+			(req, res) => {
+				const userGroup = req.getEntity('usergroup', 'update');
 				return userGroupBLL.update(
 					userGroup,
 					parseInt(req.params.groupid)
-				).then(function(result) {
+				).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '已更新用户组 ' + userGroup.groupname
 					});
@@ -117,8 +117,8 @@ exports['delete/post'] = {
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			function(req, res, next) {
-				return userGroupBLL.delete( parseInt(req.params.groupid) ).then(function() {
+			(req, res) => {
+				return userGroupBLL.delete(parseInt(req.params.groupid)).then(() => {
 					res.routeHelper.renderInfo(res, {
 						message: '已删除指定用户组'
 					});

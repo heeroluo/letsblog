@@ -6,18 +6,17 @@
 
 'use strict';
 
-var Promise = require('bluebird');
-var util = require('../lib/util');
-var validator = require('../lib/validator');
-var articleModel = require('../entity/article');
-var articleDAL = require('../dal/article');
-var Cache = require('./_cache');
-var categoryBLL = require('./category');
-var commentBLL = require('./comment');
+const util = require('../lib/util');
+const validator = require('../lib/validator');
+const articleModel = require('../entity/article');
+const articleDAL = require('../dal/article');
+const Cache = require('./_cache');
+const categoryBLL = require('./category');
+const commentBLL = require('./comment');
 
 
 // 读取文章列表（带分页）
-var list = exports.list = function(params, pageSize, page) {
+const list = exports.list = (params, pageSize, page) => {
 	if (params) {
 		if (isNaN(params.minWeight) || params.minWeight < 0) { delete params.minWeight; }
 		if (isNaN(params.maxWeight) || params.maxWeight < 0) { delete params.maxWeight; }
@@ -25,15 +24,15 @@ var list = exports.list = function(params, pageSize, page) {
 		if (!validator.isAutoId(params.categoryid)) { delete params.categoryid; }
 		if (!validator.isAutoId(params.userid)) { delete params.userid; }
 		if (params.categoryids) {
-			params.categoryids = params.categoryids.filter(function(id) {
+			params.categoryids = params.categoryids.filter((id) => {
 				return validator.isAutoId(id);
 			});
 			if (!params.categoryids.length) { delete params.categoryids; }
 		}
 	}
 
-	return articleDAL.list(params, pageSize, page).then(function(result) {
-		result.data = result.data.map(function(article) {
+	return articleDAL.list(params, pageSize, page).then((result) => {
+		result.data = result.data.map((article) => {
 			return articleModel.createEntity(article);
 		});
 		return result;
@@ -42,11 +41,11 @@ var list = exports.list = function(params, pageSize, page) {
 
 
 // 首页文章列表缓存
-var homePageCache = new Cache(function() {
+const homePageCache = new Cache(() => {
 	return list({
 		minWeight: 1,
 		state: 1
-	}, 10, 1).then(function(result) {
+	}, 10, 1).then((result) => {
 		// 冻结对象，防止因意外修改导致脏数据的出现
 		if (result.data) {
 			result.data.forEach(Object.freeze);
@@ -62,20 +61,20 @@ var homePageCache = new Cache(function() {
 });
 
 // 获取首页文章列表
-exports.getHomePageList = function() { return homePageCache.promise(); };
+exports.getHomePageList = () => { return homePageCache.promise(); };
 
 
 // 推荐文章列表缓存（10分钟过期）
-var recommendedCache = new Cache(function() {
+const recommendedCache = new Cache(() => {
 	return list({
 		minWeight: 200,
 		state: 1
-	}, -1, 1).then(function(result) {
+	}, -1, 1).then((result) => {
 		result = result.data;
 		// 冻结对象，防止因意外修改导致脏数据的出现
 		if (result) {
 			// 按权重排序
-			result.sort(function(a, b) { return b.weight - a.weight; });
+			result.sort((a, b) => { return b.weight - a.weight; });
 			result.forEach(Object.freeze);
 		}
 		Object.freeze(result);
@@ -88,41 +87,39 @@ var recommendedCache = new Cache(function() {
 });
 
 // 获取推荐文章列表
-exports.getRecommendedList = function() { return recommendedCache.promise(); };
+exports.getRecommendedList = () => { return recommendedCache.promise(); };
 
 
 // 清空缓存
-var clearCache = exports.clearCache = function() {
+const clearCache = exports.clearCache = () => {
 	homePageCache.clear();
 	recommendedCache.clear();
 };
 
 
 // 摘要分隔符
-var re_summarySep = /<div\s+style=(["'])page-break-after:\s*always;?\1>.*?<\/div>/i;
+const reSummarySep = /<div\s+style=(["'])page-break-after:\s*always;?\1>.*?<\/div>/i;
 
 // 移除文章内容中用于截取摘要的分页符
-exports.cleanContent = function(content) {
-	return content.replace(re_summarySep, '');
-};
+exports.cleanContent = (content) => { return content.replace(reSummarySep, ''); };
 
 // 截取文章摘要（分页符前的部分）
 function getSummary(content) {
-	return re_summarySep.test(content) ? RegExp.leftContext : content;
+	return reSummarySep.test(content) ? RegExp.leftContext : content;
 }
 
 
 // 行分隔符和段落分隔符（JSON序列化时，这两个字符不会被编码，容易导致异常，清空之）
-var re_separator = new RegExp(
+const reSeparator = new RegExp(
 	'[' + String.fromCharCode(8232) + String.fromCharCode(8233) + ']', 'g'
 );
 
 // 默认权重
-var DEFAULT_WEIGHT = exports.DEFAULT_WEIGHT = 60;
+const DEFAULT_WEIGHT = exports.DEFAULT_WEIGHT = 60;
 
 // 创建和更新数据前的验证
 function validate(article, user) {
-	var err;
+	let err;
 
 	if (!article.title) {
 		err = '标题不能为空';
@@ -144,13 +141,13 @@ function validate(article, user) {
 	// 清理末尾的空段落
 	article.content = article.content.replace(/(?:<p>(?:&nbsp;|\s)*<\/p>)+$/, '');
 	// 移除容易导致异常的字符
-	article.content = article.content.replace(re_separator, '');
+	article.content = article.content.replace(reSeparator, '');
 	// 截取摘要
 	article.summary = getSummary(article.content);
 
 	return err ?
 		util.createError(err) :
-		categoryBLL.read(article.categoryid).then(function(category) {
+		categoryBLL.read(article.categoryid).then((category) => {
 			if (!category) {
 				return util.createError('分类不存在');
 			}
@@ -158,10 +155,10 @@ function validate(article, user) {
 }
 
 // 创建文章
-exports.create = function(article, user) {
-	return validate(article, user).then(function() {
+exports.create = (article, user) => {
+	return validate(article, user).then(() => {
 		return articleDAL.create(article.toDbRecord());
-	}).then(function(result) {
+	}).then((result) => {
 		categoryBLL.clearCache();
 		clearCache();
 		return result;
@@ -169,14 +166,14 @@ exports.create = function(article, user) {
 };
 
 // 更新文章
-exports.update = function(article, articleid, user) {
+exports.update = (article, articleid, user) => {
 	if (!validator.isAutoId(articleid)) {
 		return util.createError('无效的文章编号');
 	}
 
-	return validate(article, user).then(function() {
+	return validate(article, user).then(() => {
 		return articleDAL.update(article.toDbRecord(), articleid);
-	}).then(function() {
+	}).then(() => {
 		categoryBLL.clearCache();
 		clearCache();
 	});
@@ -184,15 +181,15 @@ exports.update = function(article, articleid, user) {
 
 
 // 读取单条文章数据
-exports.read = function(articleid) {
+exports.read = (articleid) => {
 	if (!validator.isAutoId(articleid)) {
 		return util.createError('无效的文章编号');
 	}
 
-	return articleDAL.read(articleid).then(function(result) {
+	return articleDAL.read(articleid).then((result) => {
 		if (result && result[0]) {
 			// 移除容易导致异常的字符
-			result[0].content = result[0].content.replace(re_separator, '');
+			result[0].content = result[0].content.replace(reSeparator, '');
 			return articleModel.createEntity(result[0]);
 		}
 	});
@@ -200,13 +197,13 @@ exports.read = function(articleid) {
 
 
 // 删除文章记录
-exports.delete = function(articleids, userid) {
-	var err;
+exports.delete = (articleids, userid) => {
+	let err;
 	if (!articleids.length) {
 		err = '请指定要操作的文章';
-	} else if (articleids.some(function(id) { return !validator.isAutoId(id); })) {
+	} else if (articleids.some((id) => { return !validator.isAutoId(id); })) {
 		err = '无效的文章编号';
-	} 
+	}
 
 	return err ?
 		util.createError(err) :
@@ -215,7 +212,7 @@ exports.delete = function(articleids, userid) {
 			commentBLL.deleteByArticleIds(articleids),
 			// 删除文章
 			articleDAL.delete(articleids, userid)
-		]).then(function() {
+		]).then(() => {
 			categoryBLL.clearCache();
 			clearCache();
 		});
@@ -223,7 +220,7 @@ exports.delete = function(articleids, userid) {
 
 
 // 增加阅读次数
-exports.addViews = function(articleid) {
+exports.addViews = (articleid) => {
 	return validator.isAutoId(articleid) ?
 		articleDAL.addViews(articleid) :
 		util.createError('无效的文章编号');
@@ -231,12 +228,12 @@ exports.addViews = function(articleid) {
 
 
 // 获取上一篇和下一篇文章
-exports.getAdjacentArticles = function(articleid, categoryid) {
+exports.getAdjacentArticles = (articleid, categoryid) => {
 	return Promise.all([
 		articleDAL.adjacent(articleid, categoryid, 0),
 		articleDAL.adjacent(articleid, categoryid, 1)
-	]).then(function(results) {
-		return results.map(function(result) {
+	]).then((results) => {
+		return results.map((result) => {
 			if (result && result[0]) {
 				return articleModel.createEntity(result[0]);
 			}

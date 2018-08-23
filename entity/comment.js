@@ -6,7 +6,7 @@
 
 'use strict';
 
-var EntityModel = require('./_entity-model');
+const EntityModel = require('./_entity-model');
 
 
 module.exports = new EntityModel([
@@ -37,10 +37,13 @@ module.exports = new EntityModel([
 		isUpdateIgnored: true
 	},
 	'ip',
-	{ name: 'state', type: 'int' }
+	{
+		name: 'state',
+		type: 'int'
+	}
 ], function() {
-	this.article_href = '/article/detail/' + this.articleid;
-	if (this.article_title_en) {
-		this.article_href += '/' + this.article_title_en;
+	this['article_href'] = '/article/detail/' + this.articleid;
+	if (this['article_title_en']) {
+		this['article_href'] += '/' + this['article_title_en'];
 	}
 });

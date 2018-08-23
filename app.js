@@ -5,26 +5,26 @@
 
 'use strict';
 
-var path = require('path');
-var express = require('express');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var appConfig = require('./config');
+const path = require('path');
+const express = require('express');
+// const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const appConfig = require('./config');
 
-var app = express();
-app.set('env', appConfig.env);
+const app = express();
+app.set('env', appConfig.nodeEnv);
 
 // 配置express
 if (appConfig.express) {
-	for (var c in appConfig.express) {
-		app.set(c, appConfig.express[c]);
-	}
+	Object.keys(appConfig.express).forEach((key) => {
+		app.set(key, appConfig.express[key]);
+	});
 }
 
 // 初始化XTemplate引擎
-var xTpl = require('./lib/xtpl');
+const xTpl = require('./lib/xtpl');
 xTpl.express(app, {
 	rootPath: path.join(__dirname, 'public', 'assets')
 });
@@ -49,19 +49,21 @@ app.use('/ckeditor', express.static(
 ));
 
 // 静态文件
-var assetConfig = require('./asset-config');
+const assetConfig = require('./asset-config');
+// assetConfig为null时，表示未构建（开发环境）
+const isLocalDev = assetConfig == null;
 // 以下情况都要在Express中处理静态资源:
-//   assetConfig为null时，表示未构建（开发环境）
+//   未构建
 //   isStaticServer为true时，表示非开发环境下也使用Express作为静态资源服务器
-if (assetConfig == null || appConfig.isStaticServer) {
+if (isLocalDev || appConfig.isStaticServer) {
 	// 非开发环境用~public存放构建后的静态资源
-	var staticPath = path.join(
+	const staticPath = path.join(
 		__dirname,
-		assetConfig == null ? 'public' : '~public'
+		isLocalDev ? 'public' : '~public'
 	);
-	// 开发环境才需要处理特殊静态资源的中间件
-	if (assetConfig == null) {
-		app.use(require('./lib/assert-handler')(staticPath));
+	// 开发环境才需要预处理特殊静态资源的中间件
+	if (isLocalDev) {
+		app.use(require('./lib/assets-handler')(staticPath));
 	}
 	// 处理静态文件的中间件
 	app.use(express.static(staticPath, appConfig.static));

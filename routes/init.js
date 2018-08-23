@@ -5,14 +5,15 @@
 
 'use strict';
 
-var requireDir = require('require-dir');
-var util = require('../lib/util');
-var routeHelpers = require('./route-helpers');
-var routes = requireDir('./pages');
+const util = require('../lib/util');
+const routeHelpers = require('./route-helpers');
+const requireDir = require('require-dir');
+const routes = requireDir('./pages');
+const appConfig = require('../config');
 
 
 module.exports = function(express, app) {
-	var env = app.get('env');
+	const env = appConfig.env;
 
 	// 调用渲染的callback
 	function render(req, res, next) {
@@ -34,20 +35,21 @@ module.exports = function(express, app) {
 				res.end();
 				return;
 			}
-			var result = callback.apply(this, arguments);
+			const result = callback.apply(this, arguments);
 			if (result && typeof result.then === 'function') {
 				// 注意这里不能写成 result.then(next, next)
 				// 因为next一旦有参数就会被判定为出现异常
 				result.then(function() { next(); }, next);
 			} else if (result !== true) {
-				// 如果不需要next，就return true
+				// 如果不需要next（例如进行了重定向），就return true
 				next();
 			}
 		};
 	}
 
 	util.each(routes, function(subRoutes, mainPath) {
-		var router = express.Router();
+		/* eslint-disable */
+		const router = express.Router();
 
 		if (mainPath === '__') {
 			mainPath = '/';
@@ -59,7 +61,7 @@ module.exports = function(express, app) {
 			if (typeof subRoute === 'function' || Array.isArray(subRoute)) {
 				subRoute = { callbacks: subRoute };
 			} else {
-				subRoute = util.extend({ }, subRoute);
+				subRoute = Object.assign({ }, subRoute);
 			}
 			if (!Array.isArray(subRoute.callbacks)) {
 				subRoute.callbacks = [subRoute.callbacks];
@@ -70,15 +72,15 @@ module.exports = function(express, app) {
 
 			subRoute.path = subPath;
 
-			var template, resType;
+			let template, resType;
 			if (!subRoute.resType || subRoute.resType === 'html') {
 				resType = 'html';
-				// 默认模板路径为 pages/路由主路径/路径子路径/路径子路径.page
-				var pageName = subRoute.path.replace(/\//g, '__');
-				template = ( 'pages/' + (
+				// 默认模板路径为 pages/路由主路径/路径子路径/路径子路径.page.xtpl
+				let pageName = subRoute.path.replace(/\//g, '__');
+				template = ('pages/' + (
 					subRoute.template ||
 					(mainPath + '/' + pageName + '/' + pageName)
-				) ).replace(/\/{2,}/, '/') + '.page.xtpl';
+				)).replace(/\/{2,}/, '/') + '.page.xtpl';
 			} else {
 				resType = subRoute.resType;
 			}
@@ -86,16 +88,13 @@ module.exports = function(express, app) {
 			if (subRoute.path[0] !== '/') { subRoute.path = '/' + subRoute.path; }
 
 			subRoute.callbacks.unshift(function(req, res, next) {
-				var RouteHelper;
+				let RouteHelper;
 				if (resType === 'json') {
 					RouteHelper = routeHelpers.JSONRouteHelper;
 				} else {
 					RouteHelper = routeHelpers.HTMLRouteHelper;
 				}
-				res.routeHelper = new RouteHelper();
-				if (resType === 'html') {
-					res.routeHelper.setTemplate(template);
-				} 
+				res.routeHelper = new RouteHelper(template);
 				res.routeHelper.viewData({
 					ENV: env,
 					currentYear: (new Date).getFullYear()
@@ -104,9 +103,8 @@ module.exports = function(express, app) {
 				next();
 			});
 
-			var verb = subRoute.verb || 'get';
-			var pathPattern = subRoute.pathPattern || subRoute.path;
-
+			const verb = subRoute.verb || 'get';
+			const pathPattern = subRoute.pathPattern || subRoute.path;
 			subRoute.callbacks.forEach(function(callback) {
 				router[verb](pathPattern, callback);
 			});
@@ -121,14 +119,13 @@ module.exports = function(express, app) {
 
 		res.routeHelper = new routeHelpers.HTMLRouteHelper();
 
-		var err = new Error('您访问的页面不存在');
+		const err = new Error('您访问的页面不存在');
 		err.status = 404;
 		next(err);
 	});
 
 	// 异常处理
-	var isDevEnv = env !== 'production';
-	app.use(function(err, req, res, next) {
+	app.use(function(err, req, res) {
 		if (typeof err === 'string') { err = new Error(err); }
 		err.status = err.status || 500;
 
@@ -142,7 +139,7 @@ module.exports = function(express, app) {
 				status: 2,
 				httpStatus: err.status,
 				message: err.message || '',
-				stack: isDevEnv ? err.stack : ''
+				stack: appConfig.nodeEnv !== 'production' ? err.stack : ''
 			});
 		} catch (e) {
 			res.end();
