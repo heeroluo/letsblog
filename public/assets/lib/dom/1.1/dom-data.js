@@ -1,6 +1,6 @@
 /*!
  * JRaiser 2 Javascript Library
- * dom-data@1.1.1 (2017-02-03T08:30:37Z)
+ * dom-data@1.1.2 (2017-10-31T07:06:45Z)
  * http://jraiser.org/ | Released under MIT license
  */
 
@@ -47,9 +47,14 @@ var uniqueId = (function () {
 		}
 	}
 
+	// Chrome 57+在某些情况下（未查明）会回收掉节点的expando特性；
+	// 生成一个闭包并记录到此对象中以阻止回收。
+	var keepNodeExpando = { };
+
 	// 删除id特性
 	function deleteExpando(node) {
 		if (node[expandoName]) {
+			delete keepNodeExpando[node[expandoName]];
 			try {
 				delete node[expandoName];
 			} catch (e) {
@@ -69,6 +74,10 @@ var uniqueId = (function () {
 					if (!id && !doNotSet) {
 						// 写入object类型的自定义特性不会出现在innerHTML中
 						id = node[expandoName] = new Number(++autoId);
+						// 阻止回收
+						keepNodeExpando[id] = function() {
+							node[expandoName];
+						};
 					}
 					break;
 
@@ -240,7 +249,7 @@ function removeData(node, keys) {
 
 
 module.exports = {
-	// See line 207
+	// See line 216
 	createDataSpace: createDataSpace,
 
 	/**

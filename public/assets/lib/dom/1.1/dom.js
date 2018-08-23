@@ -1,6 +1,6 @@
 /*!
  * JRaiser 2 Javascript Library
- * dom@1.1.2 (2017-02-03T08:31:59Z)
+ * dom@1.1.3 (2017-04-01T10:09:03Z)
  * http://jraiser.org/ | Released under MIT license
  */
 

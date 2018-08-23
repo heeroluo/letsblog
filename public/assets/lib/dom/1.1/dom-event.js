@@ -1,6 +1,6 @@
 /*!
  * JRaiser 2 Javascript Library
- * dom-event@1.1.2 (2017-02-03T08:30:52Z)
+ * dom-event@1.1.2 (2017-12-14T06:22:51Z)
  * http://jraiser.org/ | Released under MIT license
  */
 
@@ -103,7 +103,7 @@ var eventArgNormalizer = {
 			if ( !event.which && !base.isUndefined(button) ) {
 				event.which = ( button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) ) );
 			}
-
+			
 			return event;
 		}
 	},
