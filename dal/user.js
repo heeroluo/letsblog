@@ -18,7 +18,7 @@ exports.readByUserId = (userid) => {
 	return db.query('SELECT * FROM user WHERE userid = ? LIMIT 1', userid);
 };
 
-exports.readByUsername = (username, password) => {
+exports.readByUsername = function(username, password) {
 	let sql = 'SELECT * FROM user WHERE username = ?';
 	const params = [username];
 
