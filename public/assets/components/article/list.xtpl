@@ -33,19 +33,4 @@
 {{ js('components/highlight/run') }}
 {{ css('./list') }}
 {{ css('./content') }}
-{{#modjs ('lib/dom@1.1', 'components/share/share')}}
-function($, share) {
-	$('body').on('click', function() {
-		var $article = $(this).parents('.article-list__item');
-		var $link = $article.find('.article-list__item__header__title a');
-		if ($link.length) {
-			share.to(this.getAttribute('data-sharetype'), {
-				title: $link.text(),
-				url: $link.prop('href')
-			});
-		}
-	}, {
-		delegator: '.share-ico'
-	});
-}
-{{/modjs}}
+{{ modjs('./list') }}
