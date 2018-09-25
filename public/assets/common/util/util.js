@@ -5,8 +5,8 @@
  * @param {String} formation 日期格式
  * @return {String} 格式化后的日期字符串
  */
-exports.formatDate = function(date, formation) {
-	var values = {
+exports.formatDate = (date, formation) => {
+	const values = {
 		Y: date.getFullYear(),
 		M: date.getMonth() + 1,
 		D: date.getDate(),
@@ -15,8 +15,8 @@ exports.formatDate = function(date, formation) {
 		s: date.getSeconds()
 	};
 
-	return formation.replace(/Y+|M+|D+|h+|m+|s+/g, function(match) {
-		var result = values[ match[0] ];
+	return formation.replace(/Y+|M+|D+|h+|m+|s+/g, (match) => {
+		let result = values[match[0]];
 		if (match.length > 1 && result.toString().length !== match.length) {
 			result = ((new Array(match.length)).join('0') + result).slice(-match.length);
 		}
@@ -32,18 +32,34 @@ exports.formatDate = function(date, formation) {
  * @return {String} 格式化后的日期字符串
  */
 exports.formatDateFromNow = function(date) {
-	var timespan = (new Date - date) / 1000, result;
+	const timespan = (new Date - date) / 1000;
+	let result;
 	if (timespan < 60) {
 		result = '1分钟内';
 	} else {
 		[
-			{ name: '年', value: 365 * 24 * 60 * 60 },
-			{ name: '个月', value: 30 * 24 * 60 * 60 },
-			{ name: '天', value: 24 * 60 * 60 },
-			{ name: '小时', value: 60 * 60 },
-			{ name: '分钟', value: 60 }
+			{
+				name: '年',
+				value: 365 * 24 * 60 * 60
+			},
+			{
+				name: '个月',
+				value: 30 * 24 * 60 * 60
+			},
+			{
+				name: '天',
+				value: 24 * 60 * 60
+			},
+			{
+				name: '小时',
+				value: 60 * 60
+			},
+			{
+				name: '分钟',
+				value: 60
+			}
 		].some(function(unit) {
-			var value = parseInt(timespan / unit.value);
+			const value = parseInt(timespan / unit.value);
 			if (value) {
 				result = value + unit.name + '前';
 				return true;
