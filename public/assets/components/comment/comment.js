@@ -1,26 +1,26 @@
 /*!
  * LetsBlog
- * Comment component - v1.1 (2017-10-06T07:56:25Z)
+ * Comment component - v1.1 (2018-09-24T08:34:57Z)
  * Released under MIT license
  */
 
-var $ = require('lib/dom@1.1'),
-	ajax = require('lib/ajax@1.3'),
-	widget = require('lib/widget@1.1'),
-	Validator = require('lib/validator@1.1'),
-	xTpl = require('common/xtpl/xtpl'),
-	currentUser = window.currentUser;
+const $ = require('lib/dom@1.1');
+const ajax = require('lib/ajax@1.3');
+const widget = require('lib/widget@1.1');
+const Validator = require('lib/validator@1.1');
+const xTpl = require('xtpl/xtpl');
+const currentUser = window.currentUser;
 
 
 module.exports = widget.create({
 	_init: function(options) {
-		var t = this, form = options.form;
+		const t = this, form = options.form;
 		t._listWrapper = options.listWrapper;
 
 		// 在列表容器代理页码点击操作
 		t._onDOMEvent(t._listWrapper, 'click', function(e) {
 			e.preventDefault();
-			t.load( this.getAttribute('data-page') );
+			t.load(this.getAttribute('data-page'));
 		}, {
 			delegator: '.paginator__item a'
 		});
@@ -30,10 +30,13 @@ module.exports = widget.create({
 		// 没表单，仅加载列表
 		if (!form.length) { return; }
 
-		var steps = [ ];
+		const steps = [];
 		if (!currentUser.userid) {
 			steps.push(
-				{ fields: 'user_nickname', message: '请填写昵称' },
+				{
+					fields: 'user_nickname',
+					message: '请填写昵称'
+				},
 				{
 					fields: 'user_nickname',
 					rule: function(val) { return val.length >= 2; },
@@ -55,25 +58,28 @@ module.exports = widget.create({
 
 			// 从本地存储获取记录的昵称、email和qq
 			form.find('input[type=text]').forEach(function(textbox) {
-				var value = localStorage.getItem(textbox.name);
+				const value = localStorage.getItem(textbox.name);
 				if (value) {
 					textbox.value = value;
 				}
 			});
 		}
 
-		steps.push({ fields: 'content', message: '请填写评论内容' });
+		steps.push({
+			fields: 'content',
+			message: '请填写评论内容'
+		});
 
 		t._validator = new Validator({
 			form: form,
 			steps: steps,
 			submitProxy: function(data, form) {
-				var btn = form.find('input[type=submit]'), btnText = btn.val();
-				btn.prop('disabled', true).val( btn.attr('data-submitingtext') );
+				const btn = form.find('input[type=submit]'), btnText = btn.val();
+				btn.prop('disabled', true).val(btn.attr('data-submitingtext'));
 
 				// 记录昵称、email和qq到本地存储
 				data.forEach(function(d) {
-					if ( /^user_/.test(d.name) ) {
+					if (/^user_/.test(d.name)) {
 						localStorage.setItem(d.name, d.value);
 					}
 				});
@@ -93,11 +99,11 @@ module.exports = widget.create({
 							t._renderList(res.commentList, res.page, res.totalPages);
 
 							// 重定位到最新的那条
-							var lastComment = t._listWrapper.find('.comment__list__item').last();
+							const lastComment = t._listWrapper.find('.comment__list__item').last();
 							window.scrollTo(
 								$(window).scrollLeft(),
 								lastComment.offset().top + lastComment.outerHeight(true) +
-									$('#header').innerHeight() - document.documentElement.clientHeight 
+									$('#header').innerHeight() - document.documentElement.clientHeight
 							);
 
 							t._trigger('submitsuccess', { result: res });
@@ -127,10 +133,10 @@ module.exports = widget.create({
 	},
 
 	_renderList: function(commentList, page, totalPages) {
-		var t = this, listWrapper = t._listWrapper;
+		const t = this, listWrapper = t._listWrapper;
 
 		return xTpl.render(
-			require.resolve('./list'), {
+			_tpl('./list.xtpl'), {
 				listData: commentList,
 				currentPage: page,
 				totalPages: totalPages
@@ -141,14 +147,13 @@ module.exports = widget.create({
 	},
 
 	load: function(page) {
-		var t = this,
-			listWrapper = t._options.listWrapper,
-			listTpl = require.resolve('./list');
+		const t = this;
+		const listWrapper = t._options.listWrapper;
 
 		t._destroyList();
 
 		xTpl.render(
-			listTpl, { tips: '正在加载评论...' }
+			_tpl('./list.xtpl'), { tips: '正在加载评论...' }
 		).then(function(result) {
 			listWrapper.html(result);
 		}).then(function() {
@@ -170,7 +175,7 @@ module.exports = widget.create({
 			}
 		}).catch(function(e) {
 			return xTpl.render(
-				listTpl, { tips: e.message }
+				_tpl('./list.xtpl'), { tips: e.message }
 			).then(function(result) {
 				listWrapper.html(result);
 			});
