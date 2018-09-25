@@ -48,31 +48,5 @@
 	{{ js('components/highlight/run') }}
 	{{ css('components/article/content') }}
 	{{ css('./detail') }}
-	{{#modjs (
-		'lib/dom@1.1',
-		'components/share/share',
-		'components/comment/comment'
-	)}}
-	function($, share, Comment) {
-		$('.share-btn').click(function() {
-			share.to(this.getAttribute('data-sharetype'), {
-				title: document.title,
-				url: window.location.href
-			});
-		});
-
-		var $comment = $('#comment');
-		new Comment({
-			listWrapper: $comment.find('.comment__list'),
-			form: $comment.find('.comment__form'),
-			page: 1,
-			articleId: window.articleId,
-			events: {
-				submitsuccess: function(e) {
-					$('.comment__total').text(e.result.totalRows);
-				}
-			}
-		});
-	}
-	{{/modjs}}
+	{{ modjs('./detail') }}
 {{/block}}
