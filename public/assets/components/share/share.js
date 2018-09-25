@@ -1,9 +1,9 @@
-var qs = require('lib/querystring@1.0');
-var $ = require('lib/dom@1.1');
-var QRCode = require('lib/qrcode@1.0');
+const qs = require('lib/querystring@1.0');
+const $ = require('lib/dom@1.1');
+const QRCode = require('lib/qrcode@1.0');
 
 
-var shareTypes = {
+const shareTypes = {
 	weibo: function(params) {
 		window.open(
 			qs.append('http://service.weibo.com/share/share.php', {
@@ -14,9 +14,9 @@ var shareTypes = {
 	},
 
 	wechat: function(params) {
-		var overlayer = $('<div class="overlayer overlayer--visible"></div>').appendTo('body');
+		const overlayer = $('<div class="overlayer overlayer--visible"></div>').appendTo('body');
 
-		var layer;
+		let layer;
 		if (/MicroMessenger/.test(window.navigator.userAgent)) {
 			layer = $(
 				'<div class="share-wechat--inwechat clearfix">' +
@@ -36,12 +36,12 @@ var shareTypes = {
 				'</div>'
 			);
 
-			var qrcode = new QRCode(layer.find('.share-wechat__qrcode').get(0), {
+			new QRCode(layer.find('.share-wechat__qrcode').get(0), {
 				text: params.url,
 				width: 128,
 				height: 128,
-				colorDark : '#000000',
-				colorLight : '#ffffff'
+				colorDark: '#000000',
+				colorLight: '#ffffff'
 			});
 		}
 
