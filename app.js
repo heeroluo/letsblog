@@ -15,6 +15,7 @@ const appConfig = require('./config');
 
 const app = express();
 app.set('env', appConfig.nodeEnv);
+app.set('trust proxy', true);
 
 // 配置express
 if (appConfig.express) {

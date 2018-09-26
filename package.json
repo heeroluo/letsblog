@@ -17,6 +17,7 @@
     "url": "http://heeroluo.net/"
   },
   "scripts": {
+    "start": "node ./bin/www",
     "dev": "node ./bin/www --env dev --no-prod",
     "test": "node ./bin/www --env test --no-prod",
     "pre": "node ./bin/www --env pre --no-prod",

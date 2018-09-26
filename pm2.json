@@ -1,5 +1,5 @@
 {
-	"name": "heeroluo.net",
+	"name": "mrluo.life",
 	"script": "bin/www",
 	"log_date_format": "YYYY-MM-DD HH:mm Z",
 	"exec_mode": "cluster",
