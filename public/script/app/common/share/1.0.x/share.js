@@ -1,6 +1,0 @@
-/*!
- * LetsBlog
- * SNS share - v1.0.1 (2016-02-11T16:25:19+0800)
- * Released under MIT license
- */
-define("/common/share/1.0.x/share",["querystring/1.0.x/","dom/1.1.x/","/common/qrcode/1.0.x/qrcode"],function(e,a,r){"use strict";var c=e("querystring/1.0.x/"),t=e("dom/1.1.x/"),s=e("/common/qrcode@1.0.x"),i={weibo:function(e){window.open(c.append("http://service.weibo.com/share/share.php",{title:e.title,url:e.url}))},wechat:function(e){function a(){r.remove(),c.remove()}var r,c=t('<div class="overlayer overlayer--visible"></div>').appendTo("body");if(/MicroMessenger/.test(window.navigator.userAgent))r=t('<div class="share-wechat--inwechat clearfix"><div class="share-wechat--inwechat__text">点击右上角按钮进行分享<br />(点击任意位置关闭提示)</div><div class="share-wechat--inwechat__arrow"><span class="share-wechat--inwechat__arrow__triangle"></span><span class="share-wechat--inwechat__arrow__rectangle"></span></div></div>');else{r=t('<div class="share-wechat"><p>扫一扫，分享到微信</p><p class="share-wechat__qrcode"></p><p class="share-wechat__close">点击任意位置关闭</p></div>');new s(r.find(".share-wechat__qrcode").get(0),{text:e.url,width:128,height:128,colorDark:"#000000",colorLight:"#ffffff"})}r.appendTo("body"),c.on("click",a),r.on("click",a)}};a.to=function(e,a){return i[e](a)}});
