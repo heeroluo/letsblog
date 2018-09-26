@@ -281,3 +281,12 @@ exports['attachment/upload'] = {
 		)
 	)
 };
+
+
+// 构建后CSS会被编译为JS，需要保留一份CSS给编辑器加载
+exports['contentCSS'] = {
+	callbacks(req, res) {
+		res.sendFile(path.join(process.cwd(), 'public/contentCSS.css'));
+		return true;
+	}
+};

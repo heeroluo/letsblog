@@ -51,9 +51,7 @@
 			<script src="/ckeditor/4.10.1/ckeditor.js"></script>
 			<script>
 			CKEDITOR.config.height = 350;
-			CKEDITOR.config.contentsCss = {{{ jsonEncode(
-				resolvePath('components/article/content.css')
-			) }}};
+			CKEDITOR.config.contentsCss = '/admin/article/contentCSS';
 			CKEDITOR.config.bodyClass = 'article__content';
 			{{#if (articleContentJSON !== '')}}
 			CKEDITOR.on('instanceReady', function() {
