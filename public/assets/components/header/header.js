@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Header - v1.0.0 (2018-09-25T10:05:46Z)
+ * Header - v1.0.0 (2018-09-26T09:18:17Z)
  * Released under MIT license
  */
 
@@ -65,17 +65,16 @@ if (currentUser && currentUser.group.perm_manage_comment) {
 	const getTotalPendingViews = function() {
 		ajax.send({
 			url: '/admin/comment/totalpendingreviews',
-			dataType: 'json',
-			onsuccess: function(res) {
-				const element = header.find('.header__user-panel__menu__item__admin__pending-reviews');
-				if (res.status === 1 && res.data.total > 0) {
-					element.find('em').text(res.data.total);
-					element.show();
-				} else {
-					element.hide();
-				}
-				setTimeout(getTotalPendingViews, 60000);
+			dataType: 'json'
+		}).spread(function(res) {
+			const element = header.find('.header__user__menu__item__admin__pending-reviews');
+			if (res.status === 1 && res.data.total > 0) {
+				element.find('em').text(res.data.total);
+				element.show();
+			} else {
+				element.hide();
 			}
+			setTimeout(getTotalPendingViews, 60000);
 		});
 	};
 	getTotalPendingViews();
