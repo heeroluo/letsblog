@@ -35,7 +35,7 @@
 	margin-left: 1.5em;
 	list-style-type: disc;
 }
-.header__nav__menu-list__item { margin-top: 5px; }
+.header__nav__menu-list__item { margin-top: 6px; }
 .header__nav__menu-list__item,
 .header__nav__menu-list__item a { color: #888; }
 .header__nav__menu-list__item a:hover { color: #efefef; }

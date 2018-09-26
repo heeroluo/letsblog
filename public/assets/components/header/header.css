@@ -60,7 +60,7 @@
 		line-height: 80px;
 		overflow: hidden;
 	}
-	.header__nav__list-item a { max-width: 80px; }
+	.header__nav__list-item a { max-width: 82px; }
 	.header__nav__list-item a:hover { color: #333 !important; }
 	.header__nav__list-item--current {
 		z-index: 1000;
