@@ -5,7 +5,7 @@
 	<article class="comment__list__item{{#if (this.userid)}} comment__list__item--isuser{{/if}}">
 		<header class="comment__list__item__header clearfix">
 			<div class="comment__list__item__header__author"><em>{{ this.user_nickname }}</em> 说：</div>
-			<div class="comment__list__item__header__pubtime">发表于{{ formatDateFromNow(this.pubtime_formatted) }}</div>
+			<div class="comment__list__item__header__pubtime">发表于{{ formatDateFromNow(this.pubtime) }}</div>
 		</header>
 		<div class="comment__list__item__content">{{ this.content }}</div>
 	</article>

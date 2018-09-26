@@ -21,6 +21,9 @@ function getCommentList(articleid, page, res) {
 	return commentBLL.list(params, 5, page).then((result) => {
 		result.data = result.data.map((c) => {
 			c = c.toPureData();
+			// 日期转成数字
+			c.pubtime = c.pubtime.getTime();
+
 			// 删除较为敏感的数据
 			delete c.user_email;
 			delete c.user_qq;

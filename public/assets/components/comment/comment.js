@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Comment component - v1.1 (2018-09-24T08:34:57Z)
+ * Comment component - v1.1 (2018-09-26T06:20:04Z)
  * Released under MIT license
  */
 
