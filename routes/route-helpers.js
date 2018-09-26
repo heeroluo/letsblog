@@ -175,8 +175,8 @@ class HTMLRouteHelper extends BasicRouteHelper {
 		this.viewData('info', info);
 		this.setTemplate(
 			res.req.originalUrl.indexOf('/admin/') === 0 ?
-				'pages/admin/_info/_info.page' :
-				'pages/_info/_info.page'
+				'pages/admin/_info/_info.page.xtpl' :
+				'pages/_info/_info.page.xtpl'
 		);
 		this.render(res);
 	}
