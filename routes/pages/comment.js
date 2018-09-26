@@ -18,7 +18,7 @@ function getCommentList(articleid, page, res) {
 		state: 1
 	};
 
-	return commentBLL.list(params, 5, page).then((result) => {
+	return commentBLL.list(params, 10, page).then((result) => {
 		result.data = result.data.map((c) => {
 			c = c.toPureData();
 			// 日期转成数字
