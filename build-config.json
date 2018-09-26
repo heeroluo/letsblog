@@ -1,7 +1,7 @@
 {
 	"build_to": {
-		"server": "../dist/{$env}/{$rev}",
-		"static": "../dist/{$env}/{$rev}/~public/assets"
+		"server": "/Users/HeeroLaw/Sites/Node/mrluo.life/{$env}/{$rev}",
+		"static": "/Users/HeeroLaw/Sites/Node/mrluo.life/{$env}/{$rev}/~public/assets"
 	},
 	"static_path": "./public/assets",
 	"static_url_prefix": "/assets/"
