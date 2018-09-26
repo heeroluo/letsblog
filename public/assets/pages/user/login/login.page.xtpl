@@ -1,3 +1,5 @@
+{{ set(title = '用户登录') }}
+
 {{ extend('layouts/basic/basic') }}
 
 {{#block ('body')}}
