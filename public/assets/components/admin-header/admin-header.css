@@ -38,7 +38,7 @@
 .header__nav__menu-list__item { margin-top: 6px; }
 .header__nav__menu-list__item,
 .header__nav__menu-list__item a { color: #888; }
-.header__nav__menu-list__item a:hover { color: #efefef; }
+.header__nav__menu-list__item a:hover { color: #80bd01 !important; }
 .header__nav__menu-list__item--current {
 	padding: 5px 0;
 	border-right: 4px solid #80bd01;
