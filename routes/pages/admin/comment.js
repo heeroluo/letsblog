@@ -88,7 +88,7 @@ exports.totalpendingreviews = {
 		pageType.prepend(
 			checkPermission,
 			(req, res) => {
-				return commentBLL.getTotalPendingReviews((result) => {
+				return commentBLL.getTotalPendingReviews().then((result) => {
 					res.routeHelper.viewData('total', result);
 				});
 			}
