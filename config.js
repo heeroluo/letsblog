@@ -17,6 +17,8 @@ const isProd = argvs.prod !== false;
 });
 
 
+const path = require('path');
+
 module.exports = {
 	// 环境
 	env: process.env.BACK2FRONT_ENV,
@@ -35,6 +37,12 @@ module.exports = {
 
 	// 前后端同构的XTemplate指令模块（路径相对于 lib/xtpl.js）
 	xTplCommands: '../public/assets/xtpl/commands',
+
+	// 上传文件目录
+	uploadDir: path.resolve('./upload'),
+
+	// 编辑器内容区CSS
+	contentCSS: path.resolve('public/contentCSS.css'),
 
 	// 数据库配置
 	database: {

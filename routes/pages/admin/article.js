@@ -11,6 +11,7 @@ const pageType = require('../../page-type');
 const articleModel = require('../../../entity/article');
 const articleBLL = require('../../../bll/article');
 const categoryBLL = require('../../../bll/category');
+const appConfig = require('../../../config');
 
 
 // 基本权限验证
@@ -209,16 +210,16 @@ const storage = multer.diskStorage({
 	destination(req, file, callback) {
 		function callCallback(err, targetDir, localDir) {
 			if (targetDir) {
-				req.res.routeHelper.viewData('path', targetDir);
+				req.res.routeHelper.viewData('path', '/upload/' + targetDir);
 			}
 			callback(err, localDir);
 		}
 
 		const now = new Date();
-		const targetDir = '/upload/article/' +
+		const targetDir = 'article/' +
 			now.getFullYear() +
 			('0' + (now.getMonth() + 1)).slice(-2);
-		const localDir = path.join(process.cwd(), targetDir);
+		const localDir = path.join(appConfig.uploadDir, targetDir);
 
 		// 创建年月目录
 		fs.exists(localDir, (exists) => {
@@ -286,7 +287,7 @@ exports['attachment/upload'] = {
 // 构建后CSS会被编译为JS，需要保留一份CSS给编辑器加载
 exports['contentCSS'] = {
 	callbacks(req, res) {
-		res.sendFile(path.join(process.cwd(), 'public/contentCSS.css'));
+		res.sendFile(appConfig.contentCSS);
 		return true;
 	}
 };

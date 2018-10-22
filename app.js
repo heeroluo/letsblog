@@ -40,9 +40,7 @@ app.use('/favicon.ico', function(req, res) {
 app.use(logger('dev'));
 
 // 上传文件（文章附件）
-app.use('/upload', express.static(
-	path.join(__dirname, 'upload'), appConfig.static
-));
+app.use('/upload', express.static(appConfig.uploadDir, appConfig.static));
 
 // CKEditor
 app.use('/ckeditor', express.static(
