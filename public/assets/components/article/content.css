@@ -68,7 +68,7 @@ body.article__content { margin: 1em; }
 	border-radius: 3px;
 	margin: 0 1em;
 	background-color: #f6f6f6;
-	font-family: 'Consolas', 'Courier New', Courier, monospace;
+	font-family: Consolas, Courier, monospace;
 }
 .article__content blockquote {
 	padding: 0.5em;
