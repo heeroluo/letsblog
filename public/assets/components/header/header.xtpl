@@ -25,7 +25,7 @@
 			<i class="iconfont header__user__toggle"></i>
 			<ul class="header__user__menu">
 				<li>Welcome, {{ currentUser.nickname }}</li>
-				<li class="header__user__menu__item__admin"><a href="/admin/home" target="_blank">后台管理</a><span class="header__user__menu__item__admin__pending-reviews"> (<a href="/admin/comment/list?state=0" target="_blank">待审:<em></em>条</a>)</span> | <a href="/user/logout">退出</a></li>
+				<li class="header__user__menu__item__admin"><a href="/admin/home" target="_blank">后台管理</a><span class="header__user__menu__item__admin__pending-reviews"> (<a href="/admin/comment/list/?state=0" target="_blank">待审:<em></em>条</a>)</span> | <a href="/user/logout">退出</a></li>
 			</ul>
 			{{else}}
 			<div class="header__user__login"><a href="/user/login">登录</a></div>
