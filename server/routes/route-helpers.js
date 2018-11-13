@@ -170,7 +170,7 @@ class HTMLRouteHelper extends BasicRouteHelper {
 	renderInfo(res, info) {
 		info = Object.assign({
 			backURL: res.req.get('Referer'),
-			status: 1
+			status: 200
 		}, info);
 		this.viewData('info', info);
 		this.setTemplate(
@@ -192,11 +192,16 @@ class HTMLRouteHelper extends BasicRouteHelper {
 class JSONRouteHelper extends BasicRouteHelper {
 	constructor(template) {
 		super(template);
-		this._viewDataWrap = { status: 1 };
+		this._viewDataWrap = { status: 200 };
 		this._type = 'json';
 	}
 
 	render(res) {
+		const origin = res.req.get('Origin');
+		if (origin) {
+			res.header('Access-Control-Allow-Origin', origin);
+			res.header('Access-Control-Allow-Credentials', 'true');
+		}
 		const viewDataWrap = this._viewDataWrap;
 		viewDataWrap.data = this._viewData;
 		res.json(viewDataWrap);
