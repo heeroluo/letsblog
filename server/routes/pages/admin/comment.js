@@ -13,7 +13,7 @@ const commentBLL = require('../../../bll/comment');
 
 // 基本权限检查
 function checkPermission(req) {
-	if (!req.currentUser.group.perm_comment) {
+	if (!req.currentUser.usergroup.perm_comment) {
 		return util.createError('权限不足', 403);
 	}
 }

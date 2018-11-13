@@ -36,20 +36,22 @@ module.exports = {
 	},
 
 	// 前后端同构的XTemplate指令模块（路径相对于 lib/xtpl.js）
-	xTplCommands: '../public/assets/xtpl/commands',
+	xTplCommands: '../../public/assets/xtpl/commands',
 
 	// 上传文件目录
 	uploadDir: path.resolve('./upload'),
 
 	// 编辑器内容区CSS
-	contentCSS: path.resolve('public/contentCSS.css'),
+	contentCSS: path.resolve('./public/contentCSS.css')
 
-	// 数据库配置
-	database: {
-		host: 'localhost',
-		port: 3306,
-		user: 'root',
-		password: '12345',
-		database: 'letsblog'
-	}
+	// ,
+
+	// // 数据库配置
+	// database: {
+	// 	host: 'localhost',
+	// 	port: 3306,
+	// 	user: 'root',
+	// 	password: '12345',
+	// 	database: 'letsblog'
+	// }
 };

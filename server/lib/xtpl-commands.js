@@ -8,14 +8,14 @@
 const path = require('path');
 const escapeHTML = require('escape-html');
 const util = require('./util');
-const assetConfig = require('../asset-config');
-const md5Map = require('../md5-map');
+const assetConfig = require('../../asset-config');
+const md5Map = require('../../md5-map');
 
 
 // 解析路径
 function resolvePath(rootPath, from, to, extname) {
 	// a@b解析为a/b/a
-	to = to.replace(/([^\\\/]+)@([^\\\/]+)/g, (match, module, version) => {
+	to = to.replace(/([^\\/]+)@([^\\/]+)/g, (match, module, version) => {
 		return module + '/' + version + '/' + module;
 	});
 

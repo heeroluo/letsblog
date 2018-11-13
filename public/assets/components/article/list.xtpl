@@ -1,12 +1,12 @@
-{{#if (exists(articleList.data))}}
-	{{#each (articleList.data)}}
+{{#if (exists(articleList.rows))}}
+	{{#each (articleList.rows)}}
 	<article class="article-list__item">
 		<header class="article-list__item__header clearfix">
 			<h1 class="article-list__item__header__title">
 				<a href="{{ this.href }}">{{ this.title }}</a>
 			</h1>
 			<div class="article-list__item__header__meta">
-				{{#if (pageCategoryId <= 0)}}<a href="{{ this.category_href }}">{{ this.categoryname }}</a>&nbsp;&nbsp;|&nbsp;&nbsp;{{/if}}{{ formatDateFromNow(this.pubtime) }}
+				{{#if (pageCategoryId <= 0)}}<a href="{{ this.category.href }}">{{ this.category.categoryname }}</a>&nbsp;&nbsp;|&nbsp;&nbsp;{{/if}}{{ formatDateFromNow(this.pubtime) }}
 			</div>
 		</header>
 		<div class="article__content article-list__item__summary">
@@ -20,10 +20,10 @@
 		</footer>
 	</article>
 	{{/each}}
-	{{#if (articleList.totalPages > 1)}}
+	{{#if (articleList.pageCount > 1)}}
 	<nav class="article-list__paginator">{{ parse (
 		'components/paginator/paginator',
-		currentPage = articleList.page, totalPages = articleList.totalPages
+		currentPage = articleList.page, totalPages = articleList.pageCount
 	) }}</nav>
 	{{/if}}
 {{/if}}

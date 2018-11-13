@@ -8,8 +8,8 @@
 const path = require('path');
 const fs = require('fs');
 const XTemplate = require('xtemplate');
-const appConfig = require('../config');
-const assetConfig = require('../asset-config');
+const appConfig = require('../../config');
+const assetConfig = require('../../asset-config');
 const util = require('./util');
 const basicCommands = require('./xtpl-commands');
 
@@ -58,11 +58,11 @@ exports.express = function(app, config) {
 	// 解析JS模块路径
 	function parseModJSPath(p) {
 		// mod@ver => mod/ver/mod
-		p = p.replace(/([^\\\/]+)@([^\\\/]+)/g, (match, module, version) => {
+		p = p.replace(/([^\\/]+)@([^\\/]+)/g, (match, module, version) => {
 			return module + '/' + version + '/' + module;
 		});
 		// 添加默认扩展名
-		if (!/\.[^\\\/]+$/i.test(p)) { p += '.js'; }
+		if (!/\.[^\\/]+$/i.test(p)) { p += '.js'; }
 
 		return p;
 	}
@@ -120,7 +120,7 @@ exports.express = function(app, config) {
 				.replace(/^\s*\/\*[\s\S]*?\*\/\s*$/mg, '')
 				.replace(/^\s*\/\/.*$/mg, '');
 
-			const reRequire = /(?:^|[^.$])\b(?:require|_tpl)\s*\(\s*(["'])([^"'\s\)]+)\1\s*\)/g;
+			const reRequire = /(?:^|[^.$])\b(?:require|_tpl)\s*\(\s*(["'])([^"'\s)]+)\1\s*\)/g;
 			const dirname = path.dirname(p);
 
 			let match;

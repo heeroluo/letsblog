@@ -5,6 +5,9 @@
 		"node": true,
 		"es6": true
 	},
+	"parserOptions": {
+		"ecmaVersion": 2017
+	},
 	"globals": {
 		"ActiveXObject": true,
 		"_tpl": true

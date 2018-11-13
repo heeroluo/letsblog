@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Header - v1.0.0 (2018-09-26T09:18:17Z)
+ * Header - v1.0.0 (2018-11-12T09:27:32Z)
  * Released under MIT license
  */
 
@@ -61,7 +61,7 @@ new Toggle(
 );
 
 
-if (currentUser && currentUser.group.perm_manage_comment) {
+if (currentUser && currentUser.usergroup.perm_manage_comment) {
 	const getTotalPendingViews = function() {
 		ajax.send({
 			url: '/admin/comment/totalpendingreviews',

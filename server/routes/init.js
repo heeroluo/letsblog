@@ -9,7 +9,7 @@ const util = require('../lib/util');
 const routeHelpers = require('./route-helpers');
 const requireDir = require('require-dir');
 const routes = requireDir('./pages');
-const appConfig = require('../config');
+const appConfig = require('../../config');
 
 
 module.exports = function(express, app) {
@@ -95,10 +95,12 @@ module.exports = function(express, app) {
 					RouteHelper = routeHelpers.HTMLRouteHelper;
 				}
 				res.routeHelper = new RouteHelper(template);
-				res.routeHelper.viewData({
-					ENV: env,
-					currentYear: (new Date).getFullYear()
-				});
+				if (resType === 'html') {
+					res.routeHelper.viewData({
+						ENV: env,
+						currentYear: (new Date).getFullYear()
+					});
+				}
 
 				next();
 			});

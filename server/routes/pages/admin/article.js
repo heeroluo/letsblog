@@ -11,7 +11,7 @@ const pageType = require('../../page-type');
 const articleModel = require('../../../entity/article');
 const articleBLL = require('../../../bll/article');
 const categoryBLL = require('../../../bll/category');
-const appConfig = require('../../../config');
+const appConfig = require('../../../../config');
 
 
 // 基本权限验证
