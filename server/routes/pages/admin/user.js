@@ -23,6 +23,28 @@ function createPermissionChecking(limit) {
 }
 
 
+exports.whoAmI = {
+	resType: 'json',
+	callbacks: async(req, res) => {
+		let user;
+
+		const username = req.cookies.username;
+		const password = req.cookies.password;
+		try {
+			user = await userBLL.readByUsernameAndPassword(
+				username,
+				password
+			);
+		} catch (e) { }
+
+		if (user) {
+			delete user.password;
+			res.routeHelper.viewData('me', user);
+		}
+	}
+};
+
+
 // 创建用户界面
 exports.create = {
 	template: 'admin/user__form/user__form',
