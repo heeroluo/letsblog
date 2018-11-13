@@ -121,26 +121,23 @@ module.exports = function(express, app) {
 
 		res.routeHelper = new routeHelpers.HTMLRouteHelper();
 
-		const err = new Error('您访问的页面不存在');
-		err.status = 404;
-		next(err);
+		next(util.createError('您访问的页面不存在', 404));
 	});
 
 	// 异常处理
 	/* eslint-disable */
 	app.use(function(err, req, res, next) {
 		if (typeof err === 'string') { err = new Error(err); }
-		err.status = err.status || 500;
+		err.statusCode = err.statusCode || 500;
 
-		if (err.status !== 404) { console.error('Error: ' + err.message); }
+		if (err.statusCode !== 404) { console.error('Error: ' + err.message); }
 
-		res.status(err.status);
+		res.status(err.statusCode);
 
 		try {
 			res.routeHelper.viewData('title', '温馨提示');
 			res.routeHelper.renderInfo(res, {
-				status: 2,
-				httpStatus: err.status,
+				status: err.statusCode,
 				message: err.message || '',
 				stack: appConfig.nodeEnv !== 'production' ? err.stack : ''
 			});

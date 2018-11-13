@@ -13,26 +13,25 @@ const optionsBLL = require('../../../bll/options');
 
 // 权限验证
 function checkPermission(req) {
-	if (!req.currentUser.group.perm_manage_option) {
+	if (!req.currentUser.usergroup.perm_manage_option) {
 		return util.createError('权限不足', 403);
 	}
 }
 
 
 // 修改网站设置操作界面
-exports.update = {
-	template: 'admin/options__form/options__form',
+exports.read = {
+	resType: 'json',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			(req, res) => {
-				return optionsBLL.read().then((result) => {
-					res.routeHelper.viewData('options', result);
-				});
+			async(req, res) => {
+				res.routeHelper.viewData('options', await optionsBLL.read());
 			}
 		)
 	)
 };
+
 
 // 提交网站设置修改
 exports['update/post'] = {

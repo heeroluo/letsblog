@@ -15,8 +15,8 @@ const categoryBLL = require('../../../bll/category');
 
 // 创建权限验证函数
 function checkPermission(req) {
-	if (req.currentUser.group.perm_manage_article < 2) {
-		return util.createError('权限不足', 403);
+	if (req.currentUser.usergroup.perm_manage_article < 2) {
+		throw util.createError('权限不足', 403);
 	}
 }
 
@@ -53,6 +53,23 @@ exports['create/post'] = {
 						message: '已创建新分类 ' + category.categoryname
 					});
 				});
+			}
+		)
+	)
+};
+
+
+exports.read = {
+	resType: 'json',
+	pathPattern: '/category/read/:id(\\d+)',
+	callbacks: pageType.admin(
+		pageType.prepend(
+			checkPermission,
+			async(req, res) => {
+				res.routeHelper.viewData(
+					'category',
+					await categoryBLL.read(parseInt(req.params.id))
+				);
 			}
 		)
 	)
@@ -107,38 +124,34 @@ exports['update/post'] = {
 
 
 // 分类列表
-exports.list = pageType.admin(
-	pageType.prepend(
-		checkPermission,
-		(req, res) => {
-			return Promise.all([
-				categoryBLL.list().then((result) => {
-					res.routeHelper.viewData('categoryList', result);
-				}),
-				userGroupBLL.list(1).then((result) => {
-					res.routeHelper.viewData('userGroupMap', result);
-				})
-			]);
-		}
-	)
-);
-
-
-// 删除分类
-exports['delete/post'] = {
-	pathPattern: '/category/delete/:categoryid/post',
-	verb: 'post',
+exports.list = {
 	resType: 'json',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			(req, res) => {
-				return categoryBLL.delete(
-					parseInt(req.params.categoryid)
-				).then(() => {
-					res.routeHelper.renderInfo(res, {
-						message: '已删除指定分类'
-					});
+			async(req, res) => {
+				res.routeHelper.viewData('categoryList', await categoryBLL.list());
+			}
+		)
+	)
+};
+
+
+// 删除分类
+exports['delete/post'] = {
+	pathPattern: '/category/delete/:id(\\d+)',
+	verb: 'delete',
+	resType: 'json',
+	callbacks: pageType.admin(
+		pageType.prepend(
+			checkPermission,
+			async(req, res) => {
+				await categoryBLL.delete(
+					parseInt(req.params.id)
+				);
+
+				res.routeHelper.renderInfo(res, {
+					message: '已删除指定分类'
 				});
 			}
 		)

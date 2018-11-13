@@ -148,12 +148,7 @@ exports.admin = function(callbacks) {
 				res.routeHelper.appendTitle('LetsBlog后台管理系统');
 			}
 			if (!req.currentUser.userid) {
-				res.redirect(
-					'/user/login' +
-					'?referrer=' + encodeURIComponent(req.originalUrl) +
-					'&msg=' + encodeURIComponent('请先登录')
-				);
-				return true;
+				throw util.createError('请先登录', 403);
 			}
 		}, callbacks)
 	);

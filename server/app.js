@@ -84,6 +84,17 @@ app.use(function(req, res, next) {
 	next();
 });
 
+app.use('/admin', (req, res, next) => {
+	const origin = res.req.get('Origin');
+	if (origin) {
+		res.header('Access-Control-Allow-Origin', origin);
+		res.header('Access-Control-Allow-Credentials', 'true');
+		res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, POST, PUT, DELETE');
+	}
+	next();
+});
+
+
 // 初始化路由
 require('./routes/init')(express, app);
 

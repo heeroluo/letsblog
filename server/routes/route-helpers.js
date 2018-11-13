@@ -197,11 +197,6 @@ class JSONRouteHelper extends BasicRouteHelper {
 	}
 
 	render(res) {
-		const origin = res.req.get('Origin');
-		if (origin) {
-			res.header('Access-Control-Allow-Origin', origin);
-			res.header('Access-Control-Allow-Credentials', 'true');
-		}
 		const viewDataWrap = this._viewDataWrap;
 		viewDataWrap.data = this._viewData;
 		res.json(viewDataWrap);
