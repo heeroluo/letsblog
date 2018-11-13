@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Routes of user
+ * 用户相关前台路由
  * Released under MIT license
  */
 
@@ -21,29 +21,30 @@ exports.login = pageType.basic((req, res) => {
 	}
 });
 
+
 // 登录页提交
 exports['login/post'] = {
 	verb: 'post',
 	resType: 'json',
-	callbacks: function(req, res) {
-		const username = req.body.username, password = req.body.password;
+	callbacks: async(req, res) => {
+		const username = req.body.username;
+		const password = req.body.password;
 
-		return userBLL.login(username, password, req.ip).then(function(user) {
-			const cookieOptions = {
-				path: '/',
-				expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-			};
-			res.cookie('username', user.username, cookieOptions);
-			cookieOptions.httpOnly = true;
-			res.cookie('password', user.password, cookieOptions);
+		const user = await userBLL.login(username, password, req.ip);
+		const cookieOptions = {
+			path: '/',
+			expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+		};
+		res.cookie('username', user.username, cookieOptions);
+		cookieOptions.httpOnly = true;
+		res.cookie('password', user.password, cookieOptions);
 
-			user = user.toPureData();
-			delete user.password;
+		delete user.password;
 
-			res.routeHelper.viewData('currentUser', user);
-		});
+		res.routeHelper.viewData('currentUser', user);
 	}
 };
+
 
 // 退出登录
 exports.logout = function(req, res) {
