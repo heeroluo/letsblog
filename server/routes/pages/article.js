@@ -1,6 +1,6 @@
 /*!
  * LetsBlog
- * Routes of article
+ * 文章相关前台路由
  * Released under MIT license
  */
 
