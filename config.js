@@ -25,7 +25,7 @@ module.exports = {
 	nodeEnv: process.env.NODE_ENV,
 
 	// 占用的端口
-	port: 3000,
+	port: 3020,
 
 	// 本应用发布后是否作为静态文件服务器
 	isStaticServer: true,
