@@ -40,14 +40,18 @@ const basicPage = exports.basic = function(callbacks) {
 		}
 
 		let user;
-		try {
-			user = await userBLL.readByUsernameAndPassword(
-				req.cookies.username,
-				req.cookies.password
-			);
-		} catch (e) {
-			// error的情况下表示没有登录
-			// 无需处理异常
+		const username = req.cookies.username;
+		const password = req.cookies.password;
+		if (username && password) {
+			try {
+				user = await userBLL.readByUsernameAndPassword(
+					username,
+					password
+				);
+			} catch (e) {
+				// error的情况下表示没有登录
+				// 无需处理异常
+			}
 		}
 
 		if (!user) {
