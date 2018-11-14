@@ -7,6 +7,9 @@ const defaultConfig = {
 	baseURL: `http://${ serverConfig.host }:${ serverConfig.port }/api/`
 };
 
+axios.defaults.headers.put['Content-Type'] =
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+
 export async function request(url, config) {
 	config = Object.assign({
 		url
