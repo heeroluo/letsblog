@@ -19,7 +19,7 @@ function checkPermission(req) {
 }
 
 
-// 修改网站设置操作界面
+// 加载配置数据
 exports.read = {
 	resType: 'json',
 	callbacks: pageType.admin(
@@ -33,19 +33,16 @@ exports.read = {
 };
 
 
-// 提交网站设置修改
-exports['update/post'] = {
-	verb: 'post',
+// 更新网站设置
+exports.update = {
+	verb: 'put',
+	resType: 'json',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			(req, res) => {
-				const options = req.getEntity('options', 'update');
-				return optionsBLL.update(options).then(() => {
-					res.routeHelper.renderInfo(res, {
-						message: '更新成功'
-					});
-				});
+			async(req) => {
+				const options = req.getModel('options', req.body);
+				await optionsBLL.update(options);
 			}
 		)
 	)

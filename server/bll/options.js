@@ -1,6 +1,6 @@
 const optionsDAL = require('../dal/options');
 const PromiseCache = require('../lib/promise-cache');
-const validate = require('./validator/options');
+const { validate } = require('./validator/options');
 const { createError } = require('../lib/util');
 
 

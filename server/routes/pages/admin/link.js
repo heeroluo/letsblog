@@ -9,118 +9,89 @@
 const util = require('../../../lib/util');
 const pageType = require('../../page-type');
 const linkBLL = require('../../../bll/link');
-const linkModel = require('../../../entity/link');
 
 
 // 权限验证
 function checkPermission(req) {
-	if (!req.currentUser.group.perm_manage_option) {
+	if (!req.currentUser.usergroup.perm_manage_option) {
 		return util.createError('权限不足', 403);
 	}
 }
 
 
-// 创建链接界面
-exports.create = {
-	template: 'admin/link__form/link__form',
+// 链接列表
+exports.list = {
+	resType: 'json',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			(req, res) => {
-				const link = linkModel.createEntity();
-				link.weight = '';
-				res.routeHelper.viewData('link', link);
+			async(req, res) => {
+				res.routeHelper.viewData('linkList', await linkBLL.list());
 			}
 		)
 	)
 };
+
+
+// 加载单条链接数据
+exports.read = {
+	resType: 'json',
+	callbacks: pageType.admin(
+		pageType.prepend(
+			checkPermission,
+			async(req, res) => {
+				res.routeHelper.viewData(
+					'link',
+					await linkBLL.read(parseInt(req.query.id))
+				);
+			}
+		)
+	)
+};
+
+
 
 // 提交新链接
-exports['create/post'] = {
+exports.create = {
 	verb: 'post',
+	resType: 'json',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			(req, res) => {
-				const link = req.getEntity('link', 'insert');
-				return linkBLL.create(link).then(() => {
-					res.routeHelper.renderInfo(res, {
-						message: '已创建新链接 ' + link.linkname
-					});
-				});
+			async(req) => {
+				const link = req.getModel('link', req.body);
+				await linkBLL.create(link);
 			}
 		)
 	)
 };
 
-
-// 修改链接界面
-exports.update = {
-	pathPattern: '/link/update/:linkid',
-	template: 'admin/link__form/link__form',
-	callbacks: pageType.admin(
-		pageType.prepend(
-			checkPermission,
-			(req, res) => {
-				return linkBLL.read(parseInt(req.params.linkid)).then((result) => {
-					if (result == null) {
-						return util.createError('链接不存在', 404);
-					} else {
-						res.routeHelper.viewData('link', result);
-					}
-				});
-			}
-		)
-	)
-};
 
 // 提交链接修改
-exports['update/post'] = {
-	pathPattern: '/link/update/:linkid/post',
-	verb: 'post',
+exports.update = {
+	verb: 'put',
+	resType: 'json',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			(req, res) => {
-				const link = req.getEntity('link', 'update');
-				return linkBLL.update(link, parseInt(req.params.linkid)).then(() => {
-					res.routeHelper.renderInfo(res, {
-						message: '已更新链接 ' + link.linkname
-					});
-				});
+			async(req) => {
+				const link = req.getModel('link', req.body);
+				await linkBLL.update(link, link.linkid);
 			}
 		)
 	)
 };
-
-
-// 链接列表
-exports.list = pageType.admin(
-	pageType.prepend(
-		checkPermission,
-		(req, res) => {
-			return linkBLL.list().then((result) => {
-				res.routeHelper.viewData('linkList', result);
-			});
-		}
-	)
-);
 
 
 // 删除链接
-exports['delete/post'] = {
-	pathPattern: '/link/delete/:linkid/post',
+exports['delete'] = {
 	resType: 'json',
-	verb: 'post',
+	verb: 'delete',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
-			(req, res) => {
-				return linkBLL.delete(parseInt(req.params.linkid)).then(() => {
-					res.routeHelper.renderInfo(res, {
-						message: '已删除指定链接'
-					});
-				});
+			async(req) => {
+				await linkBLL.delete(parseInt(req.query.id));
 			}
 		)
 	)

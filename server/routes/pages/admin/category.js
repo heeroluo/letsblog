@@ -36,14 +36,14 @@ exports.list = {
 // 加载单个分类数据
 exports.read = {
 	resType: 'json',
-	pathPattern: '/category/read/:id(\\d+)',
+	pathPattern: '/category/read',
 	callbacks: pageType.admin(
 		pageType.prepend(
 			checkPermission,
 			async(req, res) => {
 				res.routeHelper.viewData(
 					'category',
-					await categoryBLL.read(parseInt(req.params.id))
+					await categoryBLL.read(parseInt(req.query.id))
 				);
 			}
 		)

@@ -24,11 +24,11 @@ const Options = exports.Model = core.define('options', {
 	},
 
 	tipstext: {
-		type: Sequelize.TINYINT
+		type: Sequelize.STRING
 	},
 
 	statcode: {
-		type: Sequelize.TINYINT
+		type: Sequelize.STRING
 	}
 }, {
 	timestamps: false,
