@@ -16,7 +16,7 @@ const userBLL = require('../../../bll/user');
 // 创建权限验证函数
 function createPermissionChecking(limit) {
 	return (req) => {
-		if (req.currentUser.group.perm_manage_user < limit) {
+		if (req.currentUser.usergroup.perm_manage_user < limit) {
 			return util.createError('权限不足', 403);
 		}
 	};
@@ -242,31 +242,40 @@ exports['update/password/post'] = {
 
 
 // 用户列表
-exports.list = pageType.admin(
-	pageType.prepend(
-		createPermissionChecking(2),
-		(req, res) => {
+exports.list = {
+	resType: 'json',
+	callbacks: pageType.admin(
+		pageType.prepend(createPermissionChecking(2), async(req, res) => {
 			const page = parseInt(req.query.page) || 1;
 			const params = {
 				name: req.query.name || '',
-				groupid: parseInt(req.query.groupid) || 0
+				groupid: req.query.groupid ? parseInt(req.query.groupid) : null
 			};
 
-			return Promise.all([
-				userBLL.list(params, 15, page).then((result) => {
-					res.routeHelper.viewData({
-						userList: result,
-						params: params
-					});
-				}),
+			const result = await userBLL.list(15, page, params);
+			res.routeHelper.viewData({
+				pageCount: result.pageCount,
+				page: result.page,
+				rows: result.rows
+			});
 
-				userGroupBLL.list().then((result) => {
-					res.routeHelper.viewData('userGroupList', result);
-				})
-			]);
-		}
+			// return Promise.all([
+			// 	userBLL.list(params, 15, page).then((result) => {
+			// 		res.routeHelper.viewData({
+			// 			userList: result,
+			// 			params: params
+			// 		});
+			// 	}),
+
+			// 	userGroupBLL.list().then((result) => {
+			// 		res.routeHelper.viewData('userGroupList', result);
+			// 	})
+			// ]);
+		})
 	)
-);
+};
+
+
 
 
 // 批量删除用户

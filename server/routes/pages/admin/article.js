@@ -16,7 +16,9 @@ const appConfig = require('../../../../config');
 
 // 基本权限验证
 function checkPermission(req) {
-	if (!req.currentUser.group.perm_article && !req.currentUser.group.perm_manage_article) {
+	if (!req.currentUser.usergroup.perm_article &&
+		!req.currentUser.usergroup.perm_manage_article
+	) {
 		return util.createError('权限不足', 403);
 	}
 }
@@ -140,44 +142,36 @@ exports['update/post'] = {
 
 
 // 文章列表
-exports.list = pageType.admin(
-	pageType.prepend(
-		checkPermission,
-		function(req, res) {
+exports.list = {
+	resType: 'json',
+	callbacks: pageType.admin(
+		pageType.prepend(checkPermission, async(req, res) => {
 			// 没有管理权限的用户只能看到自己的文章
 			const isPersonalPage =
-				req.query.type == 'personal' || !req.currentUser.group.perm_manage_article;
+				req.query.type == 'personal' ||
+				!req.currentUser.usergroup.perm_manage_article;
 
 			const page = parseInt(req.query.page) || 1;
 			const params = isPersonalPage ? {
 				userid: req.currentUser.userid
 			} : {
-				minWeight: parseInt(req.query.min_weight),
-				maxWeight: parseInt(req.query.max_weight),
-				categoryid: parseInt(req.query.categoryid),
-				state: parseInt(req.query.state),
+				minWeight: req.query.min_weight ? parseInt(req.query.min_weight) : null,
+				maxWeight: req.query.max_weight ? parseInt(req.query.max_weight) : null,
+				categoryid: req.query.categoryid ? parseInt(req.query.categoryid) : null,
+				state: req.query.state ? parseInt(req.query.state) : null,
 				username: req.query.username || '',
 				title: req.query.title || ''
 			};
 
-			return Promise.all([
-				articleBLL.list(params, 15, page).then((result) => {
-					if (isPersonalPage) { params.type = 'personal'; }
-
-					res.routeHelper.viewData({
-						articleList: result,
-						params,
-						isPersonalPage
-					});
-				}),
-
-				categoryBLL.list().then((result) => {
-					res.routeHelper.viewData('categoryList', result);
-				})
-			]);
-		}
+			const result = await articleBLL.list(15, page, params);
+			res.routeHelper.viewData({
+				pageCount: result.pageCount,
+				page: result.page,
+				rows: result.rows
+			});
+		})
 	)
-);
+};
 
 
 // 批量删除文章

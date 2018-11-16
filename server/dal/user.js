@@ -52,7 +52,13 @@ const User = exports.Model = core.define('user', {
 	}
 }, {
 	timestamps: false,
-	freezeTableName: true
+	freezeTableName: true,
+
+	getterMethods: {
+		name() {
+			return this.nickname || this.username;
+		}
+	}
 });
 
 
