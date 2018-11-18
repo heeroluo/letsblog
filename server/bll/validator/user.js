@@ -1,4 +1,9 @@
-const { isUsername, isEmail, isNickname } = require('./common');
+const {
+	isUsername,
+	isEmail,
+	isNickname,
+	isAutoId
+} = require('./common');
 
 
 // 创建和更新数据前的主要属性验证

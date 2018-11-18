@@ -8,8 +8,6 @@
 
 const util = require('../../../lib/util');
 const pageType = require('../../page-type');
-const userGroupBLL = require('../../../bll/usergroup');
-const userModel = require('../../../entity/user');
 const userBLL = require('../../../bll/user');
 
 
@@ -23,6 +21,7 @@ function createPermissionChecking(limit) {
 }
 
 
+// 身份验证
 exports.whoAmI = {
 	resType: 'json',
 	callbacks: async(req, res) => {
@@ -45,198 +44,108 @@ exports.whoAmI = {
 };
 
 
-// 创建用户界面
-exports.create = {
-	template: 'admin/user__form/user__form',
+exports.read = {
+	resType: 'json',
 	callbacks: pageType.admin(
-		pageType.prepend(
-			createPermissionChecking(1),
-			(req, res) => {
-				res.routeHelper.viewData('user', userModel.createEntity());
-
-				return userGroupBLL.list().then((result) => {
-					// 过滤出权限<=当前用户所在用户组的用户组
-					res.routeHelper.viewData(
-						'userGroupList',
-						result.filter((group) => {
-							return req.currentUser.group.compare(group) >= 0;
-						})
-					);
-				});
-			}
-		)
+		pageType.prepend(createPermissionChecking(1), async(req, res) => {
+			res.routeHelper.viewData('user', await userBLL.readByUserId(req.query.id));
+		})
 	)
 };
+
 
 // 提交新用户
-exports['create/post'] = {
+exports.create = {
 	verb: 'post',
+	resType: 'json',
 	callbacks: pageType.admin(
-		pageType.prepend(
-			createPermissionChecking(1),
-			(req, res) => {
-				const user = req.getEntity('user', 'create');
-				// 生成注册日期、最后活动时间
-				user.regtime = user.lastactivity = new Date();
-				// 获取当前IP
-				user.lastip = req.ip;
+		pageType.prepend(createPermissionChecking(1), async(req) => {
+			const user = req.getModel('user', req.body);
+			// 生成注册日期、最后活动时间
+			user.regtime = user.lastactivity = new Date();
+			// 获取当前IP
+			user.lastip = req.ip;
 
-				return userBLL.create(user, req.currentUser).then(() => {
-					res.routeHelper.renderInfo(res, {
-						message: '已创建新用户 ' + user.nickname
-					});
-				});
-			}
-		)
+			await userBLL.create(user, req.currentUser);
+		})
 	)
 };
 
 
-// 渲染更新用户界面
-function renderUpdateForm(userid, res) {
-	return Promise.all([
-		userBLL.readByUserId(userid).then((result) => {
-			if (result) {
-				res.routeHelper.viewData('user', result);
-			} else {
-				return util.createError('用户不存在', 404);
-			}
-		}),
-
-		userGroupBLL.list().then((result) => {
-			res.routeHelper.viewData('userGroupList', result);
-		})
-	]);
-}
 
 // 更新个人资料时，isMyProfile传true
-function submitUpdateForm(userid, isMyProfile, req, res) {
-	return userBLL.readByUserId(userid).then((result) => {
-		if (!result) { return util.createError('用户不存在', 404); }
-		return result;
-	}).then((user) => {
-		const newUser = req.getEntity('user', 'update');
-		newUser.username = user.username;
-		// 更新个人资料时，保持原有用户组
-		if (isMyProfile) { newUser.groupid = req.currentUser.groupid; }
-		// 更新个人资料时，无需检查当前用户的权限，第三个参数传null
-		return userBLL.update(
-			newUser, userid, isMyProfile ? null : req.currentUser
-		).then(() => {
-			return newUser;
-		});
-	}).then((newUser) => {
-		res.routeHelper.renderInfo(res, {
-			message: '已更新用户 ' + newUser.nickname
-		});
-	});
+async function submitUpdateForm(userid, isMyProfile, req) {
+	const newUser = req.getModel('user', req.body);
+	if (!isMyProfile) { userid = newUser.userid; }
+
+	const user = await userBLL.readByUserId(userid);
+	if (!user) {
+		throw util.createError('用户不存在', 404);
+	}
+
+	newUser.username = user.username;
+	// 更新个人资料时，保持原有用户组
+	if (isMyProfile) { newUser.groupid = req.currentUser.groupid; }
+
+	// 更新个人资料时，无需检查当前用户的权限，第三个参数传null
+	await userBLL.updateProfile(
+		newUser, userid, isMyProfile ? null : req.currentUser
+	);
 }
 
-// 修改个人资料界面
-exports['i/update'] = {
-	template: 'admin/user__form/user__form',
-	callbacks: pageType.admin(
-		(req, res) => {
-			res.routeHelper.viewData('isMyProfile', true);
-			return renderUpdateForm(req.currentUser.userid, res);
-		}
-	)
-};
-
 // 提交个人资料修改
-exports['i/update/post'] = {
-	verb: 'post',
+exports['i/update'] = {
+	verb: 'put',
+	resType: 'json',
 	callbacks: pageType.admin(
-		(req, res) => {
-			return submitUpdateForm(req.currentUser.userid, true, req, res);
+		async(req) => {
+			await submitUpdateForm(req.currentUser.userid, true, req);
 		}
-	)
-};
-
-// 修改用户资料界面
-exports.update = {
-	pathPattern: '/user/update/:userid',
-	template: 'admin/user__form/user__form',
-	callbacks: pageType.admin(
-		pageType.prepend(
-			createPermissionChecking(2),
-			(req, res, next) => {
-				return renderUpdateForm(parseInt(req.params.userid), res, next);
-			}
-		)
 	)
 };
 
 // 提交用户资料修改
-exports['update/post'] = {
-	pathPattern: '/user/update/:userid/post',
-	verb: 'post',
+exports.update = {
+	verb: 'put',
+	resType: 'json',
 	callbacks: pageType.admin(
-		pageType.prepend(
-			createPermissionChecking(2),
-			(req, res) => {
-				return submitUpdateForm(parseInt(req.params.userid), false, req, res);
-			}
-		)
+		pageType.prepend(createPermissionChecking(2), async(req) => {
+			await submitUpdateForm(null, false, req);
+		})
 	)
 };
 
 
-// 修改个人密码
-exports['i/update/password'] = pageType.admin();
-
 // 提交个人密码修改
-exports['i/update/password/post'] = {
-	verb: 'post',
-	callbacks: pageType.admin((req, res) => {
+exports['i/update/password'] = {
+	verb: 'put',
+	resType: 'json',
+	callbacks: pageType.admin(async(req, res) => {
 		const newPassword = req.body.newpassword;
-		return userBLL.updatePassword(
-			newPassword, req.body.oldpassword, req.currentUser.username
-		).then((result) => {
-			// 更新cookie中的密码
-			res.cookie('password', result.newPassword, {
-				path: '/',
-				expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-				httpOnly: true
-			});
 
-			res.routeHelper.renderInfo(res, {
-				message: '密码已修改'
-			});
+		const result = await userBLL.updatePassword(
+			newPassword, req.body.oldpassword, req.currentUser.username
+		);
+
+		// 更新cookie中的密码
+		res.cookie('password', result.newPassword, {
+			path: '/',
+			expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+			httpOnly: true
 		});
 	})
 };
 
-// 修改用户密码
-exports['update/password'] = {
-	pathPattern: '/user/update/password/:username',
-	callbacks: pageType.admin(
-		pageType.prepend(
-			createPermissionChecking(2),
-			(req, res) => {
-				res.routeHelper.viewData('username', req.params.username);
-			}
-		)
-	)
-};
-
 // 提交用户密码修改
-exports['update/password/post'] = {
-	pathPattern: '/user/update/password/:username/post',
-	verb: 'post',
+exports['update/password'] = {
+	verb: 'put',
+	resType: 'json',
 	callbacks: pageType.admin(
-		pageType.prepend(
-			createPermissionChecking(2),
-			(req, res) => {
-				return userBLL.updatePassword(
-					req.body.newpassword, null, req.body.username
-				).then(() => {
-					res.routeHelper.renderInfo(res, {
-						message: '密码已修改'
-					});
-				});
-			}
-		)
+		pageType.prepend(createPermissionChecking(2), async(req) => {
+			await userBLL.updatePassword(
+				req.body.newpassword, null, req.body.username
+			);
+		})
 	)
 };
 
@@ -258,40 +167,18 @@ exports.list = {
 				page: result.page,
 				rows: result.rows
 			});
-
-			// return Promise.all([
-			// 	userBLL.list(params, 15, page).then((result) => {
-			// 		res.routeHelper.viewData({
-			// 			userList: result,
-			// 			params: params
-			// 		});
-			// 	}),
-
-			// 	userGroupBLL.list().then((result) => {
-			// 		res.routeHelper.viewData('userGroupList', result);
-			// 	})
-			// ]);
 		})
 	)
 };
 
 
-
-
 // 批量删除用户
-exports['list/batch'] = {
-	verb: 'post',
+exports['delete'] = {
+	verb: 'delete',
+	resType: 'json',
 	callbacks: pageType.admin(
-		pageType.prepend(
-			createPermissionChecking(2),
-			(req, res) => {
-				const userids = util.convert(req.body.userids, 'array<int>');
-				return userBLL.delete(userids).then(() => {
-					res.routeHelper.renderInfo(res, {
-						message: '已删除指定用户'
-					});
-				});
-			}
-		)
+		pageType.prepend(createPermissionChecking(2), async(req) => {
+			await userBLL.delete(req.body.userids);
+		})
 	)
 };
