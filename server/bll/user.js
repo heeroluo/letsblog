@@ -66,7 +66,7 @@ exports.updateProfile = async(user, userid, currentUser) => {
 
 // 更新密码
 exports.updatePassword = async(newPassword, oldPassword, username) => {
-	// 管理员修改用户密码时，oldPassword应为null
+	// 管理员修改用户密码时，oldPassword应为 null
 
 	let err;
 	if (!username) {
