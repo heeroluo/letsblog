@@ -11,6 +11,7 @@ const userBLL = require('../../bll/user');
 const categoryBLL = require('../../bll/category');
 const articleBLL = require('../../bll/article');
 const pageType = require('../page-type');
+const appConfig = require('../../../config');
 
 
 // 文章列表
@@ -150,6 +151,15 @@ exports.view = {
 		}
 
 		res.end();
+		return true;
+	}
+};
+
+
+// 构建后CSS会被编译为JS，需要保留一份CSS给编辑器加载
+exports['contentCSS'] = {
+	callbacks(req, res) {
+		res.sendFile(appConfig.contentCSS);
 		return true;
 	}
 };
