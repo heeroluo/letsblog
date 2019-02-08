@@ -96,10 +96,10 @@ exports.list = [
 		const params = isPersonalPage ? {
 			userid: req.currentUser.userid
 		} : {
-			minWeight: parseInt(req.query.min_weight) || null,
-			maxWeight: parseInt(req.query.max_weight) || null,
+			minWeight: req.query.min_weight ? parseInt(req.query.min_weight) : null,
+			maxWeight: req.query.max_weight ? parseInt(req.query.max_weight) : null,
 			categoryid: parseInt(req.query.categoryid) || null,
-			state: parseInt(req.query.state) || null,
+			state: req.query.state ? parseInt(req.query.state) : null,
 			username: req.query.username || '',
 			title: req.query.title || ''
 		};
