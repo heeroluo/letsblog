@@ -129,7 +129,7 @@ exports.list = async(pageSize, page, params) => {
 
 	options.include = [{
 		model: Article,
-		attributes: ['title', 'title_en'],
+		attributes: ['articleid', 'title', 'title_en'],
 		where: articleWhere
 	}, {
 		model: User,
