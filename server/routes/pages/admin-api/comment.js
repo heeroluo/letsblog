@@ -24,7 +24,7 @@ exports.list = [
 	async(req, res) => {
 		const page = parseInt(req.query.page) || -1;
 		const params = {
-			state: parseInt(req.query.state) || null
+			state: req.query.state ? parseInt(req.query.state) : null
 		};
 
 		const result = await commentBLL.list(20, page, params);
@@ -45,7 +45,7 @@ exports['list/batch'] = {
 		async(req) => {
 			const commentids = req.body.commentids;
 			switch (req.body.action) {
-				case 'approve':
+				case 'audit':
 					await commentBLL.updateState(1, commentids);
 					break;
 
