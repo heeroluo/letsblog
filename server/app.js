@@ -75,9 +75,9 @@ app.use(cookieParser());
 // 增加获取实体类工具函数
 const getModel = require('./lib/get-model');
 app.use(function(req, res, next) {
-	req.getModel = function(modelName) {
+	req.getModel = function(modelName, source) {
 		return getModel(
-			req.body,
+			source || req.body,
 			require('./dal/' + modelName.toLowerCase()).Model
 		);
 	};
