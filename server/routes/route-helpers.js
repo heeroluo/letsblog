@@ -163,6 +163,7 @@ class HTMLRouteHelper extends BasicRouteHelper {
 			}
 		}
 		t.viewData('title', this._titles.join(' | '));
+		t.viewData('keywords', this._keywords.join(','));
 		res.render(t._template, t._viewData);
 		t._rendered = true;
 	}
